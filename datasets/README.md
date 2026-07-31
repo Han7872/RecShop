@@ -1,5 +1,7 @@
 # datasets
 
+[English](README.md) | [中文版](README_CN.md)
+
 Microservice RCA datasets: agent semantic faults + traditional infrastructure faults.
 
 ## What's here

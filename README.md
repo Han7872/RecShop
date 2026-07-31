@@ -1,110 +1,80 @@
 # RecShop — Microservice RCA Dataset Platform
 
+[English](README.md) | [中文版](README_CN.md)
+
+![License](https://img.shields.io/badge/license-MIT%20code%20%7C%20CC--BY--4.0%20data-blue) ![Dataset](https://img.shields.io/badge/dataset-351%20cases-orange)
+
 A real 25-microservice e-commerce recommendation system (SASRec + 4-Agent LangGraph + DeepSeek LLM) with fault injection, three-modal observability (OpenTelemetry), and machine-verifiable ground truth — for root cause analysis (RCA) research.
+
+Two complementary fault lines: **traditional infrastructure faults** (255 cases, root cause = service) and **agent semantic faults** (96 faulted cases, root cause = LLM agent). Their scores use different units — do not mix.
 
 ## What's in this repo
 
 | Component | Description |
 |---|---|
 | `services/` | 25 microservices (Flask/FastAPI) — the running application |
-| `datasets/agentfault_k8s/` | Agent semantic fault dataset (96 faulted cases, 4 families) |
+| `datasets/agentfault_k8s/` | Agent semantic fault dataset (96 faulted cases, 4 families) + pre-computed eval results |
 | `datasets/traditional_k8s/` | Traditional infra fault dataset (255 cases; full telemetry on Google Drive) |
 | `scripts/chaos/` | Fault injection + collection + evaluation toolkit |
 | `docker/` `ops/` `k8s/` | Docker / OTel stack / K8S deployment configs |
 | `scripts/database_schema.sql` | Database schema (idempotent, `CREATE TABLE IF NOT EXISTS`) |
 
-**Pre-computed evaluation results** ship inside `datasets/agentfault_k8s/` (`BASELINE_RESULTS.md`, `RESULTS_WHENWHEN.md`, `RESULTS_CONTENT_CTXDRIFT.md`, `infra_negatives/`). You can read these without installing any evaluation dependencies.
+Pre-computed evaluation results ship inside `datasets/agentfault_k8s/` (`BASELINE_RESULTS.md`, `RESULTS_WHENWHEN.md`, `RESULTS_CONTENT_CTXDRIFT.md`, `infra_negatives/`) — readable without installing any evaluation dependencies.
 
 ## Quick start
 
-### Prerequisites
+**Prerequisites**: Python 3.10+ (`requirements.txt`), MySQL 8.0+, and the large model assets (not included due to size): `services/sasrec_api/standard_cache.pkl` (~9.2 GB), `SASRec-*.pth` (~260 MB), `services/recommendation_agent/electronics.inter` (~2.4 GB), `shared/data/electronics.item` (~1.2 GB).
 
-- Python 3.10+ (`requirements.txt`)
-- MySQL 8.0+
-- **Large model assets** (not included due to size — download separately):
+```bash
+mysql -u root -p < scripts/build_database.sql          # init DB
+NACOS_ENABLED=false python start_all.py                 # start (offline mode, no Nacos)
+python start_all.py --stop                              # stop
+```
 
-| File | Size | Description |
+Access — Buyer: http://localhost:3000 · Merchant: `/merchant` · Admin: `/admin` · Jaeger: http://localhost:16686 · Grafana: http://localhost:3001
+
+## Datasets
+
+**Agent semantic faults** (`datasets/agentfault_k8s/`) — 96 faulted cases across 4 families, each with machine-verifiable ground truth. See `SUMMARY.md` (what / how) + `EVAL_NOTES.md` (evaluation protocol).
+
+| Family | Cases | Mechanism |
 |---|---|---|
-| `services/sasrec_api/standard_cache.pkl` | ~9.2 GB | SASRec model cache |
-| `services/sasrec_api/SASRec-*.pth` | ~260 MB | SASRec checkpoint |
-| `services/recommendation_agent/electronics.inter` | ~2.4 GB | SASRec interaction data |
-| `shared/data/electronics.item` | ~1.2 GB | Item metadata |
+| `hallucinate` | 36 | Sub-LLM rewrites the answer to be fluent but factually wrong |
+| `context_drift` | 36 | Upstream message deleted from the downstream agent's input |
+| `wrong_item_pick` | 12 | Recommended ASIN swapped to a sentinel |
+| `format_violation` | 12 | 4 subtypes (missing / type / empty / malformed) |
 
-Place them at the paths shown above.
+**Traditional infra faults** (`datasets/traditional_k8s/`) — 255 cases (single 130 / dual 100 / triple 25), Chaos Mesh. Full telemetry (~16 GB) hosted on Google Drive; see `traditional_k8s/README.md`.
 
-### Database
+## Data collection
 
-```bash
-mysql -u root -p < scripts/build_database.sql
-```
+The fault-injection + collection toolkit lives under `scripts/chaos/`. One-click collection scripts (each a self-contained orchestrator with pre-flight checks, per-case gates, and resume):
 
-### Start the system
+| Script | Collects | Output tree |
+|---|---|---|
+| `scripts/chaos/ctk/collect-{single,dual,triple}-dense.sh` | single 40 / dual 80 / triple 20 (v19 dense) | `datasets/k8s_pilot/{single,dual,triple}_dense/` |
+| `scripts/chaos/ctk/collect-single-spread.sh` | single 55 (pod-failure & service-CPU, 6 services) | `datasets/k8s_pilot/single_spread/` |
+| `scripts/chaos/ctk/collect-single-recagent.sh` | single 15 (rec-agent, + agent-span side capture) | `datasets/k8s_pilot/single_recagent/` |
+| `scripts/chaos/ctk/collect-g2ext.sh` | G2ext batch — dual 25 + triple 20 (all-distinct multi-root) | `datasets/k8s_pilot/{dual,triple}_ext/` |
+| `scripts/chaos/agentfault/run_collect_agentfault.sh` | agent semantic faults — 9 combos × 12 reps (108) | `datasets/agentfault_k8s/` |
 
-```bash
-# Without Nacos (offline mode):
-NACOS_ENABLED=false python start_all.py
+> `collect-{single,dual,triple}.sh` (without `-dense`) are the v18 predecessors — kept for provenance, **do not run** (use the `-dense` versions).
 
-# With Docker OTel stack:
-python start_all.py    # auto-starts Grafana/Jaeger/Prometheus/Loki
+> Re-collection requires the full 25-service K8S stack + Chaos Mesh + the large model assets. The shipped `datasets/` are the ready-to-use outputs; collection is for reproducing / extending only.
 
-# Stop:
-python start_all.py --stop
-```
-
-Set `NACOS_ENABLED=false` in `.env` (copy from `.env.example`) if you don't have Nacos installed. All services fall back to `127.0.0.1:<port>` direct connections.
-
-### Access
-
-- Buyer storefront: http://localhost:3000
-- Merchant console: http://localhost:3000/merchant
-- Admin backend: http://localhost:3000/admin
-- Jaeger UI: http://localhost:16686
-- Grafana: http://localhost:3001
-
-## Agent semantic fault dataset
-
-96 faulted cases across 4 families, each with machine-verifiable ground truth:
-
-| Family | Cases | Target agents | Mechanism |
-|---|---|---|---|
-| `hallucinate` | 36 | 3 analyzers (×12 each) | Sub-LLM rewrites answer to be fluent but factually wrong |
-| `context_drift` | 36 | 3 downstream agents (×12 each) | Upstream message deleted from downstream input |
-| `wrong_item_pick` | 12 | Synthesizer | Recommended ASIN swapped to sentinel |
-| `format_violation` | 12 | Synthesizer | 4 subtypes (missing/type/empty/malformed) |
-
-See `datasets/agentfault_k8s/SUMMARY.md` for details, `datasets/agentfault_k8s/EVAL_NOTES.md` for evaluation protocol.
-
-## Re-running evaluation
-
-The evaluation toolkit (`scripts/chaos/agentfault/`) supports BARO, RCD, Who&When, and A2P. Pre-computed results ship with the dataset.
-
-**To re-run evaluation from scratch**, you need two additional dependencies:
-
-1. **RCAEval** — BARO/RCD implementations:
-   ```bash
-   git clone https://github.com/q7kcc/RCAEval.git third_party/RCAEval
-   ```
-
-2. **Patched causal-learn** — RCD requires `causal-learn==0.1.2.3` with 4 vendored patch files. Install causal-learn, then apply the patches:
-   ```bash
-   pip install causal-learn==0.1.2.3
-   # Create third_party/_cl_patched/ with the patched causallearn package
-   # (see scripts/chaos/ctk/m9_score.py:42-44 for sys.path setup)
-   ```
-
-Without these, Steps 4/5/9 of `run_eval_agentfault.sh` will fail with ImportError. All other steps (make cases, run Who&When judge, score) work without them.
+## Evaluation
 
 ```bash
-# One-click evaluation (requires DeepSeek API key for Who&When judge):
+# One-click agent-fault eval (offline steps are free; --with-judge needs a DeepSeek API key):
 bash scripts/chaos/agentfault/run_eval_agentfault.sh --dataset-dir datasets/agentfault_k8s
 ```
 
+BARO / RCD need `third_party/RCAEval` + patched `causallearn==0.1.2.3` (see `scripts/chaos/ctk/m9_score.py` header); without them those steps skip and the rest still runs.
+
 ## Architecture
 
-25 microservices on K8S (docker-desktop single node):
-
 ```
-shop_web:3000 (BFF/three-endpoint UI)
+shop_web:3000 (BFF / three-endpoint UI)
 ├── Recommendation: backend_api:5000 → sasrec_api:8200
 │                  recommendation_agent:5001 → sasrec + DeepSeek
 │                  llm_rerank_service:5002 → DeepSeek
@@ -113,14 +83,10 @@ shop_web:3000 (BFF/three-endpoint UI)
 ├── Content: catalog:5005 (high fan-in) · search:5017 · review:5003/5018
 ├── Profile: user:5004 · address:5007 · merchant:5019 · announcement:5009
 └── Telemetry: interaction:5020 · admin_audit:5022 · ai_memory:5008
-
 Shared: MySQL shopify2 · Nacos (optional) · DeepSeek API · OTel collector
 ```
 
-## License
+## License & citation
 
-- **Source code**: MIT
-- **Dataset** (`datasets/`): CC-BY-4.0
-- **Vendored libraries** (`services/sasrec_api/vendor/`): original licenses apply
-
-See `LICENSE.md` for details. Cite using `CITATION.cff`.
+- Source code: MIT · Dataset (`datasets/`): CC-BY-4.0 · Vendored libraries: original licenses
+- See `LICENSE.md`; cite via `CITATION.cff`.
