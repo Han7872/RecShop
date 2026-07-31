@@ -25,9 +25,12 @@
 **前置**：Python 3.10+（`requirements.txt`）、MySQL 8.0+，以及大模型资产（体积过大，需自备）：`services/sasrec_api/standard_cache.pkl`（~9.2 GB）、`SASRec-*.pth`（~260 MB）、`services/recommendation_agent/electronics.inter`（~2.4 GB）、`shared/data/electronics.item`（~1.2 GB）。
 
 ```bash
-mysql -u root -p < scripts/build_database.sql          # 初始化数据库
-NACOS_ENABLED=false python start_all.py                 # 启动（离线模式，不起 Nacos）
-python start_all.py --stop                              # 停止
+bash install.sh        # 装 Python 依赖(大模型资产需自备,见下)
+bash init_db.sh        # 建库 + 灌商品 + demo 种子(设 DB_PASSWORD 环境变量; 需 electronics.item)
+bash start.sh          # 启动 25 服务(默认离线模式)
+bash start.sh --stop   # 停止
+# 可选,从零全采集(通宵级,需 K8S 栈; datasets/ 已是采好的产物):
+#   bash collect_all.sh
 ```
 
 访问 —— 买家端：http://localhost:3000 · 商家端：`/merchant` · 管理端：`/admin` · Jaeger：http://localhost:16686 · Grafana：http://localhost:3001
