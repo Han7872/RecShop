@@ -25,12 +25,12 @@ Pre-computed evaluation results ship inside `datasets/agentfault_k8s/` (`BASELIN
 **Prerequisites**: Python 3.10+ (`requirements.txt`), MySQL 8.0+, and the large model assets (not included due to size): `services/sasrec_api/standard_cache.pkl` (~9.2 GB), `SASRec-*.pth` (~260 MB), `services/recommendation_agent/electronics.inter` (~2.4 GB), `shared/data/electronics.item` (~1.2 GB).
 
 ```bash
-bash install.sh        # install Python deps (large model assets must be supplied — see below)
-bash init_db.sh        # build DB + load items + demo seed  (set DB_PASSWORD env; needs electronics.item)
-bash start.sh          # start all 25 services (offline mode by default)
-bash start.sh --stop   # stop
+python scripts/setup/install.py        # install Python deps (large model assets must be supplied — see below)
+python scripts/setup/init_db.py        # build DB + load items + demo seed  (set DB_PASSWORD env; needs electronics.item)
+python scripts/setup/start.py          # start all 25 services (offline mode by default)
+python scripts/setup/start.py --stop   # stop
 # optional, full re-collection (overnight, K8S stack required; datasets/ ships pre-collected):
-#   bash collect_all.sh
+#   python scripts/setup/collect_all.py
 ```
 
 Access — Buyer: http://localhost:3000 · Merchant: `/merchant` · Admin: `/admin` · Jaeger: http://localhost:16686 · Grafana: http://localhost:3001
