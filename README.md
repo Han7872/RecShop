@@ -22,7 +22,7 @@ Pre-computed evaluation results ship inside `datasets/agentfault_k8s/` (`BASELIN
 
 ## Quick start
 
-**Prerequisites**: Python 3.10+ (`requirements.txt`), MySQL 8.0+, and the large model assets (not included due to size): `services/sasrec_api/standard_cache.pkl` (~9.2 GB), `SASRec-*.pth` (~260 MB), `services/recommendation_agent/electronics.inter` (~2.4 GB), `shared/data/electronics.item` (~1.2 GB).
+**Prerequisites**: Python 3.10+ (`requirements.txt`), MySQL 8.0+, and the large model assets (not included due to size): `services/sasrec_api/standard_cache.pkl` (~9.2 GB), `SASRec-*.pth` (~260 MB), `services/recommendation_agent/electronics.inter` (~2.4 GB), `shared/data/electronics.item` (~1.2 GB). Download from [Google Drive](https://drive.google.com/drive/folders/1MPKbMsBcISbGIaHmKkV9vygZp7XKLCG5) (`services/` + `shared/` folders, ~11 GB) and merge into the repo root.
 
 ```bash
 python scripts/setup/install.py        # install Python deps (large model assets must be supplied — see below)

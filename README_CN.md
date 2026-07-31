@@ -22,7 +22,7 @@
 
 ## 快速开始
 
-**前置**：Python 3.10+（`requirements.txt`）、MySQL 8.0+，以及大模型资产（体积过大，需自备）：`services/sasrec_api/standard_cache.pkl`（~9.2 GB）、`SASRec-*.pth`（~260 MB）、`services/recommendation_agent/electronics.inter`（~2.4 GB）、`shared/data/electronics.item`（~1.2 GB）。
+**前置**：Python 3.10+（`requirements.txt`）、MySQL 8.0+，以及大模型资产（体积过大，需自备）：`services/sasrec_api/standard_cache.pkl`（~9.2 GB）、`SASRec-*.pth`（~260 MB）、`services/recommendation_agent/electronics.inter`（~2.4 GB）、`shared/data/electronics.item`（~1.2 GB）。从 [Google Drive](https://drive.google.com/drive/folders/1MPKbMsBcISbGIaHmKkV9vygZp7XKLCG5) 下载（`services/` + `shared/`，~11 GB），覆盖合并到仓库根目录。
 
 ```bash
 python scripts/setup/install.py        # 装 Python 依赖(大模型资产需自备,见下)

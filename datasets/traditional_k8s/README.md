@@ -1,7 +1,7 @@
 # traditional_k8s — 传统基础设施故障数据集（K8S）
 
-> **完整数据集（全量三模态遥测 + GT + 评测结果，~16 GB）托管在 Google Drive：**
-> 🔗 **`https://drive.google.com/<TODO_REPLACE_WITH_SHARED_LINK>`**
+> **完整数据集（traditional 255 + agent 96，含全量三模态遥测 + GT + 评测结果）托管在 Google Drive：**
+> 🔗 https://drive.google.com/drive/folders/1MPKbMsBcISbGIaHmKkV9vygZp7XKLCG5 （见 `Dataset/` 子目录）
 > 下载后解压到本目录（`datasets/traditional_k8s/`）即可使用。
 
 ## 这是什么
