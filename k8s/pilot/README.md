@@ -131,7 +131,7 @@ docker build -f services/sasrec_api/Dockerfile       -t recweb-sasrec:latest .
 > 以上面 §全栈 bring-up 步骤 2 的命令为准。
 
 ```bash
-# 🔶 主循环实测确认: .env 里 DB_PASSWORD=204525。建 Secret 后把 10-catalog/30-backend 的
+# 🔶 主循环实测确认: .env 里 DB_PASSWORD=<your-mysql-password>。建 Secret 后把 10-catalog/30-backend 的
 #    env DB_PASSWORD value 改成 valueFrom.secretKeyRef（或临时直接填值, M0 内网可接受）。
 kubectl -n recweb-chaos create secret generic recweb-db \
   --from-literal=password='<.env 里的 DB_PASSWORD>'
@@ -213,8 +213,8 @@ kubectl delete namespace recweb-chaos          # 连带删 ns 内所有资源
 1. **python base tag**：`python:3.11-slim` 是否匹配 conda env recweb2 的 Python 版本（本任务未侦察 recweb2 Python 版本）。
 2. **torch 安装**：sasrec Dockerfile 的 torch 装法（CPU wheel vs cu118）+ recbole vendor 运行时还缺哪些三方包（实测 import 验证）。
 3. **`.pth` 真实文件名**：`20-sasrec.yaml` 的 `SASREC_MODEL_PATH` / hostPath / mountPath 三处都写 `SASRec-Feb-24-2026_17-54-22.pth`（取自黑板基线条目），核对宿主实际文件名一致。
-4. **hostPath 实际路径**：`/run/desktop/mnt/host/d/AIProjects/RecWeb2/services/sasrec_api/...`（盘符小写 d）能否挂到；若 9p 读 9GB 超 300s，cp 进 WSL2 ext4 改指向（G8）。
+4. **hostPath 实际路径**：`/run/desktop/mnt/host/d/<repo-root>/services/sasrec_api/...`（盘符小写 d）能否挂到；若 9p 读 9GB 超 300s，cp 进 WSL2 ext4 改指向（G8）。
 5. **`host.docker.internal` 解析**：catalog/backend pod 内能否解析（连宿主 MySQL :3306 + 宿主 OTel collector :4317）；部分 Docker Desktop 版本需 `hostAliases` 兜底。
 6. **collector OTLP 端口**：已从 `ops/docker-compose.otel.yml` 实测 = **4317**（gRPC，宿主映射 `4317:4317`）；8889 是 Prometheus scrape 端点。manifest OTLP endpoint 已用 4317，核对 compose 栈仍 UP。
-7. **DB_PASSWORD Secret**：manifest 占位 `REPLACE_ME`，apply 前建 Secret（.env 里是 204525）。
+7. **DB_PASSWORD Secret**：manifest 占位 `REPLACE_ME`，apply 前建 Secret（.env 里是 <your-mysql-password>）。
 8. **Chaos Mesh CRD apiVersion**：`chaos-mesh.org/v1alpha1` 随实装 Chaos Mesh 版本核对。

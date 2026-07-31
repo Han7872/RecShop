@@ -8,7 +8,7 @@ A real 25-microservice e-commerce recommendation system (SASRec + 4-Agent LangGr
 |---|---|
 | `services/` | 25 microservices (Flask/FastAPI) — the running application |
 | `datasets/agentfault_k8s/` | Agent semantic fault dataset (96 faulted cases, 4 families) |
-| `datasets/agentfault_k8s_whowhen/` | Who&When-format delivery view (96 cases, drop-in) |
+| `datasets/traditional_k8s/` | Traditional infra fault dataset (255 cases; full telemetry on Google Drive) |
 | `scripts/chaos/` | Fault injection + collection + evaluation toolkit |
 | `docker/` `ops/` `k8s/` | Docker / OTel stack / K8S deployment configs |
 | `scripts/database_schema.sql` | Database schema (idempotent, `CREATE TABLE IF NOT EXISTS`) |

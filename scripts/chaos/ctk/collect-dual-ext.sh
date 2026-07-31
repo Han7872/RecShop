@@ -4,7 +4,7 @@
 # 采集黑板 = (project docs)/archive/TASK-K8S-G2ext-multiroot-expand.md; 设计权威 = FAULT_DESIGN.md §扩充批次
 #
 # ===== 环境(照 archive/TASK-K8S-M8-overnight-recollect §1.5-A) =====
-# cd /d/AIProjects/RecWeb2
+# cd /path/to/repo
 # export KUBECTL='kubectl'
 # export PATH="/c/Program Files/Docker/Docker/resources/bin:$PATH"
 # export NO_PROXY='*' NACOS_ENABLED=false PYTHONIOENCODING=utf-8

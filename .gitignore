@@ -25,3 +25,9 @@ HANDOFF-*.md
 *.bak
 *.part
 *.log
+
+# IDE / editor personal config (do not ship)
+.idea/
+.vscode/
+*.iml
+.DS_Store

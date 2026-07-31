@@ -65,8 +65,8 @@ set -euo pipefail
 
 # ---- locate repo root from this script's location, then cd there -------------
 # ★2026-07-27 修(首轮 B 档采集被它坑过):必须用 `pwd -W` 而不是 `pwd`。
-#   Git Bash 的 `pwd` 给 MSYS 风格 /d/AIProjects/...,把它拼进路径再传给
-#   **Windows 版 python.exe**,会被解释成 D:\d\AIProjects\... → "can't open file"。
+#   Git Bash 的 `pwd` 给 MSYS 风格 /path/to/repo/...,把它拼进路径再传给
+#   **Windows 版 python.exe**,会被解释成 D:\path\to\repo\... → "can't open file"。
 #   `pwd -W` 直接给 ${REPO_DIR}/...(正斜杠 Windows 风格),bash 与 Windows python 都认。
 #   (纯 bash 用途如 `cd`/`[ -f ]` 用哪种都行,所以统一成 -W 最省事。)
 #   ★写法坑(2026-07-27 二次修):不能写成 `cd X && pwd -W || cd X && pwd` ——
@@ -89,7 +89,7 @@ export PYTHONIOENCODING=utf-8
 PY="${CONDA_PY:-python3}"   # conda env recweb2
 
 # ★注意:绝不能在这里 `export MSYS2_ARG_CONV_EXCL='*'`。
-#   本脚本给 python.exe 传的 ${RUNNER} 是 MSYS 风格路径(/d/AIProjects/...),要靠 MSYS 的
+#   本脚本给 python.exe 传的 ${RUNNER} 是 MSYS 风格路径(/path/to/repo/...),要靠 MSYS 的
 #   自动转换才能变成 Windows 路径;全局关掉转换 = 本机分支直接跑不起来。
 #   只有"参数里带 Linux 容器内路径"的那几条 kubectl 命令需要**逐条**前缀 MSYS2_ARG_CONV_EXCL='*'
 #   (否则 /app/... 会被改写成 Windows 路径)。runner 内部走 subprocess 直调 kubectl、不过 shell,

@@ -3,11 +3,11 @@
   "updated": "2026-07-31",
   "_doc": [
     "Machine-readable dataset catalog for the public release.",
-    "Only agentfault_k8s + agentfault_k8s_whowhen are included in this repo."
+    "agentfault_k8s ships in-repo; traditional_k8s full telemetry is hosted on Google Drive (placeholder README in-repo)."
   ],
   "datasets": {
     "agentfault_k8s": {
-      "description": "Agent semantic fault dataset (B-tier, full 25-microservice K8S cluster)",
+      "description": "Agent semantic fault dataset (full 25-microservice K8S cluster)",
       "total_cases": 108,
       "faulted_cases": 96,
       "zero_injection_controls": 12,
@@ -28,13 +28,18 @@
         "limitations.json"
       ]
     },
-    "agentfault_k8s_whowhen": {
-      "description": "Who&When-format delivery view (drop-in for Who&When / A2P evaluation)",
-      "cases": 96,
-      "key_files": [
-        "Injection-Generated/",
-        "cases_index.json",
-        "README.md"
+    "traditional_k8s": {
+      "description": "Traditional infrastructure fault dataset (Chaos Mesh, 25-microservice K8S)",
+      "total_cases": 255,
+      "arity_breakdown": {"single": 130, "dual": 100, "triple": 25},
+      "hosting": "external — Google Drive (~16 GB full telemetry)",
+      "in_repo": "placeholder README only; download full dataset from Google Drive",
+      "key_files_in_download": [
+        "raw/",
+        "eval/",
+        "per_case_scores_255.csv",
+        "DATASHEET.md",
+        "FAULT_DESIGN.md"
       ]
     }
   }

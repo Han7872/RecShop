@@ -79,7 +79,7 @@ F1_TIMEOUT_SHORT_MS = 1000      # ov-f1on/ov-f1f2 proxy_read_timeout 读回值(c
 DB_HOST = os.environ.get("DB_HOST", "127.0.0.1")
 DB_PORT = int(os.environ.get("DB_PORT", "3306"))
 DB_USER = os.environ.get("DB_USER", "root")
-DB_PASS = os.environ.get("DB_PASSWORD", "204525")
+DB_PASS = os.environ.get("DB_PASSWORD", "")
 DB_NAME = os.environ.get("DB_NAME", "shopify2")
 CHECKSUM_BASELINE = {"items": 3849590678, "inventory": 3935678504}
 

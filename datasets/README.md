@@ -1,13 +1,13 @@
 # datasets
 
-Agent semantic fault dataset for microservice RCA research.
+Microservice RCA datasets: agent semantic faults + traditional infrastructure faults.
 
 ## What's here
 
 | Directory | Cases | Description |
 |---|---|---|
-| `agentfault_k8s/` | 108 (96 faulted + 12 zero-injection controls) | B-tier dataset: agent semantic faults injected on a full 25-microservice K8S cluster |
-| `agentfault_k8s_whowhen/` | 96 | Who&When-format delivery view (drop-in for Who&When / A2P) |
+| `agentfault_k8s/` | 108 (96 faulted + 12 zero-injection controls) | Agent semantic faults injected on a full 25-microservice K8S cluster |
+| `traditional_k8s/` | 255 (single 130 / dual 100 / triple 25) | Traditional infra faults (Chaos Mesh). **Full telemetry hosted on Google Drive** — see `traditional_k8s/README.md` |
 
 ## Quick links
 
@@ -16,4 +16,5 @@ Agent semantic fault dataset for microservice RCA research.
 - `agentfault_k8s/dataset_agentfault.csv` — one row per case
 - `agentfault_k8s/RESULTS_WHENWHEN.md` — Who&When results (DeepSeek + GLM cross-family)
 - `agentfault_k8s/BASELINE_RESULTS.md` — Tier-A baselines (contract oracle, trivial, RF)
+- `traditional_k8s/README.md` — traditional dataset overview + Google Drive download link
 - `REGISTRY.json` — machine-readable catalog

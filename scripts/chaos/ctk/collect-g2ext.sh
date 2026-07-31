@@ -20,7 +20,9 @@
 #   NACOS_ENABLED=false / NO_PROXY='*' / kubectl 在 PATH / proxy8001 / pfwd 守护 / CHECKSUM 闸(runner 自含)。
 # =============================================================================
 set -u
-cd /d/AIProjects/RecWeb2 || { echo "FATAL: 需在 ${REPO_DIR} 下运行"; exit 1; }
+# cd to repo root (this script lives in scripts/chaos/ctk/)
+REPO_DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
+cd "$REPO_DIR" || { echo "FATAL: 无法 cd 到仓根 $REPO_DIR"; exit 1; }
 
 export KUBECTL='kubectl'
 export PATH="/c/Program Files/Docker/Docker/resources/bin:$PATH"

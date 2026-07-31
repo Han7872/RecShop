@@ -26,10 +26,10 @@ set -euo pipefail
 
 # ---- locate repo root, cd there ---------------------------------------------
 # ★2026-07-27:与 run_collect_agentfault.sh 同款修复(改一处必查同款,本仓已犯过五次)。
-#   裸 `pwd` 给 MSYS 风格 /d/AIProjects/...,把它拼成脚本路径传给 **Windows 版 python.exe** 时,
+#   裸 `pwd` 给 MSYS 风格 /path/to/repo/...,把它拼成脚本路径传给 **Windows 版 python.exe** 时,
 #   若 python 的 cwd 恰好在盘根,`/d/...` 会被当【相对根路径】拼到盘符后 →
-#   D:\d\AIProjects\... → "can't open file"(2026-07-27 实测复现:cwd=D:\ 时
-#   os.path.abspath("/d/AIProjects/x.py") == "D:\d\AIProjects\x.py")。
+#   D:\path\to\repo\... → "can't open file"(2026-07-27 实测复现:cwd=D:\ 时
+#   os.path.abspath("/path/to/repo/x.py") == "D:\path\to\repo\x.py")。
 #   本脚本此前没炸只是 cwd 恰好合适,属**潜伏**同款风险,一并修。
 #   ⚠ 不能写 `cd X && pwd -W || cd X && pwd`(&&/|| 同优先级左结合会两个 pwd 都跑且 fallback cd 失败)。
 _abspath() {  # $1 = 目录;Git Bash 下输出 D:/... 正斜杠风格,其它 shell 回退原生绝对路径

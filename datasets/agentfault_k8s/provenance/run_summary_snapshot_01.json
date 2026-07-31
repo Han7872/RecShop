@@ -1,6 +1,6 @@
 {
   "generated_at": "2026-07-27T23:22:02.117362+08:00",
-  "out_dir": "D:\\AIProjects\\RecWeb2\\datasets\\agentfault_k8s",
+  "out_dir": "<repo>\\datasets\\agentfault_k8s",
   "runs": 12,
   "warmup": 1,
   "probe_seq": [
@@ -8,7 +8,7 @@
     "6300215695",
     "0446673145"
   ],
-  "carrier_pool": "D:\\AIProjects\\RecWeb2\\scripts\\chaos\\agentfault\\assets\\carrier_pool.json",
+  "carrier_pool": "<repo>\\scripts\\chaos\\agentfault\\assets\\carrier_pool.json",
   "carrier_seq_ids": [
     0,
     1,

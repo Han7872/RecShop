@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # G1 放量: 3类×5 剩余 12 发(r1 已成). 每发 PID+硬上限, 采后三项核 + agent_spans 回收 + 重试≤2.
 set -uo pipefail
-cd /d/AIProjects/RecWeb2
+REPO_DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
+cd "$REPO_DIR"
 export NO_PROXY='*' NACOS_ENABLED=false PYTHONIOENCODING=utf-8
 export KUBECTL="kubectl"
 export PATH="/c/Program Files/Docker/Docker/resources/bin:$PATH"

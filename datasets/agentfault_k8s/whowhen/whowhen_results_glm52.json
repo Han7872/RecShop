@@ -2,7 +2,7 @@
   "results": [
     {
       "method": "all_at_once",
-      "eval_file": "D:\\AIProjects\\RecWeb2\\datasets/agentfault_k8s\\whowhen\\outputs\\all_at_once_glm52.txt",
+      "eval_file": "<repo>\\datasets/agentfault_k8s\\whowhen\\outputs\\all_at_once_glm52.txt",
       "total_cases": 96,
       "parsed_predictions": 58,
       "missing_predictions": 38,
@@ -1565,7 +1565,7 @@
     },
     {
       "method": "step_by_step",
-      "eval_file": "D:\\AIProjects\\RecWeb2\\datasets/agentfault_k8s\\whowhen\\outputs\\step_by_step_glm52.txt",
+      "eval_file": "<repo>\\datasets/agentfault_k8s\\whowhen\\outputs\\step_by_step_glm52.txt",
       "total_cases": 96,
       "parsed_predictions": 82,
       "missing_predictions": 14,
@@ -3128,7 +3128,7 @@
     },
     {
       "method": "binary_search",
-      "eval_file": "D:\\AIProjects\\RecWeb2\\datasets/agentfault_k8s\\whowhen\\outputs\\binary_search_glm52.txt",
+      "eval_file": "<repo>\\datasets/agentfault_k8s\\whowhen\\outputs\\binary_search_glm52.txt",
       "total_cases": 96,
       "parsed_predictions": 91,
       "missing_predictions": 5,
@@ -4691,7 +4691,7 @@
     },
     {
       "method": "a2p",
-      "eval_file": "D:\\AIProjects\\RecWeb2\\datasets/agentfault_k8s\\whowhen\\outputs\\a2p_glm52.txt",
+      "eval_file": "<repo>\\datasets/agentfault_k8s\\whowhen\\outputs\\a2p_glm52.txt",
       "total_cases": 96,
       "parsed_predictions": 26,
       "missing_predictions": 70,

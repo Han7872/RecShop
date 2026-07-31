@@ -22,12 +22,12 @@ import argparse
 import os
 import shutil
 import sys
+import tempfile
 
-SRC = r"${REPO_DIR}/third_party/Eadro"
-DEFAULT_WORKDIR = (
-    r"C:/Users/Chen/AppData/Local/Temp/claude/D--AIProjects-RecWeb2/"
-    r"1460aa60-9bd5-4201-9362-9d3b9a0f2e32/scratchpad/eadro_run"
-)
+# Repo root = 4 levels up from scripts/methods/eadro/apply_patch.py
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+SRC = os.path.join(REPO_ROOT, "third_party", "Eadro")
+DEFAULT_WORKDIR = os.path.join(tempfile.gettempdir(), "recshop_eadro_run")
 
 # (id, relative file, old snippet, new snippet, why it crashes, class)
 PATCHES = [

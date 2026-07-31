@@ -1,5 +1,5 @@
 {
-  "dataset_dir": "D:\\AIProjects\\RecWeb2\\datasets/agentfault_k8s",
+  "dataset_dir": "<repo>\\datasets/agentfault_k8s",
   "n_context_drift_cases": 36,
   "ledger_target_equals_gt_root": "36/36",
   "x_vs_y": {
@@ -139,7 +139,7 @@
       "Supervised ref: RF-content ceiling (LOGO, seeds 0-4)": 0.0
     },
     "tierA_quoted_source": {
-      "path": "D:\\AIProjects\\RecWeb2\\datasets/agentfault_k8s\\BASELINE_RESULTS.md",
+      "path": "<repo>\\datasets/agentfault_k8s\\BASELINE_RESULTS.md",
       "family": "context_drift",
       "parsed_ok": true,
       "parse_error": null,
