@@ -17,7 +17,6 @@
 | `datasets/traditional_k8s/` | 传统基础设施故障数据集（255 case；全量遥测托管在 Google Drive） |
 | `scripts/chaos/` | 故障注入 + 采集 + 评测工具链 |
 | `docker/` `ops/` `k8s/` | Docker / OTel 栈 / K8S 部署配置 |
-| `scripts/database_schema.sql` | 数据库 schema（幂等，`CREATE TABLE IF NOT EXISTS`） |
 
 预计算评测结果随 `datasets/agentfault_k8s/` 提供（`BASELINE_RESULTS.md`、`RESULTS_WHENWHEN.md`、`RESULTS_CONTENT_CTXDRIFT.md`、`infra_negatives/`），无需安装任何评测依赖即可阅读。
 
@@ -35,14 +34,7 @@ python start_all.py --stop                              # 停止
 
 ## 数据集
 
-**Agent 语义故障**（`datasets/agentfault_k8s/`）——96 faulted case，4 个族，每 case 附机器可校验真值。详见 `SUMMARY.md`（是什么 / 怎么采）+ `EVAL_NOTES.md`（评测协议）。
-
-| 故障族 | case 数 | 机制 |
-|---|---|---|
-| `hallucinate` | 36 | 副 LLM 把终答改写成流畅但事实错误 |
-| `context_drift` | 36 | 删掉送进下游 agent 的上游消息 |
-| `wrong_item_pick` | 12 | 推荐的 ASIN 换成哨兵值 |
-| `format_violation` | 12 | 4 个子类型（缺失 / 类型错 / 空 / 畸形） |
+**Agent 语义故障**（`datasets/agentfault_k8s/`）——96 faulted case，4 个族（hallucinate / context_drift / wrong_item_pick / format_violation），每 case 附机器可校验真值。详见 `SUMMARY.md`（是什么 / 怎么采）+ `EVAL_NOTES.md`（评测协议）。
 
 **传统基础设施故障**（`datasets/traditional_k8s/`）——255 case（single 130 / dual 100 / triple 25），Chaos Mesh 注入。全量遥测（~16 GB）托管在 Google Drive，见 `traditional_k8s/README.md`。
 
@@ -70,21 +62,6 @@ bash scripts/chaos/agentfault/run_eval_agentfault.sh --dataset-dir datasets/agen
 ```
 
 BARO / RCD 需要 `third_party/RCAEval` + 打过补丁的 `causallearn==0.1.2.3`（见 `scripts/chaos/ctk/m9_score.py` 头注）；缺失时这两步跳过，其余步骤照常。
-
-## 架构
-
-```
-shop_web:3000 (BFF / 三端 UI)
-├── 推荐链：backend_api:5000 → sasrec_api:8200
-│          recommendation_agent:5001 → sasrec + DeepSeek
-│          llm_rerank_service:5002 → DeepSeek
-├── 交易链：checkout:5011 (扇出) → cart/pricing/inventory
-│          order:5010 · payment:5012 · shipping:5016 → notification:5021
-├── 内容链：catalog:5005 (高 fan-in) · search:5017 · review:5003/5018
-├── 资料链：user:5004 · address:5007 · merchant:5019 · announcement:5009
-└── 埋点链：interaction:5020 · admin_audit:5022 · ai_memory:5008
-共享：MySQL shopify2 · Nacos (可选) · DeepSeek API · OTel collector
-```
 
 ## 许可与引用
 
