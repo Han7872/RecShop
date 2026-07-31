@@ -1,0 +1,71 @@
+# syntax=docker/dockerfile:1.7
+# Dockerfile.agentfault — rec-agent 变体镜像:agentfault 注入器 + openinference 内容层
+# ----------------------------------------------------------------------------
+# FROM 现役 recweb-rec-agent:latest 薄叠四层:
+#   1. openinference-instrumentation-langchain(受 constraints.txt 钉版约束——
+#      langchain 0.3.24 等不许 bump;若 pip 解析失败即合法 NO-GO,勿放松约束)
+#   2. COPY 注入器目录(injector/ 含 loader/sitecustomize.py + agentfault_injector.py
+#      + contract_validator.py + injector_smoke.py)
+#   3. ★COPY --from=repo 覆盖 services/recommendation_agent/ —— base 镜像建于
+#      2026-07-19 03:18Z,而 `ab4dfd7`(2026-07-20)给 agents/tools.py 加了
+#      `_filter_real_title`(候选剔占位符标题)。base 里那份是**旧快照**
+#      (实测 tools.py 192 行 / grep -c _filter_real_title = 0),与 (archived) agentfault_v2
+#      的本机采集**不同口径**。B 档要跟 v2 对读就必须把当前仓库源码叠上来。
+#      为什么不重 build `:latest`:它是 traditional 255 的 provenance 锚
+#      (15 个 single_recagent 就打在它/它的变体上),重建 = 给基线镜像换身份。**冻结它**。
+#   4. ENV PYTHONPATH 指 loader → CPython site 初始化自动 import sitecustomize
+#      (与本地 phase1 完全同机制;全 env-gated:AGENTFAULT_INSTRUMENT/INJECT 不设
+#       时本镜像行为与 recweb-rec-agent:latest 等价,可安全常驻)
+#
+# build:★**规范命令只有一份** —— scripts/chaos/agentfault/README.md
+#   §"K8S 分支:从零到开采" 步骤 1(PowerShell + 正斜杠路径)。以那份为准。
+#   下面这份只是同一条命令的 bash 写法,便于就地阅读(仓库根执行):
+#     docker build -f scripts/chaos/agentfault/k8s/Dockerfile.agentfault \
+#       --build-context repo=${REPO_DIR} \
+#       --build-arg SRC_GIT_SHA=$(git rev-parse --short HEAD) \
+#       -t recweb-rec-agent:agentfault-v2 scripts/chaos/agentfault
+#
+#   · 主上下文仍是 scripts/chaos/agentfault(绕开根 .dockerignore 对 scripts/ 的整树排除);
+#   · 命名上下文 repo **必须指仓库根**,★★绝不能指 services/recommendation_agent ★★——
+#     那个目录里躺着 electronics.inter(2.4GB)且目录内没有 .dockerignore,会被整传。
+#     指仓库根时根 .dockerignore 生效(排掉 scripts/ **/*.inter **/*.item datasets/ .git/),
+#     实测 `transferring repo: 9.44kB`,全程 22s。
+#   · `--build-context` 需要 buildx ≥ v0.21.06(本机 docker 29.6.1 / buildx v0.35,OK)。
+#
+# ★tag 用 :agentfault-v2 不覆盖 :agentfault —— 后者是 G1(single_recagent 15,2026-07-22)
+#   的环境身份,覆盖即抹掉那 15 个 case 的 provenance。
+#
+# ★★镜像不会自动进节点 containerd(Docker Desktop 新版 K8S 的 k8s.io namespace 与
+#   docker build 的存储**不共享**;同 tag + IfNotPresent 会继续跑旧 digest ——
+#   (project docs)/archive/TASK-K8S-G1-recagent-traditional.md 坑 3 实证)。若 rollout 起不来/跑的还是旧代码:
+#     docker save recweb-rec-agent:agentfault-v2 | \
+#       kubectl exec -i -n kube-system <debug-pod> -- chroot /host ctr -n k8s.io images import -
+#   (3GB ≈ 29s,★★必须 **cmd.exe** 跑 —— 2026-07-27 实测:
+#    · Git Bash 的管道会坏二进制流;
+#    · **PowerShell 也不行** —— PS 的管道传对象、会把 3GB 全缓存进内存,
+#      报 `Insufficient memory to continue the execution of the program`。
+#    ✅ 可用写法: cmd.exe /c "docker save … | docker exec -i desktop-control-plane ctr -n k8s.io images import -"
+#    ★另:import 完的回显会被 PS 显示成乱码(tag 里的连字符变空格),必须另外核 digest:
+#      docker exec desktop-control-plane ctr -n k8s.io images ls | grep agentfault)
+#   patch_recagent_collect.ps1 的 verify 段会用 RECWEB_SRC_GIT_SHA 抓这个坑。
+# ----------------------------------------------------------------------------
+FROM recweb-rec-agent:latest
+
+# 溯源:哪个 commit 的源码被叠进来了(pod 内 `printenv RECWEB_SRC_GIT_SHA` 可查,
+# 也是 "以为换了其实没换" 的唯一硬证据)
+ARG SRC_GIT_SHA=unknown
+LABEL recweb.src_git_sha=$SRC_GIT_SHA
+ENV RECWEB_SRC_GIT_SHA=$SRC_GIT_SHA
+
+COPY constraints.txt /app/agentfault/constraints.txt
+RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple \
+    -c /app/agentfault/constraints.txt openinference-instrumentation-langchain
+
+COPY injector/ /app/agentfault/injector/
+
+# ★用仓库【当前】源码覆盖 base 里 2026-07-19 的旧快照(见头注第 3 条)
+COPY --from=repo services/recommendation_agent/ /app/services/recommendation_agent/
+
+# loader 自动装载(env-gated);PYTHONPATH 只含 loader 目录,目录里只有 sitecustomize.py,
+# 与业务 import 零冲突
+ENV PYTHONPATH=/app/agentfault/injector/loader

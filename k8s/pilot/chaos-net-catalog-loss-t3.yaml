@@ -1,0 +1,26 @@
+# T3(三-03 net_delay_x_net_loss_x_db_lock)专用 loss 30%(catalog-gw → catalog 边单边 netem 真丢包)。
+# ★co-active-regime 标定(2026-07-07 live probe,DB_LOCK_PROBE_TIMEOUT_SEC=3s 载体):
+#   T3 载体用 3s 超时(非旧 8s),且 loss 与 net_delay(~2.1s)【共活】→ 丢包重传在 3s 门下极敏感:
+#   loss15%→pricing_gw F1F2 err≈0.50 / loss30%→err≈0.69 / loss60%→err≈1.00(饱和=总故障非部分放大)。
+#   选 30%:err 0.69 稳过 gate 0.3 门(n~40 时 [0.55,0.83],reps 不逼门)且 ~31% 仍 slow-success
+#   = 诚实【部分放大】(上游三-03 loss=amplifier),非"gw 全挂"。catalog_direct/search off-gw netem-免疫(err 0)。
+# ⚠ 诚实(同 60% yaml):netem qdisc 丢包【不进】cAdvisor packets_dropped(dropped_rate=0.0)→ gate 用 app 层
+#   error_ratio 签名(loss 有错 / delay slow-200-ok),绝不 claim dropped-metric 区分 loss/delay。loss=RCAEval 已发表原子类。
+# 真窗靠 runner delete CRD 对齐(非 duration)。共享 60% yaml(chaos-net-catalog-loss.yaml)不碰。
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: net-loss-catalog-t3
+  namespace: recweb-chaos
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces: [recweb-chaos]
+    labelSelectors:
+      app: catalog-gw
+  direction: to
+  loss:
+    loss: "30"
+    correlation: "0"
+  duration: "300s"

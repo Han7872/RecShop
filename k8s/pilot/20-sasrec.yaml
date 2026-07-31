@@ -1,0 +1,137 @@
+# 20-sasrec.yaml — sasrec_api Deployment + ClusterIP Service (M0 pilot)
+# ----------------------------------------------------------------------------
+# sasrec_api(:8200) FastAPI 推理核心。M0 三服务最重一极, 是 M0 de-risk 头号未知。
+#
+# 裸进程基线实测(must-fix#2, 黑板 2026-06-25 [主循环]):
+#   pickle.load 39.6s / 总加载 40.5s / 加载后 RSS 9.34GB / 峰值工作集 13.34GB
+# 据此落 manifest:
+#   - requests.memory=10Gi / limits.memory=16Gi(峰值 13.34GB × 1.2 ≈ 16Gi)
+#   - startupProbe 容忍 ~300s: periodSeconds=10 × failureThreshold=30 = 300s
+#     (9.2GB pickle 经 Docker Desktop hostPath=9p/grpcfuse 比 NTFS 慢, 放宽到 300s)
+#   - 无 DB(纯 pickle+pth 推理), 不注 DB_* env。
+#   - 大文件 standard_cache.pkl(8.57GB)+ SASRec-*.pth【绝不进镜像】, hostPath 只读挂卷。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sasrec
+  namespace: recweb-chaos
+  labels:
+    app: sasrec
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate   # RWO PVC + 单例: 先删旧 pod 再建新, 避免滚更时 RWO 多挂致新 pod Pending(主循环 2026-06-25)
+  selector:
+    matchLabels:
+      app: sasrec
+  template:
+    metadata:
+      labels:
+        app: sasrec
+    spec:
+      enableServiceLinks: false   # 防 K8S 注入 *_SERVICE_HOST/PORT 撞应用变量(主循环 2026-06-25)
+      containers:
+        - name: sasrec
+          image: recweb-sasrec:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8200          # 源码实测: SASREC_PORT 默认 8200
+          env:
+            - name: NACOS_ENABLED
+              value: "false"
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "sasrec_api"           # 与裸进程栈一致, 保 Jaeger serviceName 不变
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+            # api_server.py 用 HERE/os.environ.get('SASREC_CACHE_PATH','standard_cache.pkl');
+            # HERE = /app/services/sasrec_api。默认相对文件名即可, 只要挂卷把文件放到 HERE 同目录。
+            # 显式写出, 与挂卷 mountPath 对齐(防默认值漂移)。
+            - name: SASREC_CACHE_PATH
+              value: "standard_cache.pkl"
+            - name: SASREC_MODEL_PATH
+              value: "SASRec-Feb-24-2026_17-54-22.pth"   # 🔶 主循环实测确认: .pth 实际文件名(基线日期戳)
+          # ---- hostPath 挂大文件到 api_server.py 期望路径(HERE 同目录)----
+          # api_server.py 期望 cache_file = HERE / 'standard_cache.pkl',
+          # HERE = /app/services/sasrec_api → 把单文件挂到该目录下的同名路径。
+          volumeMounts:
+            # PVC sasrec-data(已一次性灌入 pkl+pth)subPath 挂到 api_server.py 期望路径(HERE 同目录)
+            # hostPath 挂不进 kind 节点(主循环 2026-06-25 实测), 改 PVC。
+            - name: sasrec-data
+              mountPath: /app/services/sasrec_api/standard_cache.pkl
+              subPath: standard_cache.pkl
+              readOnly: true
+            - name: sasrec-data
+              mountPath: /app/services/sasrec_api/SASRec-Feb-24-2026_17-54-22.pth
+              subPath: SASRec-Feb-24-2026_17-54-22.pth
+              readOnly: true
+          # ---- startupProbe 放宽到 ~300s, 容忍 9.2GB 经 9p 挂卷的慢加载 ----
+          startupProbe:
+            httpGet:
+              path: /health      # 源码确认: /health 存在(api_server.py:668), 加载完才 model_loaded=true
+              port: 8200
+            periodSeconds: 10
+            failureThreshold: 30   # 10s × 30 = 300s 容忍窗(覆盖基线 40.5s + 9p 慢盘余量)
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8200
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          # liveness 不设激进阈值, 避免加载期被误杀(startupProbe 已守住启动窗)
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8200
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+          resources:
+            requests:
+              memory: "12Gi"      # 裸进程加载后 RSS 9.34GB / anon peak ~13GB; requests 12Gi 保调度
+              cpu: "500m"
+            limits:
+              # ⚠ 不设 memory limit(主循环 2026-06-25 实测): 16Gi/18Gi 均 OOMKilled(exit137)——
+              #   Linux cgroup 硬上限把 8.5GB 文件 page-cache(可回收)+ 解包对象一起算, 快速顺序读+unpickle
+              #   时 cache 来不及回收即撞顶。去掉硬上限 → 内核在节点级压力下回收 page-cache, 只需 anon(~13GB)
+              #   塞进节点可用内存(停 OTel 后 ~16GB)。代价: 无硬隔离, 靠 requests 调度 + 节点容量兜底。
+              cpu: "4"
+      volumes:
+        # hostPath 挂不进 Docker Desktop kind 节点(节点是容器, 无 /run/desktop/mnt/host, 实测)
+        #   → 改用 PVC sasrec-data(StorageClass standard, 已一次性 HTTP 灌入 pkl+pth, 持久 survives 重启)。
+        - name: sasrec-data
+          persistentVolumeClaim:
+            claimName: sasrec-data
+            readOnly: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sasrec          # 集群内 DNS: sasrec.recweb-chaos.svc(同 ns 直接 sasrec)
+  namespace: recweb-chaos
+  labels:
+    app: sasrec
+spec:
+  type: ClusterIP
+  selector:
+    app: sasrec
+  ports:
+    - name: http
+      port: 8200          # backend_api 经 SASREC_API_URL=http://sasrec:8200 调到这里
+      targetPort: 8200

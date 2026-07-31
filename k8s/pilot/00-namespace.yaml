@@ -1,0 +1,14 @@
+# 00-namespace.yaml — M0 pilot 专用 namespace
+# ----------------------------------------------------------------------------
+# 所有 M0 pilot 资源(catalog/sasrec/backend_api Deployment+Service + Chaos smoke)
+# 都落在 recweb-chaos namespace, 与宿主裸进程栈隔离(铁律: 新栈独立 namespace)。
+# namespace-scoped Chaos Mesh 也装在这个 ns(主循环装完后)。
+# apply 顺序: 本文件最先 apply。
+# ----------------------------------------------------------------------------
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: recweb-chaos
+  labels:
+    app.kubernetes.io/part-of: recweb
+    recweb.io/stack: k8s-pilot

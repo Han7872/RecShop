@@ -1,0 +1,66 @@
+{
+  "case_id": "hallu_Sequence_Recommender__r12",
+  "combo_id": "hallu_Sequence_Recommender",
+  "kind": "hallucinate",
+  "agent": "Sequence_Recommender",
+  "subtype": null,
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B00966IYPW",
+      "B00BQ5RYI4",
+      "B00JPRACS4",
+      "B004OVECU0"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 11
+  },
+  "trace_id": "8a287f3b9a6294a537454b757e895359",
+  "window": {
+    "start": "2026-07-27T13:29:38.434647+00:00",
+    "end": "2026-07-27T13:30:23.383548+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "Sequence_Recommender"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "hallucinate"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "hallucinate",
+      "User_Behavior_Analyzer": "none",
+      "Product_Analyzer": "none",
+      "Recommendation_Synthesizer": "none"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "厨房电器与家居清洁」领域。**\n\n1. **网络设备主导**（排名第1、第4）\n   - 推荐了 **ARRIS SB6",
+    "divergent_needle_present": 1,
+    "response_asin": "B00AJHDZSI",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

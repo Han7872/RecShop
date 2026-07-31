@@ -1,0 +1,66 @@
+{
+  "case_id": "hallu_Product_Analyzer__r3",
+  "combo_id": "hallu_Product_Analyzer",
+  "kind": "hallucinate",
+  "agent": "Product_Analyzer",
+  "subtype": null,
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B00B7YDGGS",
+      "B00YO2T6ZA",
+      "B074QKDWQ7",
+      "B07FPQHYBH"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 2
+  },
+  "trace_id": "47bc71fb8390bba2d17b7442e522f450",
+  "window": {
+    "start": "2026-07-27T13:46:43.972807+00:00",
+    "end": "2026-07-27T13:47:43.643967+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "Product_Analyzer"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "hallucinate"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "none",
+      "User_Behavior_Analyzer": "none",
+      "Product_Analyzer": "hallucinate",
+      "Recommendation_Synthesizer": "none"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "|\n| B00B7YDGGS | 7英寸彩色LCD水下视频摄像机系统（探鱼器） | 🎣 **户外运动摄像机** | 户外",
+    "divergent_needle_present": 1,
+    "response_asin": "B07PXGQC1Q",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

@@ -1,0 +1,113 @@
+# 17-search.yaml — search_service Deployment + ClusterIP Service (C-content 族)
+# ----------------------------------------------------------------------------
+# search_service(:5017) 标题/品牌/分类 LIKE 检索在售商品, 可选 enrich→catalog。仿 M0 backend 模板(带下游)。
+# - DB 外接宿主 MySQL: DB_HOST=host.docker.internal(items 只读检索, 不写)。
+# - 去 Nacos: NACOS_ENABLED=false → _catalog_base_url() 走 fallback = env CATALOG_SERVICE_URL,
+#   指向集群内 svc 名 http://catalog:5005(同 ns)。不能留 127.0.0.1:5005(pod 内连自己)。
+# - OTLP 复用宿主 collector: host.docker.internal:4317(gRPC)。
+# - label app=search; /health 路由【确认存在】(app.py:317)。
+# - enableServiceLinks:false + 显式 SEARCH_SERVICE_HOST=0.0.0.0 防撞 bind。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search
+  namespace: recweb-chaos
+  labels:
+    app: search
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: search
+  template:
+    metadata:
+      labels:
+        app: search
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: search
+          image: recweb-search:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5017          # 源码实测: SEARCH_SERVICE_PORT 默认 5017
+          env:
+            - name: NACOS_ENABLED
+              value: "false"
+            - name: SEARCH_SERVICE_HOST
+              value: "0.0.0.0"
+            # ---- 下游 catalog: 去 Nacos fallback 用 CATALOG_SERVICE_URL, 指集群内 svc 名 ----
+            - name: CATALOG_SERVICE_URL
+              value: "http://catalog:5005"
+            # ---- DB 外接宿主 MySQL(items 只读) ----
+            - name: DB_HOST
+              value: "host.docker.internal"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "shopify2"
+            - name: DB_USER
+              value: "recweb_k8s"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-cred
+                  key: password
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "search_service"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5017
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5017
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: search
+  namespace: recweb-chaos
+  labels:
+    app: search
+spec:
+  type: ClusterIP
+  selector:
+    app: search
+  ports:
+    - name: http
+      port: 5017
+      targetPort: 5017

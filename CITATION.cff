@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this software or dataset, please cite it as below."
+title: "RecShop: A Multi-layer Fault Injection Dataset for Microservice Root Cause Analysis"
+abstract: >-
+  RecShop is a fault injection dataset built on a real 25-microservice e-commerce
+  recommendation system (SASRec sequential recommendation + 4-Agent LangGraph pipeline +
+  LLM rerank). It contains two complementary fault lines on the same system: traditional
+  infrastructure faults (255 cases, K8S + Chaos Mesh, three-modal OTel telemetry) and
+  agent semantic faults (96 cases, LLM message rewriting). Each case provides
+  machine-verifiable ground truth and multi-modal telemetry (metric/trace/log).
+authors:
+  - family-names: Chen
+    given-names: Pengyu
+keywords:
+  - root cause analysis
+  - fault injection
+  - microservice
+  - multi-agent system
+  - observability
+  - benchmark
+license: "MIT"
+license-url: "https://spdx.org/licenses/MIT.html"
+type: software
+version: "1.0.0"
+date-released: "2026-07-31"
+repository-code: "https://github.com/USERNAME/RecShop"
+preferred-citation:
+  type: dataset
+  authors:
+    - family-names: Chen
+      given-names: Pengyu
+  title: "RecShop: A Multi-layer Fault Injection Dataset for Microservice Root Cause Analysis"
+  year: 2026
+  notes: "Bachelor's thesis dataset."

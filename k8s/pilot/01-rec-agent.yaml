@@ -1,0 +1,109 @@
+# 01-rec-agent.yaml — recommendation_agent Deployment + ClusterIP Service
+# ----------------------------------------------------------------------------
+# recommendation_agent(:5001) LangGraph 多 Agent 推荐编排(A-llm-bff 族)。
+# - 无 DB(纯内存编排), 故【不注】DB_* env。
+# - 去 Nacos: NACOS_ENABLED=false → agents/tools.py 读 env SASREC_API_URL 走 fallback。
+# - 下游: sasrec_api(SASREC_API_URL=http://sasrec:8200, 集群内 svc 名) + DeepSeek(外部 API,
+#   key 经 .env / DEEPSEEK_* env, 不是 K8S svc, 这里不引入)。
+# - OTLP 复用宿主 docker-compose collector: host.docker.internal:4317(gRPC)。
+# - label app=recommendation_agent 供 Service selector + Chaos Mesh selector 共用。
+# - 探针: 源码无裸 /health, 健康路由是 /recommend/health(workflow.py:594, 恒返 200,
+#   sasrec 子状态仅为响应字段不影响状态码) → httpGet /recommend/health。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rec-agent
+  namespace: recweb-chaos
+  labels:
+    app: recommendation_agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recommendation_agent
+  template:
+    metadata:
+      labels:
+        app: recommendation_agent   # Service selector + Chaos Mesh labelSelector 命中此 label
+    spec:
+      enableServiceLinks: false   # 防 K8S 注入 *_SERVICE_HOST/PORT 撞应用变量(主循环 2026-06-25 实测 CrashLoop)
+      containers:
+        - name: rec-agent
+          image: recweb-rec-agent:latest
+          imagePullPolicy: IfNotPresent   # 本地 build 的镜像, 不去 registry 拉
+          ports:
+            - name: http
+              containerPort: 5001          # 源码实测: RECOMMENDATION_PORT 默认 5001
+          env:
+            # ---- 去 Nacos ----
+            - name: NACOS_ENABLED
+              value: "false"
+            # ---- 下游 sasrec: 指向集群内 svc 名(agents/tools.py 读 SASREC_API_URL)----
+            # tools.py:14 SASREC_API_URL = os.environ.get('SASREC_API_URL','http://127.0.0.1:8200')
+            # 必须指 http://sasrec:8200(svc 名), 不能留 127.0.0.1:8200(pod 内连自己撞不到 sasrec)。
+            # 注: workflow.py:599 健康检查里另有硬编码 http://127.0.0.1:8200/health(非 env 驱动),
+            #     在 K8S 内该子探测会失败 → /recommend/health 响应里 sasrec_service 字段显 unavailable,
+            #     但路由仍返 200, 不影响探针。真实推荐路径(tools.py)走 env, 指向 sasrec 正常。
+            - name: SASREC_API_URL
+              value: "http://sasrec:8200"
+            # ---- DeepSeek 外部 API: 非 K8S svc, key/base 经宿主 .env 注入栈或下方占位 env;
+            #      这里不写死 key(保留经 .env 注入的约定), 仅声明不引入任何 K8S 下游。----
+            # ---- OTel: 复用宿主 docker-compose collector ----
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "recommendation_agent"   # 与裸进程栈一致(app.py:40 setdefault), 保 Jaeger serviceName 不变
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          # ---- 探针: /recommend/health(workflow.py:594, 恒 200)----
+          readinessProbe:
+            httpGet:
+              path: /recommend/health
+              port: 5001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /recommend/health
+              port: 5001
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"     # Flask + LangGraph 编排, 无 DB 池, 轻量
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rec-agent          # 集群内 DNS: rec-agent.recweb-chaos.svc(同 ns 直接 rec-agent)
+  namespace: recweb-chaos
+  labels:
+    app: recommendation_agent
+spec:
+  type: ClusterIP
+  selector:
+    app: recommendation_agent
+  ports:
+    - name: http
+      port: 5001          # svc 端口与容器端口一致, 便于 port-forward / runner URL 零改
+      targetPort: 5001

@@ -1,0 +1,66 @@
+{
+  "case_id": "hallu_User_Behavior_Analyzer__r10",
+  "combo_id": "hallu_User_Behavior_Analyzer",
+  "kind": "hallucinate",
+  "agent": "User_Behavior_Analyzer",
+  "subtype": null,
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B000PC62O6",
+      "B007JZGO6S",
+      "B013IIV8N8",
+      "B07T9K5S2Z"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 9
+  },
+  "trace_id": "88ccdb927ae5c3c17836a5a9ec558e61",
+  "window": {
+    "start": "2026-07-27T13:40:35.694781+00:00",
+    "end": "2026-07-27T13:41:28.988974+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "User_Behavior_Analyzer"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "hallucinate"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "none",
+      "User_Behavior_Analyzer": "hallucinate",
+      "Product_Analyzer": "none",
+      "Recommendation_Synthesizer": "none"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "Micro USB 线 + 充电头    │\n│  ② 存储卡升级 → 推荐 大容量 microSD 卡",
+    "divergent_needle_present": 1,
+    "response_asin": "B07PDH7N5G",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

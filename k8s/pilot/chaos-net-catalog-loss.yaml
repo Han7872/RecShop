@@ -1,0 +1,23 @@
+# M2b-1b 纯 NET 单根因(network_loss): catalog-gw → catalog 边单边 netem 真丢包。
+# 单边隔离: selector=catalog-gw 出向 + direction:to(无 target, 同 delay yaml, 见 M2-impl-spec §0)。
+# 强度 60% 标定(探针 B 2026-06-27 实证): carrier ok≈7/10(30% error) + avg ~6450ms(TCP 重传逼近 8s read_timeout)。
+# ⚠ 诚实(探针 B 钉死): netem qdisc 丢包【不进】cAdvisor container_network_*_packets_dropped 计数(实测 60% loss 下 dropped_rate=0.0)。
+#   → net_loss_single gate 用 app 层签名(p95_shift 可靠检测 + error_ratio 作 loss-vs-delay 判别: loss 有错 / delay ok≈1), 绝不 claim 用 dropped-metric 区分 loss/delay。
+# 真窗靠 runner delete CRD 对齐(非 duration)。loss 是 RCAEval 已发表原子类, 克制不当卖点。
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: net-loss-catalog
+  namespace: recweb-chaos
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces: [recweb-chaos]
+    labelSelectors:
+      app: catalog-gw
+  direction: to
+  loss:
+    loss: "60"
+    correlation: "0"
+  duration: "300s"

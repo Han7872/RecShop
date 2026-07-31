@@ -1,0 +1,584 @@
+{
+  "_build": {
+    "fingerprint": "5428506dd12f",
+    "generated_at": "2026-07-28T01:43:06",
+    "n_cases": 96,
+    "wrongpick_sentinel": "B00EKWZK5E"
+  },
+  "case_001.json": {
+    "case_id": "ctxdrift_prod_from_ub__r1",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_002.json": {
+    "case_id": "ctxdrift_prod_from_ub__r10",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_003.json": {
+    "case_id": "ctxdrift_prod_from_ub__r11",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_004.json": {
+    "case_id": "ctxdrift_prod_from_ub__r12",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_005.json": {
+    "case_id": "ctxdrift_prod_from_ub__r2",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_006.json": {
+    "case_id": "ctxdrift_prod_from_ub__r3",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_007.json": {
+    "case_id": "ctxdrift_prod_from_ub__r4",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_008.json": {
+    "case_id": "ctxdrift_prod_from_ub__r5",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_009.json": {
+    "case_id": "ctxdrift_prod_from_ub__r6",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_010.json": {
+    "case_id": "ctxdrift_prod_from_ub__r7",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_011.json": {
+    "case_id": "ctxdrift_prod_from_ub__r8",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_012.json": {
+    "case_id": "ctxdrift_prod_from_ub__r9",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_013.json": {
+    "case_id": "ctxdrift_synth_from_prod__r1",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_014.json": {
+    "case_id": "ctxdrift_synth_from_prod__r10",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_015.json": {
+    "case_id": "ctxdrift_synth_from_prod__r11",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_016.json": {
+    "case_id": "ctxdrift_synth_from_prod__r12",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_017.json": {
+    "case_id": "ctxdrift_synth_from_prod__r2",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_018.json": {
+    "case_id": "ctxdrift_synth_from_prod__r3",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_019.json": {
+    "case_id": "ctxdrift_synth_from_prod__r4",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_020.json": {
+    "case_id": "ctxdrift_synth_from_prod__r5",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_021.json": {
+    "case_id": "ctxdrift_synth_from_prod__r6",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_022.json": {
+    "case_id": "ctxdrift_synth_from_prod__r7",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_023.json": {
+    "case_id": "ctxdrift_synth_from_prod__r8",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_024.json": {
+    "case_id": "ctxdrift_synth_from_prod__r9",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_025.json": {
+    "case_id": "ctxdrift_ub_from_seq__r1",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_026.json": {
+    "case_id": "ctxdrift_ub_from_seq__r10",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_027.json": {
+    "case_id": "ctxdrift_ub_from_seq__r11",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_028.json": {
+    "case_id": "ctxdrift_ub_from_seq__r12",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_029.json": {
+    "case_id": "ctxdrift_ub_from_seq__r2",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_030.json": {
+    "case_id": "ctxdrift_ub_from_seq__r3",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_031.json": {
+    "case_id": "ctxdrift_ub_from_seq__r4",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_032.json": {
+    "case_id": "ctxdrift_ub_from_seq__r5",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_033.json": {
+    "case_id": "ctxdrift_ub_from_seq__r6",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_034.json": {
+    "case_id": "ctxdrift_ub_from_seq__r7",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_035.json": {
+    "case_id": "ctxdrift_ub_from_seq__r8",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_036.json": {
+    "case_id": "ctxdrift_ub_from_seq__r9",
+    "kind": "context_drift",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_037.json": {
+    "case_id": "format_Recommendation_Synthesizer__r1",
+    "kind": "format_violation",
+    "format_subtype": "missing_field",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_038.json": {
+    "case_id": "format_Recommendation_Synthesizer__r10",
+    "kind": "format_violation",
+    "format_subtype": "type_violation",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_039.json": {
+    "case_id": "format_Recommendation_Synthesizer__r11",
+    "kind": "format_violation",
+    "format_subtype": "empty_required",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_040.json": {
+    "case_id": "format_Recommendation_Synthesizer__r12",
+    "kind": "format_violation",
+    "format_subtype": "malformed_json",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_041.json": {
+    "case_id": "format_Recommendation_Synthesizer__r2",
+    "kind": "format_violation",
+    "format_subtype": "type_violation",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_042.json": {
+    "case_id": "format_Recommendation_Synthesizer__r3",
+    "kind": "format_violation",
+    "format_subtype": "empty_required",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_043.json": {
+    "case_id": "format_Recommendation_Synthesizer__r4",
+    "kind": "format_violation",
+    "format_subtype": "malformed_json",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_044.json": {
+    "case_id": "format_Recommendation_Synthesizer__r5",
+    "kind": "format_violation",
+    "format_subtype": "missing_field",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_045.json": {
+    "case_id": "format_Recommendation_Synthesizer__r6",
+    "kind": "format_violation",
+    "format_subtype": "type_violation",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_046.json": {
+    "case_id": "format_Recommendation_Synthesizer__r7",
+    "kind": "format_violation",
+    "format_subtype": "empty_required",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_047.json": {
+    "case_id": "format_Recommendation_Synthesizer__r8",
+    "kind": "format_violation",
+    "format_subtype": "malformed_json",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_048.json": {
+    "case_id": "format_Recommendation_Synthesizer__r9",
+    "kind": "format_violation",
+    "format_subtype": "missing_field",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_049.json": {
+    "case_id": "hallu_Product_Analyzer__r1",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_050.json": {
+    "case_id": "hallu_Product_Analyzer__r10",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_051.json": {
+    "case_id": "hallu_Product_Analyzer__r11",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_052.json": {
+    "case_id": "hallu_Product_Analyzer__r12",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_053.json": {
+    "case_id": "hallu_Product_Analyzer__r2",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_054.json": {
+    "case_id": "hallu_Product_Analyzer__r3",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_055.json": {
+    "case_id": "hallu_Product_Analyzer__r4",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_056.json": {
+    "case_id": "hallu_Product_Analyzer__r5",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_057.json": {
+    "case_id": "hallu_Product_Analyzer__r6",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_058.json": {
+    "case_id": "hallu_Product_Analyzer__r7",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_059.json": {
+    "case_id": "hallu_Product_Analyzer__r8",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_060.json": {
+    "case_id": "hallu_Product_Analyzer__r9",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Product_Analyzer"
+  },
+  "case_061.json": {
+    "case_id": "hallu_Sequence_Recommender__r1",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Sequence_Recommender"
+  },
+  "case_062.json": {
+    "case_id": "hallu_Sequence_Recommender__r10",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Sequence_Recommender"
+  },
+  "case_063.json": {
+    "case_id": "hallu_Sequence_Recommender__r11",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Sequence_Recommender"
+  },
+  "case_064.json": {
+    "case_id": "hallu_Sequence_Recommender__r12",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Sequence_Recommender"
+  },
+  "case_065.json": {
+    "case_id": "hallu_Sequence_Recommender__r2",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Sequence_Recommender"
+  },
+  "case_066.json": {
+    "case_id": "hallu_Sequence_Recommender__r3",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Sequence_Recommender"
+  },
+  "case_067.json": {
+    "case_id": "hallu_Sequence_Recommender__r4",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Sequence_Recommender"
+  },
+  "case_068.json": {
+    "case_id": "hallu_Sequence_Recommender__r5",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Sequence_Recommender"
+  },
+  "case_069.json": {
+    "case_id": "hallu_Sequence_Recommender__r6",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Sequence_Recommender"
+  },
+  "case_070.json": {
+    "case_id": "hallu_Sequence_Recommender__r7",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Sequence_Recommender"
+  },
+  "case_071.json": {
+    "case_id": "hallu_Sequence_Recommender__r8",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Sequence_Recommender"
+  },
+  "case_072.json": {
+    "case_id": "hallu_Sequence_Recommender__r9",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "Sequence_Recommender"
+  },
+  "case_073.json": {
+    "case_id": "hallu_User_Behavior_Analyzer__r1",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_074.json": {
+    "case_id": "hallu_User_Behavior_Analyzer__r10",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_075.json": {
+    "case_id": "hallu_User_Behavior_Analyzer__r11",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_076.json": {
+    "case_id": "hallu_User_Behavior_Analyzer__r12",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_077.json": {
+    "case_id": "hallu_User_Behavior_Analyzer__r2",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_078.json": {
+    "case_id": "hallu_User_Behavior_Analyzer__r3",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_079.json": {
+    "case_id": "hallu_User_Behavior_Analyzer__r4",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_080.json": {
+    "case_id": "hallu_User_Behavior_Analyzer__r5",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_081.json": {
+    "case_id": "hallu_User_Behavior_Analyzer__r6",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_082.json": {
+    "case_id": "hallu_User_Behavior_Analyzer__r7",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_083.json": {
+    "case_id": "hallu_User_Behavior_Analyzer__r8",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_084.json": {
+    "case_id": "hallu_User_Behavior_Analyzer__r9",
+    "kind": "hallucinate",
+    "format_subtype": "",
+    "mistake_agent": "User_Behavior_Analyzer"
+  },
+  "case_085.json": {
+    "case_id": "wrongpick_Recommendation_Synthesizer__r1",
+    "kind": "wrong_item_pick",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_086.json": {
+    "case_id": "wrongpick_Recommendation_Synthesizer__r10",
+    "kind": "wrong_item_pick",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_087.json": {
+    "case_id": "wrongpick_Recommendation_Synthesizer__r11",
+    "kind": "wrong_item_pick",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_088.json": {
+    "case_id": "wrongpick_Recommendation_Synthesizer__r12",
+    "kind": "wrong_item_pick",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_089.json": {
+    "case_id": "wrongpick_Recommendation_Synthesizer__r2",
+    "kind": "wrong_item_pick",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_090.json": {
+    "case_id": "wrongpick_Recommendation_Synthesizer__r3",
+    "kind": "wrong_item_pick",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_091.json": {
+    "case_id": "wrongpick_Recommendation_Synthesizer__r4",
+    "kind": "wrong_item_pick",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_092.json": {
+    "case_id": "wrongpick_Recommendation_Synthesizer__r5",
+    "kind": "wrong_item_pick",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_093.json": {
+    "case_id": "wrongpick_Recommendation_Synthesizer__r6",
+    "kind": "wrong_item_pick",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_094.json": {
+    "case_id": "wrongpick_Recommendation_Synthesizer__r7",
+    "kind": "wrong_item_pick",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_095.json": {
+    "case_id": "wrongpick_Recommendation_Synthesizer__r8",
+    "kind": "wrong_item_pick",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  },
+  "case_096.json": {
+    "case_id": "wrongpick_Recommendation_Synthesizer__r9",
+    "kind": "wrong_item_pick",
+    "format_subtype": "",
+    "mistake_agent": "Recommendation_Synthesizer"
+  }
+}

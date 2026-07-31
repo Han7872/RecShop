@@ -1,0 +1,28 @@
+# M3a S3 per-service CPU 饱和单根因(control, 非卖点): catalog 容器内 StressChaos cpu(stress-ng)。
+# probe2 2026-06-27 实证语义:
+#   - 机制: StressChaos stressors.cpu(workers=2 load=100) → catalog pod 内起 stress-ng → CPU 饱和。
+#     catalog 有 cgroup cpu limit 500m(10-catalog.yaml:88-89)→ stress-ng 被 CFS 关进 catalog 容器
+#     → 单服务标签为真(仅 catalog CPU 抬, pricing/backend/其它全 flat)。
+#   - 强度 workers=2/load=100: 慢非失败(carrier pricing p95 40→101ms, 12/12 成功无 504); catalog throttle_rate 0→1.14。
+#     restart delta=0(workers=2 无 readiness flap churn); recover 后 p95→29ms(rate[1m] 有 ~1min 衰减 lag)。
+#   - AllInjected=True 立即(本 Chaos Mesh 版引擎可用, probe2); 真窗靠 runner delete CRD 对齐(非 duration)。
+# gate(runner single_sli_gate service_cpu 分支): carrier during p95 / baseline p95 ≥ 1.8×(RELATIVE 非绝对800ms,
+#   probe2/probe4 实证 CPU 仅 +50-60ms 绝对阈值不适用) & F1_only_ok≥0.8(慢非失败); catalog cfs_throttle/confinement 作 validation 旁证。
+# 框为 control: 逐服务 CPU 遥测=云原生地板(对齐 RCAEval/Nezha per-service CPU), 克制不当卖点。
+# CHECKSUM: 纯 CPU 零 DB 写 → 平凡安全。
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: stress-catalog-cpu
+  namespace: recweb-chaos
+spec:
+  mode: all
+  selector:
+    namespaces: [recweb-chaos]
+    labelSelectors:
+      app: catalog
+  stressors:
+    cpu:
+      workers: 2
+      load: 100
+  duration: "300s"

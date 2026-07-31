@@ -1,0 +1,4476 @@
+[
+  {
+    "sample_id": "1",
+    "user_token": "AH4DJ752MUYZKJZE465QOXDVMSGQ",
+    "user_history": [
+      {
+        "item_id": "B000HZ9CCA",
+        "title": "Product_B000HZ9CCA"
+      },
+      {
+        "item_id": "B000BP50AY",
+        "title": "Product_B000BP50AY"
+      },
+      {
+        "item_id": "B002JPITXY",
+        "title": "Product_B002JPITXY"
+      },
+      {
+        "item_id": "B00308CRDM",
+        "title": "Zune HD 16GB 32GB Accessories. Premium Black 2-In-1 USB Data Hotsync & Chargi..."
+      },
+      {
+        "item_id": "B00FF6J532",
+        "title": "Product_B00FF6J532"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B00HWMPSK6",
+        "title": "Samsung Galaxy Note Pro 12.2, 32GB (Wi-Fi), Black",
+        "score": 2.5083
+      },
+      {
+        "item_id": "B005BF587O",
+        "title": "Pangea Audio - HD-26L - High-Speed HDMI Cable (1 Meter)",
+        "score": -2.7551
+      },
+      {
+        "item_id": "B06XG27N5L",
+        "title": "Garmin Dash Cam 55, 1440p 2.0\" LCD Screen, Extremely Small GPS-enabled Dash C...",
+        "score": -2.8515
+      },
+      {
+        "item_id": "B09X2T2B9C",
+        "title": "Ailun Paper Textured Removable Magnetic Screen Protector for iPad Air 4/5 Gen...",
+        "score": -4.4262
+      },
+      {
+        "item_id": "B00IJMWSMY",
+        "title": "Cosmos Purple Color Neoprene Carrying Protection Sleeve Case Bag for T300 Ult...",
+        "score": -4.5187
+      },
+      {
+        "item_id": "B09PN9T22S",
+        "title": "Product_B09PN9T22S",
+        "score": -4.9136
+      },
+      {
+        "item_id": "B06X6DL527",
+        "title": "LENTION Split Leather Sleeve Case for MacBook Air 13 (2009-2017), MacBook Pro...",
+        "score": -5.0706
+      },
+      {
+        "item_id": "B09MDP1QZV",
+        "title": "Laptop Desk for Bed, Adjustable Laptop Desk Table for Bed, 4 Levels 5 Heights...",
+        "score": -5.4171
+      },
+      {
+        "item_id": "B07WNNYX4Y",
+        "title": "ESR Case Compatible with iPad 9th Generation 2021, 8th Generation 2020, 7th G...",
+        "score": -5.4508
+      },
+      {
+        "item_id": "B01CJKZQX4",
+        "title": "Kenwood KMC-45D Heavy Duty Speaker/Microphone, MIL-STD 810, Upgraded D Versio...",
+        "score": -5.6999
+      }
+    ],
+    "ground_truth_item_id": "B00HWMPSK6"
+  },
+  {
+    "sample_id": "2",
+    "user_token": "AE55NGDASKTRQ3OSX7BZ57WPBPJQ",
+    "user_history": [
+      {
+        "item_id": "B006R1UNQC",
+        "title": "Product_B006R1UNQC"
+      },
+      {
+        "item_id": "B000ENRQ3M",
+        "title": "RCA Wireless Overear Stereo Headphones, Transmits Audio Signal up to 150 Feet..."
+      },
+      {
+        "item_id": "B00009W8XH",
+        "title": "YAMAHA Corporation of America SW315 Subwoofer System - Black Ash"
+      },
+      {
+        "item_id": "B00EZC2MG4",
+        "title": "KAPAXEN Data Battery Pack for JVC BN-VG121U and Select JVC Everio Camcorders"
+      },
+      {
+        "item_id": "B003MNEA3K",
+        "title": "Kastar Charger for JVC BN-VG107, BN-VG107U, BN-VG107US, BN-VG108, BN-VG108U, ..."
+      },
+      {
+        "item_id": "B01N32NCPM",
+        "title": "Product_B01N32NCPM"
+      },
+      {
+        "item_id": "B07KK3HL6G",
+        "title": "Fintie Case for iPad 2 3 4 (Old Model) - [Corner Protection] Multi-Angle View..."
+      },
+      {
+        "item_id": "B07289NV3T",
+        "title": "Garnetics Microfiber Cleaning Cloth (12 PACK) - to clean Glasses, Lens, Cell ..."
+      },
+      {
+        "item_id": "B08P8MPGBF",
+        "title": "Zonon 30 Pieces Replacement Stylus Tips Conductive Touch Screen Pens Tips Cap..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B0859QS3CL",
+        "title": "ANSTEN Wireless Headphones for TV Watching, Over Ear Headsets with RF Transmi...",
+        "score": -0.0799
+      },
+      {
+        "item_id": "B07C3MRZBX",
+        "title": "Product_B07C3MRZBX",
+        "score": -0.5548
+      },
+      {
+        "item_id": "B07KS2QGLF",
+        "title": "Product_B07KS2QGLF",
+        "score": -2.4849
+      },
+      {
+        "item_id": "B07K8G8CCR",
+        "title": "Dazzne D50(3 Packs) LED Video Lighting Kit with Wireless Remote, Dimmable Bi-...",
+        "score": -2.6248
+      },
+      {
+        "item_id": "B01CV0JAQ6",
+        "title": "TrekPak Foam Insert for Pelican 1510 Cases",
+        "score": -2.8437
+      },
+      {
+        "item_id": "B0006H4FBM",
+        "title": "Nokia HDB-4 Boom Headset",
+        "score": -2.9801
+      },
+      {
+        "item_id": "B099S489L9",
+        "title": "Product_B099S489L9",
+        "score": -3.6714
+      },
+      {
+        "item_id": "B0B71DS294",
+        "title": "Product_B0B71DS294",
+        "score": -4.4225
+      },
+      {
+        "item_id": "B00FQPGAHQ",
+        "title": "Product_B00FQPGAHQ",
+        "score": -4.8894
+      },
+      {
+        "item_id": "B002F9AHJS",
+        "title": "Adorama 2-1/2\" Grip Head with Various Sockets, Silver",
+        "score": -6.1362
+      }
+    ],
+    "ground_truth_item_id": "B0859QS3CL"
+  },
+  {
+    "sample_id": "3",
+    "user_token": "AHGSWGFSZCNRNQLVWN6AJWPIF25Q",
+    "user_history": [
+      {
+        "item_id": "B07B7KNGNB",
+        "title": "HP 45W 19.5V 2.31A Laptop Charger for HP Stream 11 13 14, Pavilion, Elitebook..."
+      },
+      {
+        "item_id": "B07K51C9KR",
+        "title": "AINOPE 2 Pack AUX Cable, Auxiliary Cables [4ft/1.2M, Hi-Fi Sound] 90°Angled 3..."
+      },
+      {
+        "item_id": "B018E0I01I",
+        "title": "Product_B018E0I01I"
+      },
+      {
+        "item_id": "B07SG4DWVC",
+        "title": "45W 19.5V 2.31A AC Adapter for Dell inspiron 15 5000 5558 5559 3000 3567 3552..."
+      },
+      {
+        "item_id": "B07VMHQMVL",
+        "title": "Product_B07VMHQMVL"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B07SB5ML21",
+        "title": "New Replacement 807956-001 HS03 HS04 Laptop Battery for Hp 14 15 Notebook PC ...",
+        "score": 1.6809
+      },
+      {
+        "item_id": "B01N6LLGJT",
+        "title": "Charger Cord Replacement for Amazon Fire TV Stick, Fire Tablet, Compatible Sm...",
+        "score": 0.9677
+      },
+      {
+        "item_id": "B00HJCU48K",
+        "title": "KOZMICC 10 Inch Tablet Sleeve Case Cover (Pink) w/Handle, Premium Neoprene, F...",
+        "score": 0.1214
+      },
+      {
+        "item_id": "B00TG24HLG",
+        "title": "Product_B00TG24HLG",
+        "score": -0.0764
+      },
+      {
+        "item_id": "B01MS7ZXIJ",
+        "title": "Product_B01MS7ZXIJ",
+        "score": -0.1433
+      },
+      {
+        "item_id": "B07RDW7XTS",
+        "title": "Product_B07RDW7XTS",
+        "score": -0.4501
+      },
+      {
+        "item_id": "B00SAYCFF6",
+        "title": "Xion Performance mATX USB 3.0 Tower Case Black/Blue XON-310_BK",
+        "score": -1.1205
+      },
+      {
+        "item_id": "B00B6S2MHE",
+        "title": "Poetic SLIMLINE Portfolio Case for Apple iPad 4 / iPad 3/ iPad 2 Navy Blue (A...",
+        "score": -1.9731
+      },
+      {
+        "item_id": "B018YSB2I8",
+        "title": "QICENT PCI USB C Express Card with USB3.1, Type C 2 Ports Superspeed Up to 10...",
+        "score": -2.3107
+      },
+      {
+        "item_id": "B07Q5Y9J7B",
+        "title": "45W AC Adapter Charger Fit for HP 17-byxxxx 17-akxxx 17-anxxx 17-bsxxx 17-by0...",
+        "score": -2.7267
+      }
+    ],
+    "ground_truth_item_id": "B07SB5ML21"
+  },
+  {
+    "sample_id": "4",
+    "user_token": "AH3VXF7YXHV323OMB4BN4ZVIPLHQ",
+    "user_history": [
+      {
+        "item_id": "B001SIS8YI",
+        "title": "Your Cable Store Inline Ethernet CAT 6 / RJ45 Networking Coupler"
+      },
+      {
+        "item_id": "B0035B4LJM",
+        "title": "Importer520 New Gold Plated HDMI-F to DVI-M Video Adaptor Cable"
+      },
+      {
+        "item_id": "B006ZH0J30",
+        "title": "LG 32CS460 32-Inch 720p 60Hz LCD HDTV (2012 Model)"
+      },
+      {
+        "item_id": "B007K5R8YE",
+        "title": "Warpia SWP700 StreamEZ Wireless HDMI Streaming Kit - Full 1080p - Gloss Black"
+      },
+      {
+        "item_id": "B001C20816",
+        "title": "DicaPac WP410 (10.5x16.0cm) Small Zoom Alfa Waterproof Digital Camera Case wi..."
+      },
+      {
+        "item_id": "B00KH6E1NO",
+        "title": "Compact Mouse, High-Precision Wireless Optical Mouse for Laptops and PC's. (b..."
+      },
+      {
+        "item_id": "B00VDY0EYE",
+        "title": "JEOEUS Multi-functional 3 in 1 Micro USB OTG Sd Tf Hub Card Reader MHL to Hdm..."
+      },
+      {
+        "item_id": "B078Z2DM74",
+        "title": "Product_B078Z2DM74"
+      },
+      {
+        "item_id": "B00TF8FSZ0",
+        "title": "Product_B00TF8FSZ0"
+      },
+      {
+        "item_id": "B06ZZ1SKD6",
+        "title": "Product_B06ZZ1SKD6"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B00004TBLW",
+        "title": "Bushnell Falcon 133410 Binoculars with Case (Black, 7x35 mm)",
+        "score": 0.4572
+      },
+      {
+        "item_id": "B08C2JW1NM",
+        "title": "Product_B08C2JW1NM",
+        "score": -1.6149
+      },
+      {
+        "item_id": "B00009MDBN",
+        "title": "ConnectAll 200 High Performance S-Video RF Modulator - RF Modulator (Disconti...",
+        "score": -1.7672
+      },
+      {
+        "item_id": "B07HBTDK8M",
+        "title": "Bluetooth Mouse Rechargeable Wireless Mouse - Tsmine Slim Silent Bluetooth Wi...",
+        "score": -2.6177
+      },
+      {
+        "item_id": "B073WNR7QD",
+        "title": "WHDTS 5A 75W XL4015 DC-DC Adjustable Step Down Buck Converter Power Supply Mo...",
+        "score": -3.3314
+      },
+      {
+        "item_id": "B00MICXCVM",
+        "title": "Canon EF 16-35mm f/4.0L is USM Wide Zoom Lens USA Bundle + More #9518B002 NK",
+        "score": -4.2149
+      },
+      {
+        "item_id": "B01M4K8VUL",
+        "title": "Mosiso Diamond Foam Water Repellent and Shock Resistant Lycra Laptop Sleeve B...",
+        "score": -4.2726
+      },
+      {
+        "item_id": "B004DHPYCU",
+        "title": "Mastech MS8221 Digital Multimeter Auto/Manual Ranging DMM",
+        "score": -4.41
+      },
+      {
+        "item_id": "B00IK66V86",
+        "title": "MegaGear LH-DC80 Lens Hood LH-DC80 for Canon PowerShot G1 X Mark II",
+        "score": -4.8314
+      },
+      {
+        "item_id": "B08YYKPCMV",
+        "title": "Product_B08YYKPCMV",
+        "score": -9.9982
+      }
+    ],
+    "ground_truth_item_id": "B08C2JW1NM"
+  },
+  {
+    "sample_id": "5",
+    "user_token": "AEYNWFE7SQFWGM4HQTHTVEBVD6IQ",
+    "user_history": [
+      {
+        "item_id": "B0037TEO3K",
+        "title": "Product_B0037TEO3K"
+      },
+      {
+        "item_id": "B00007E816",
+        "title": "Product_B00007E816"
+      },
+      {
+        "item_id": "B000P3X7GQ",
+        "title": "Tamrac 5514 Adventure Zoom 4 (Gray/Black)"
+      },
+      {
+        "item_id": "B0080R95XI",
+        "title": "Product_B0080R95XI"
+      },
+      {
+        "item_id": "B00GROX1T0",
+        "title": "Product_B00GROX1T0"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B00KT7DOSE",
+        "title": "SanDisk Extreme CZ80 64GB USB 3.0 Flash Drive - SDCZ80-064G-GAM46",
+        "score": 1.3522
+      },
+      {
+        "item_id": "B06XFX8WZG",
+        "title": "Product_B06XFX8WZG",
+        "score": -3.1267
+      },
+      {
+        "item_id": "B005UVG10C",
+        "title": "SanDisk Extreme Pro - flash memory card - 64 GB",
+        "score": -3.5426
+      },
+      {
+        "item_id": "B01GYHKX22",
+        "title": "Wireless Earbuds, True Bluetooth Headphones Noise Cancelling Mini Headset IPX...",
+        "score": -4.7238
+      },
+      {
+        "item_id": "B01D5Q631U",
+        "title": "Hdmi to Hdmi and Optical Spdif + RCA L/R Audio Converter Hdmi Audio Extractor...",
+        "score": -4.7504
+      },
+      {
+        "item_id": "B00IW9WZIG",
+        "title": "Movo Photo MBA6 Universal Magic Ball Multi Accessory Adapter with 6 Rods for ...",
+        "score": -5.2523
+      },
+      {
+        "item_id": "B07X7LJRNX",
+        "title": "TKDMR 10Pcs Insulated 4mm Banana Jack Female to Female Banana Socket Connecto...",
+        "score": -5.5146
+      },
+      {
+        "item_id": "B08HGGY2M7",
+        "title": "Product_B08HGGY2M7",
+        "score": -5.7761
+      },
+      {
+        "item_id": "B08PDYG3BN",
+        "title": "Product_B08PDYG3BN",
+        "score": -6.645
+      },
+      {
+        "item_id": "B0859W96BJ",
+        "title": "Product_B0859W96BJ",
+        "score": -6.6679
+      }
+    ],
+    "ground_truth_item_id": "B00KT7DOSE"
+  },
+  {
+    "sample_id": "6",
+    "user_token": "AH7JLFBFM6ZFZU3XURFX4476MELA",
+    "user_history": [
+      {
+        "item_id": "B00ENLBWW2",
+        "title": "KLIC-5000 High-Capacity Replacement Battery with Rapid Travel Charger for Sel..."
+      },
+      {
+        "item_id": "B001UBIT1A",
+        "title": "Nikon D40 6.1MP Digital SLR Camera (Body Only)"
+      },
+      {
+        "item_id": "B01LWT3U0J",
+        "title": "Rand McNally Dashboard Mounting Kit (Suction Mount+Dash Mount Disc) for Intel..."
+      },
+      {
+        "item_id": "B013HXY21E",
+        "title": "Tamron AF 18-200mm F/3.5-6.3 Di-II VC All-in-One Zoom for Nikon APS-C Digital..."
+      },
+      {
+        "item_id": "B002KEYYE2",
+        "title": "Product_B002KEYYE2"
+      },
+      {
+        "item_id": "B00004ZCJJ",
+        "title": "Tiffen 62UVP 62mm UV Protection Filter"
+      },
+      {
+        "item_id": "B07JR4Q7CY",
+        "title": "VOODOO 18 AWG Gauge 9 Conductor Speed Blue Wire Speaker Trailer Copper Strand..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B0127GUIRE",
+        "title": "Chuanganzhuo Front Side Rear View Camera, Universal Normal Image Optional Dis...",
+        "score": -1.152
+      },
+      {
+        "item_id": "B078P17BTB",
+        "title": "Product_B078P17BTB",
+        "score": -1.3302
+      },
+      {
+        "item_id": "B00OY7HR1U",
+        "title": "NorthPada® Micro USB Mains Power Wall Supply Charger 5V 2000mA / 2A for Raspb...",
+        "score": -1.5269
+      },
+      {
+        "item_id": "B008SO7YK4",
+        "title": "uxcell Camera Lens Replacement Filter Step Up Ring 37mm to 52mm Adapter Black",
+        "score": -2.0703
+      },
+      {
+        "item_id": "B078J389LZ",
+        "title": "Product_B078J389LZ",
+        "score": -2.2994
+      },
+      {
+        "item_id": "B004D0SSOS",
+        "title": "Koss 191651 KE5 Earbuds (Black)",
+        "score": -2.7171
+      },
+      {
+        "item_id": "B01IXZE7JS",
+        "title": "AC Charger Fit for Asus X200 X200C X200CA Laptop Power Supply Adapter Cord",
+        "score": -3.1967
+      },
+      {
+        "item_id": "B072R27SVJ",
+        "title": "HWG CM03XL Battery Compatible HP EliteBook 840 855 850 845 755 750 745 740 G1...",
+        "score": -3.3485
+      },
+      {
+        "item_id": "B00ISSD6QG",
+        "title": "Fitbit Flex Wireless Activity + Sleep Wristband, Tangerine, Small/Large",
+        "score": -3.8072
+      },
+      {
+        "item_id": "B00KMGNZIG",
+        "title": "G3 Privacy Screen Protector, Tech Armor 4Way 360 Degree Privacy LG G3 Screen ...",
+        "score": -3.92
+      }
+    ],
+    "ground_truth_item_id": "B078J389LZ"
+  },
+  {
+    "sample_id": "7",
+    "user_token": "AF22LOAVVWDMIKW4DB7CWF675L3Q",
+    "user_history": [
+      {
+        "item_id": "B000P7O5DG",
+        "title": "Product_B000P7O5DG"
+      },
+      {
+        "item_id": "B001DFTGUQ",
+        "title": "Winegard SW-0012 Gable End Mount for Antenna"
+      },
+      {
+        "item_id": "B00HF398F8",
+        "title": "Galaxy Note 10.1 (2014) Case, Snugg - Black Leather Smart Case Cover Samsung ..."
+      },
+      {
+        "item_id": "B006BGV92U",
+        "title": "Vello RS-N2 II Wired Remote Switch for Nikon DSLRs with DC-2 Connection"
+      },
+      {
+        "item_id": "B01K1URBFU",
+        "title": "ProCase ASUS ZenPad 3S 10 9.7 Inch Case Z500M - Stand Cover Folio Case for AS..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B00KX8EMOO",
+        "title": "Product_B00KX8EMOO",
+        "score": 0.0481
+      },
+      {
+        "item_id": "B00ZP2H49I",
+        "title": "AGPTEK Hands-Free Call Center Noise Cancelling Corded Binaural Headset Headph...",
+        "score": -0.1995
+      },
+      {
+        "item_id": "B001WLGN2K",
+        "title": "APC Premium Audio-Video Surge Protector with 8 Outlets and Coaxial Protection...",
+        "score": -1.8634
+      },
+      {
+        "item_id": "B01N5UOPOB",
+        "title": "Noctua NM-AM4-UxS, Mounting Kit for Noctua CPU Coolers on AMD AM4 Platforms",
+        "score": -2.6364
+      },
+      {
+        "item_id": "B003E7YRWS",
+        "title": "Portta PET50EP HDMI Extender Adapter Over 1 Single Cat5e/6 1080p Extension Ca...",
+        "score": -2.9383
+      },
+      {
+        "item_id": "B08LQVYP8K",
+        "title": "MOSHUSO Ballhead Ball Head Mount w/Cold Shoe Adapter 1/4\" Screw, for Field Mo...",
+        "score": -3.3888
+      },
+      {
+        "item_id": "B06XD5SJB2",
+        "title": "Blaupunkt - Dual Camera DashCam with GPS, 2.7\" LCD Screen, Wide Angle View, C...",
+        "score": -3.5587
+      },
+      {
+        "item_id": "B0769F6BRG",
+        "title": "Small Sling Backpack Waterproof Sling Bag One Shoulder Crossbody Backpack Bag...",
+        "score": -4.4651
+      },
+      {
+        "item_id": "B00EMHQNK8",
+        "title": "Perfect Vision 100 Compression/HEX F Connector 1/2\" Sleeve Weather Boot PVSR4...",
+        "score": -4.6246
+      },
+      {
+        "item_id": "B0049LC3II",
+        "title": "Mount-It! Super Low-Profile Fixed TV Wall Mount for 37-63\" LCD / LED / Plasma...",
+        "score": -4.7071
+      }
+    ],
+    "ground_truth_item_id": "B00ZP2H49I"
+  },
+  {
+    "sample_id": "8",
+    "user_token": "AF5CROTYEEQ6HGBETLXNV7NPR46Q",
+    "user_history": [
+      {
+        "item_id": "B00C18YQ5Y",
+        "title": "SAMSUNG C150 Series S22C150N 21.5-Inch Screen LED-Lit Monitor"
+      },
+      {
+        "item_id": "B00N0Y0SVY",
+        "title": "Product_B00N0Y0SVY"
+      },
+      {
+        "item_id": "B00HVLUR86",
+        "title": "Product_B00HVLUR86"
+      },
+      {
+        "item_id": "B07FZ8S74R",
+        "title": "Product_B07FZ8S74R"
+      },
+      {
+        "item_id": "B0791TX5P5",
+        "title": "Fire TV Stick streaming device with Alexa built in, includes Alexa Voice Remo..."
+      },
+      {
+        "item_id": "B07WBZPMW3",
+        "title": "Product_B07WBZPMW3"
+      },
+      {
+        "item_id": "B078M61HHB",
+        "title": "Product_B078M61HHB"
+      },
+      {
+        "item_id": "B07HM753YS",
+        "title": "MSI MPG Z390M Gaming Edge AC LGA1151 (Intel 8th and 9th Gen) M.2 USB 3.1 Gen ..."
+      },
+      {
+        "item_id": "B07S6CRLVD",
+        "title": "Intel Core i7-9700 Desktop Processor 8 Cores up to 4.7 GHz LGA1151 300 Series..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B08S32WH4Z",
+        "title": "Product_B08S32WH4Z",
+        "score": 1.2099
+      },
+      {
+        "item_id": "B071188RN8",
+        "title": "12Pcs Replacement Eartips- RIYO Premium Memory Foam Earphone Earbuds Tips Noi...",
+        "score": 0.8437
+      },
+      {
+        "item_id": "B01C4TDDB2",
+        "title": "NavePoint Adjustable Rack Mount Server Shelf Rails 1U Full Depth 2-Pack",
+        "score": -1.7995
+      },
+      {
+        "item_id": "B019UZG8AQ",
+        "title": "JBL Club WS1000 - 10” shallow mount subwoofer w/SSI™ (Selectable Smart Impeda...",
+        "score": -1.9049
+      },
+      {
+        "item_id": "B008F01YA2",
+        "title": "In-Win BQ656T.AD120TBL 120W Mini-ITX Slim Desktop Case (Black)",
+        "score": -1.9517
+      },
+      {
+        "item_id": "B00U9TLLG4",
+        "title": "Digital Nc Lithium Ion Battery (Higher Capacity) Compatible with Sony FDRAX33...",
+        "score": -3.005
+      },
+      {
+        "item_id": "B0BBMQXL9H",
+        "title": "Product_B0BBMQXL9H",
+        "score": -3.093
+      },
+      {
+        "item_id": "B08JWN7Q3Z",
+        "title": "D DACCKIT Vertical Stand with Cooling Station for Playstation 5 Console, Dual...",
+        "score": -3.8324
+      },
+      {
+        "item_id": "B001P3P3QW",
+        "title": "Product_B001P3P3QW",
+        "score": -4.1174
+      },
+      {
+        "item_id": "B00IYGKT08",
+        "title": "Crazefoto 10\" Selfie Ring Light with Tripod Stand & Cell Phone Holder, Dimmab...",
+        "score": -4.2606
+      }
+    ],
+    "ground_truth_item_id": "B08S32WH4Z"
+  },
+  {
+    "sample_id": "9",
+    "user_token": "AHYVPRZ43UIWADRYZJ4II4XGEZ5A",
+    "user_history": [
+      {
+        "item_id": "B07X4CSBY5",
+        "title": "Product_B07X4CSBY5"
+      },
+      {
+        "item_id": "B07JC9V2MN",
+        "title": "JBL Charge 4 Waterproof Wireless Bluetooth Speaker Bundle with Portable Hard ..."
+      },
+      {
+        "item_id": "B088NDGYPX",
+        "title": "Product_B088NDGYPX"
+      },
+      {
+        "item_id": "B085J23QT6",
+        "title": "JBL LIVE 300, Premium True Wireless Headphone, Black"
+      },
+      {
+        "item_id": "B07FSPF3YV",
+        "title": "Product_B07FSPF3YV"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B08B8WC8HN",
+        "title": "Amcrest 5-Megapixel Webcam with Microphone, Web Cam USB Camera, Computer HD S...",
+        "score": 1.0695
+      },
+      {
+        "item_id": "B0928PLXXX",
+        "title": "Product_B0928PLXXX",
+        "score": 0.1896
+      },
+      {
+        "item_id": "B06XPDN8RY",
+        "title": "Android 12 TV Box 4GB 64GB H618 Chipset Android tv Box with WiFi 6 4K 6k 3D H...",
+        "score": -0.1769
+      },
+      {
+        "item_id": "B0049MWUMQ",
+        "title": "Axxess AX-ANR1000 Inline Power Noise Filter",
+        "score": -0.6068
+      },
+      {
+        "item_id": "B016K0N8BQ",
+        "title": "Product_B016K0N8BQ",
+        "score": -2.2822
+      },
+      {
+        "item_id": "B0BWNFJ8NM",
+        "title": "Product_B0BWNFJ8NM",
+        "score": -2.6111
+      },
+      {
+        "item_id": "B078THF4RT",
+        "title": "HD Mirror Cam Official As Seen on TV Dash Cam 350°, Motion Detection, 2.5” LC...",
+        "score": -2.6885
+      },
+      {
+        "item_id": "B00493LFK8",
+        "title": "Bell and Howell DNV900HD 1080P Infrared Night Vision Camcorder with 16GB Acce...",
+        "score": -2.9789
+      },
+      {
+        "item_id": "B005SI45Q4",
+        "title": "C2G/Cables to Go 40354 VI Decora Pass-Through Wall Plate - White",
+        "score": -3.7316
+      },
+      {
+        "item_id": "B088NJ85GS",
+        "title": "Product_B088NJ85GS",
+        "score": -7.287
+      }
+    ],
+    "ground_truth_item_id": "B0928PLXXX"
+  },
+  {
+    "sample_id": "10",
+    "user_token": "AGCITJOVUNN3DYYMDQTRRQMXQZTA",
+    "user_history": [
+      {
+        "item_id": "B00YY3UYPU",
+        "title": "TRIPP LITE Reversible USB Charge Cable Left Right A to Right 5-Pin Mic B (UR0..."
+      },
+      {
+        "item_id": "B019Q0U31A",
+        "title": "Product_B019Q0U31A"
+      },
+      {
+        "item_id": "B00Q1UHD6C",
+        "title": "Product_B00Q1UHD6C"
+      },
+      {
+        "item_id": "B003L137Y6",
+        "title": "Product_B003L137Y6"
+      },
+      {
+        "item_id": "B01N4EAYKH",
+        "title": "uxcell RJ45 8P8C Cat5 Ethernet Network Cable Wall Surface Mount Connector Box..."
+      },
+      {
+        "item_id": "B0007SQ94G",
+        "title": "Product_B0007SQ94G"
+      },
+      {
+        "item_id": "B07QXB4BWS",
+        "title": "Product_B07QXB4BWS"
+      },
+      {
+        "item_id": "B07W95RBZM",
+        "title": "Product_B07W95RBZM"
+      },
+      {
+        "item_id": "B07VV45TXV",
+        "title": "Product_B07VV45TXV"
+      },
+      {
+        "item_id": "B081F2S1DK",
+        "title": "Product_B081F2S1DK"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B07Z738R1K",
+        "title": "Echo Show (2nd Gen) with Philips Hue Bulb - Alexa smart home starter kit - Ch...",
+        "score": 1.5629
+      },
+      {
+        "item_id": "B01LWCW3WY",
+        "title": "Product_B01LWCW3WY",
+        "score": 1.5104
+      },
+      {
+        "item_id": "B081T9T5W3",
+        "title": "Short USB C Charger Cable 7inch 2Pack Android USB-A to USB-C Braided Fast Pho...",
+        "score": -0.0379
+      },
+      {
+        "item_id": "B007ILK234",
+        "title": "Product_B007ILK234",
+        "score": -0.4174
+      },
+      {
+        "item_id": "B0B46B5MD1",
+        "title": "Product_B0B46B5MD1",
+        "score": -0.4647
+      },
+      {
+        "item_id": "B002Y27P6O",
+        "title": "Kindle Leather Cover, Black (Fits 6\" Display, 2nd Generation Kindle)",
+        "score": -0.5747
+      },
+      {
+        "item_id": "B00G4E2J32",
+        "title": "Product_B00G4E2J32",
+        "score": -0.9478
+      },
+      {
+        "item_id": "B07KS5NHTC",
+        "title": "KENTEK 6 Inch 6\" 4 Pin Molex 5.25 Male to 4 Pin 3.5 Floppy Drive FDD Female M...",
+        "score": -1.3156
+      },
+      {
+        "item_id": "B0B3XBHLN4",
+        "title": "85W Wall Charger for Mac Book Pro 15/17 inch Retina (Made Mid 2010-Mid 2012),...",
+        "score": -1.3169
+      },
+      {
+        "item_id": "B0B9GY7RY6",
+        "title": "BOLOXA Sports Bluetooth Headphones with Over Earhook",
+        "score": -2.4282
+      }
+    ],
+    "ground_truth_item_id": "B0B46B5MD1"
+  },
+  {
+    "sample_id": "11",
+    "user_token": "AH4Q5EOFYBLRED5THLI74ZW4LN3A",
+    "user_history": [
+      {
+        "item_id": "B0090YEVSE",
+        "title": "Product_B0090YEVSE"
+      },
+      {
+        "item_id": "B004P1HW60",
+        "title": "Skullcandy Lowrider (Discontinued by Manufacturer)"
+      },
+      {
+        "item_id": "B00IGDHTXY",
+        "title": "Jensen JTA-222 3-Speed Turntable, case"
+      },
+      {
+        "item_id": "B0753PV4ZR",
+        "title": "Amazon Basics Double Braided Nylon Lightning to USB Cable, Advanced Collectio..."
+      },
+      {
+        "item_id": "B0792K2BK6",
+        "title": "Echo Dot (3rd Gen) - Smart speaker with Alexa - Heather Gray"
+      },
+      {
+        "item_id": "B07CHFSTH3",
+        "title": "Wohome TV Soundbar with Built-in Subwoofers 38-Inch 120W Support HDMI-ARC, Bl..."
+      },
+      {
+        "item_id": "B013KZK2E0",
+        "title": "Product_B013KZK2E0"
+      },
+      {
+        "item_id": "B07MTCMHZX",
+        "title": "AuKing Projector, 2023 Upgraded Mini Projector, Full HD 1080P Home Theater Vi..."
+      },
+      {
+        "item_id": "B08DHLCLCY",
+        "title": "Product_B08DHLCLCY"
+      },
+      {
+        "item_id": "B07TWFVDWT",
+        "title": "Product_B07TWFVDWT"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B07S5XSTCW",
+        "title": "1 BY ONE Belt Drive Turntable with Bluetooth Connectivity, Built-in Phono Pre...",
+        "score": 1.98
+      },
+      {
+        "item_id": "B075RZYR2J",
+        "title": "Product_B075RZYR2J",
+        "score": -0.3864
+      },
+      {
+        "item_id": "B01LW8JU15",
+        "title": "Product_B01LW8JU15",
+        "score": -0.9431
+      },
+      {
+        "item_id": "B01LYKDVU9",
+        "title": "Sony a99II 42.4MP Digital SLR Camera with 3\" LCD, Black (ILCA99M2)",
+        "score": -1.7877
+      },
+      {
+        "item_id": "B004L01QVM",
+        "title": "EVGA GeForce GTX 560 Ti FPB Graphics Card (1024 MB, GDDR5, PCI-E 2.0 16x, DVI...",
+        "score": -1.8126
+      },
+      {
+        "item_id": "B09W5PT8LT",
+        "title": "UMOVAL Solar Panel Powered Outdoor WiFi Wireless Security IP Camera with Moti...",
+        "score": -2.5876
+      },
+      {
+        "item_id": "B00S4KXNSO",
+        "title": "Product_B00S4KXNSO",
+        "score": -2.5984
+      },
+      {
+        "item_id": "B075M59BD7",
+        "title": "Product_B075M59BD7",
+        "score": -3.0141
+      },
+      {
+        "item_id": "B002RL8IHM",
+        "title": "Epson PowerLite Presenter Widescreen Projector/DVD Player Combo (WXGA Resolut...",
+        "score": -3.1552
+      },
+      {
+        "item_id": "B015JKNDJ0",
+        "title": "Product_B015JKNDJ0",
+        "score": -4.3733
+      }
+    ],
+    "ground_truth_item_id": "B07S5XSTCW"
+  },
+  {
+    "sample_id": "12",
+    "user_token": "AF5ONX7XAFVQBASWXYURVOZLVOGQ",
+    "user_history": [
+      {
+        "item_id": "B005FE72PW",
+        "title": "Pioneer 2.1 Channel Computer Speaker System (S-MM751RU)"
+      },
+      {
+        "item_id": "B00O7BZ5XK",
+        "title": "Product_B00O7BZ5XK"
+      },
+      {
+        "item_id": "B00R92CLD6",
+        "title": "NETGEAR WiFi Mesh Range Extender EX7000 - Coverage up to 2100 sq.ft. and 35 d..."
+      },
+      {
+        "item_id": "B010S6RYUY",
+        "title": "TP-Link AC1900 Desktop Dual Band Wi-Fi Range Extender w/ 5 Gigabit Ethernet P..."
+      },
+      {
+        "item_id": "B00QJE3MGU",
+        "title": "Product_B00QJE3MGU"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B01A1E6BA2",
+        "title": "Product_B01A1E6BA2",
+        "score": 1.3224
+      },
+      {
+        "item_id": "B017GY5KWA",
+        "title": "TW-283/S2 Wireless Shutter Release Timer Remote Control for Sony Digital Came...",
+        "score": -0.4971
+      },
+      {
+        "item_id": "B0894QWB7N",
+        "title": "Lamicall Laptop Riser Stand Portable Ergonomic Computer & Notebook Stand Hold...",
+        "score": -1.76
+      },
+      {
+        "item_id": "B00NUXR4DA",
+        "title": "Earbuds Headphones for Men",
+        "score": -2.5714
+      },
+      {
+        "item_id": "B004Q3QMA4",
+        "title": "HGST Ultrastar 7K3000 2TB SATA 6.0GB/s 7200rpm 64MB cache 3.5-in Bulk hard dr...",
+        "score": -2.614
+      },
+      {
+        "item_id": "B00JOQIL2U",
+        "title": "Product_B00JOQIL2U",
+        "score": -4.3278
+      },
+      {
+        "item_id": "B089CW5TNY",
+        "title": "Hanatora 11.8 inch USB C to Micro USB RC-N1/N2 Remote Controller Cable for DJ...",
+        "score": -4.5175
+      },
+      {
+        "item_id": "B07BGCJLQQ",
+        "title": "Energizer Power Inverter Series 2K Watts",
+        "score": -4.6625
+      },
+      {
+        "item_id": "B07TY24P6Q",
+        "title": "Product_B07TY24P6Q",
+        "score": -5.1605
+      },
+      {
+        "item_id": "B08V91626C",
+        "title": "Product_B08V91626C",
+        "score": -5.4069
+      }
+    ],
+    "ground_truth_item_id": "B01A1E6BA2"
+  },
+  {
+    "sample_id": "13",
+    "user_token": "AG5RL55OZG474VLUADPH2EI7GHZQ",
+    "user_history": [
+      {
+        "item_id": "B00NAGGVNG",
+        "title": "64GB Samsung MicroSD XC MicroSDXC Class 10 Memory Card 64G (64 Gigabyte) for ..."
+      },
+      {
+        "item_id": "B01D92SSX6",
+        "title": "Vilros Raspberry Pi 3 Kit with Clear Case and 2.5A Power Supply"
+      },
+      {
+        "item_id": "B07QVY4RJ9",
+        "title": "Product_B07QVY4RJ9"
+      },
+      {
+        "item_id": "B07B8QH789",
+        "title": "Product_B07B8QH789"
+      },
+      {
+        "item_id": "B07CTK4TH4",
+        "title": "Product_B07CTK4TH4"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B071Z7BD2T",
+        "title": "Product_B071Z7BD2T",
+        "score": 1.0052
+      },
+      {
+        "item_id": "B07KK8HP5P",
+        "title": "COMeap 9 pin USB Header Male 1 to 4 Female Motherboard Extension Cable USB 2....",
+        "score": -0.6582
+      },
+      {
+        "item_id": "B07W5P34Q2",
+        "title": "2 Pack Remote Case/Cover for Fire TV Stick 4K,Protective Silicone Holder Ligh...",
+        "score": -2.1051
+      },
+      {
+        "item_id": "B002RL8IRC",
+        "title": "Fantom G-Force 2 TB USB 2.0/eSATA Hard Drive GF2000EU",
+        "score": -2.1096
+      },
+      {
+        "item_id": "B09KSZF79K",
+        "title": "Product_B09KSZF79K",
+        "score": -2.2918
+      },
+      {
+        "item_id": "B07D5GXW51",
+        "title": "Product_B07D5GXW51",
+        "score": -2.3238
+      },
+      {
+        "item_id": "B0097K47BW",
+        "title": "Product_B0097K47BW",
+        "score": -3.1473
+      },
+      {
+        "item_id": "B09X1GNSJC",
+        "title": "HAFURY Smart Watch for Women, IP68 Waterproof Fitness Tracker, Smartwatch for...",
+        "score": -3.1584
+      },
+      {
+        "item_id": "B003TROEBM",
+        "title": "Product_B003TROEBM",
+        "score": -3.7118
+      },
+      {
+        "item_id": "B00009R77Y",
+        "title": "Kodak Ektachrome E100G Color Slide Film ISO 100, 35mm Size, 36 Exposure, Tran...",
+        "score": -3.9466
+      }
+    ],
+    "ground_truth_item_id": "B071Z7BD2T"
+  },
+  {
+    "sample_id": "14",
+    "user_token": "AHGKD6NMLHG3WAICN6TXK65HVXKA",
+    "user_history": [
+      {
+        "item_id": "B004YG7LNA",
+        "title": "Storacell by Powerpax Slimline AA Battery Storage Container - Holds 4 Batteri..."
+      },
+      {
+        "item_id": "B07TC69LDK",
+        "title": "Battery Tester, Dlyfull LCD Display Universal Battery Checker for AA AAA C D ..."
+      },
+      {
+        "item_id": "B01J6DT070",
+        "title": "Product_B01J6DT070"
+      },
+      {
+        "item_id": "B07CSQJGQQ",
+        "title": "Product_B07CSQJGQQ"
+      },
+      {
+        "item_id": "B01LZI88D9",
+        "title": "Product_B01LZI88D9"
+      },
+      {
+        "item_id": "B07CVX3516",
+        "title": "Product_B07CVX3516"
+      },
+      {
+        "item_id": "B0779TNFDV",
+        "title": "Product_B0779TNFDV"
+      },
+      {
+        "item_id": "B07YF31LJK",
+        "title": "GPG2 ESC Flip Computer Keyboard and Laptop Stand with 3 Adjustable Angles, Fi..."
+      },
+      {
+        "item_id": "B07Q49SVYR",
+        "title": "Product_B07Q49SVYR"
+      },
+      {
+        "item_id": "B07S92QBCJ",
+        "title": "Product_B07S92QBCJ"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B08H8L2JJL",
+        "title": "Product_B08H8L2JJL",
+        "score": 1.7853
+      },
+      {
+        "item_id": "B08HV4CSVZ",
+        "title": "seenda Wireless Mouse - Rechargeable Wireless Mouse (Bluetooth 4.0+Bluetooth ...",
+        "score": -0.0278
+      },
+      {
+        "item_id": "B08BXQWJDM",
+        "title": "Product_B08BXQWJDM",
+        "score": -1.1968
+      },
+      {
+        "item_id": "B086BX25XB",
+        "title": "JUANWE 5 Pack 32GB Memory Card, Memory Card 32GB TF Card High-Speed Card for ...",
+        "score": -1.9618
+      },
+      {
+        "item_id": "B00937G65Y",
+        "title": "Product_B00937G65Y",
+        "score": -2.1246
+      },
+      {
+        "item_id": "B097TB846W",
+        "title": "Product_B097TB846W",
+        "score": -2.402
+      },
+      {
+        "item_id": "B00SOBVMVI",
+        "title": "Neewer Cleaning Kit for DSLR Cameras-Includes 3 Pcs Lens Cleaning Pen + Micro...",
+        "score": -2.4424
+      },
+      {
+        "item_id": "B085WSDVT7",
+        "title": "Apple AirPods with Wireless Charging Case with AppleCare+ Bundle",
+        "score": -2.5433
+      },
+      {
+        "item_id": "B07ZZ3L4QY",
+        "title": "Soundtrue Earpads Replacement Ear Pads Cushions Kit Muffs Parts Compatible wi...",
+        "score": -2.8362
+      },
+      {
+        "item_id": "B01KK5E0RS",
+        "title": "Mushan Micro USB Charging Cable Cord, Magnetic Charger and Data Sync Line [Up...",
+        "score": -3.4263
+      }
+    ],
+    "ground_truth_item_id": "B08H8L2JJL"
+  },
+  {
+    "sample_id": "15",
+    "user_token": "AHD7XBUGRR3K3IN3HOKTZ4P77P2Q",
+    "user_history": [
+      {
+        "item_id": "B00U6VUXQY",
+        "title": "Product_B00U6VUXQY"
+      },
+      {
+        "item_id": "B07J5RSF37",
+        "title": "Product_B07J5RSF37"
+      },
+      {
+        "item_id": "B015K33ZYE",
+        "title": "ZNARI Earbud Foam Earphone Tips - T500 Set, 3 Pairs Small Medium Large"
+      },
+      {
+        "item_id": "B01ERK1JLM",
+        "title": "Product_B01ERK1JLM"
+      },
+      {
+        "item_id": "B084ZLWJTY",
+        "title": "Cooler Master 34 Inch 21:9 Curved PC Gaming Monitor, Ultrawide Frameless QLED..."
+      },
+      {
+        "item_id": "B07DWGV3LT",
+        "title": "Pawtec Flat Screen Monitor Cover Scratch Resistance Neoprene Full Body Sleeve..."
+      },
+      {
+        "item_id": "B089CQFHHZ",
+        "title": "MSI MPG B550 GAMING EDGE WIFI Gaming Motherboard (AMD AM4, DDR4, PCIe 4.0, SA..."
+      },
+      {
+        "item_id": "B083TRRT16",
+        "title": "Product_B083TRRT16"
+      },
+      {
+        "item_id": "B07BY6F8D9",
+        "title": "Product_B07BY6F8D9"
+      },
+      {
+        "item_id": "B07MKSGZM6",
+        "title": "Samsung (MB-ME512GA/AM) 512GB 100MB/s (U3) MicroSDXC Evo Select Memory Card w..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B01J7VPZNY",
+        "title": "Product_B01J7VPZNY",
+        "score": -0.9594
+      },
+      {
+        "item_id": "B00UQRNCWA",
+        "title": "Buffalo MediaStation Portable DVD Drive/External, Plays and Burns DVDs and CD...",
+        "score": -1.846
+      },
+      {
+        "item_id": "B09MVR9NQ2",
+        "title": "Edifier Bluetooth Wireless Active Noise Cancelling Earbuds – Neckband Headpho...",
+        "score": -1.9826
+      },
+      {
+        "item_id": "B00AM32HYW",
+        "title": "Protronix 2-Port USB 3.0 Low Profile PCI-Express Host Controller Card",
+        "score": -2.3395
+      },
+      {
+        "item_id": "B08RJJ643Z",
+        "title": "Product_B08RJJ643Z",
+        "score": -2.8289
+      },
+      {
+        "item_id": "B004IV9N2S",
+        "title": "Bay Valley Parts Laptop Battery for Asus X5C K50IJ A32-F82 K40 K40IJ K50 K50A...",
+        "score": -3.6876
+      },
+      {
+        "item_id": "B01M104VJD",
+        "title": "ASURION 3 Year Security Systems Protection Plan ($125 - $149.99)",
+        "score": -3.9588
+      },
+      {
+        "item_id": "B001DXUMXS",
+        "title": "Dual-Fan Notebook Cooling Stand - Black",
+        "score": -3.9642
+      },
+      {
+        "item_id": "B003PJQT4O",
+        "title": "Product_B003PJQT4O",
+        "score": -4.8761
+      },
+      {
+        "item_id": "B014L5J5VY",
+        "title": "SY－DP182 Full Band MP3 Player New High Performance DSP FM AM SW Radio Black",
+        "score": -5.1068
+      }
+    ],
+    "ground_truth_item_id": "B09MVR9NQ2"
+  },
+  {
+    "sample_id": "16",
+    "user_token": "AGC2D7IOACWIK3FVZPQ6U5RD2BDQ",
+    "user_history": [
+      {
+        "item_id": "B072K85Z7N",
+        "title": "Product_B072K85Z7N"
+      },
+      {
+        "item_id": "B075RXV2VR",
+        "title": "Product_B075RXV2VR"
+      },
+      {
+        "item_id": "B01MAW2294",
+        "title": "Product_B01MAW2294"
+      },
+      {
+        "item_id": "B01M8O7W40",
+        "title": "Apple 87W USB-C Power Adapter (for MacBook Pro)"
+      },
+      {
+        "item_id": "B07LGHJTVX",
+        "title": "CORSAIR H100i RGB PLATINUM SE AIO Liquid CPU Cooler,240mm,Dual LL120 RGB PWM ..."
+      },
+      {
+        "item_id": "B07MF7C735",
+        "title": "DEEP COOL MATREXX 55 ADD-RGB White Case, E-ATX Supported, Motherboard or Butt..."
+      },
+      {
+        "item_id": "B071DWG4C8",
+        "title": "Boundless Audio Record Cleaner Brush - Vinyl Cleaning Carbon Fiber Anti-Stati..."
+      },
+      {
+        "item_id": "B00N2RO63U",
+        "title": "Product_B00N2RO63U"
+      },
+      {
+        "item_id": "B000FBK3QK",
+        "title": "Product_B000FBK3QK"
+      },
+      {
+        "item_id": "B0B48S1ZYM",
+        "title": "Product_B0B48S1ZYM"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B0842YK4L5",
+        "title": "Product_B0842YK4L5",
+        "score": 4.7277
+      },
+      {
+        "item_id": "B07R2J41TY",
+        "title": "NVMe Heatsinks for M.2 2280mm SSD Double-Sided Cooling Design（Blue）",
+        "score": 4.274
+      },
+      {
+        "item_id": "B077HLYVXV",
+        "title": "Discontinued Item",
+        "score": 3.2077
+      },
+      {
+        "item_id": "B0BNZ4D72B",
+        "title": "Anker 675 USB-C Docking Station (12-in-1, Monitor Stand, Wireless) with 10Gbp...",
+        "score": 3.0866
+      },
+      {
+        "item_id": "B003V5B76C",
+        "title": "Allstate 4-Year Small Appliance Protection Plan ($250-299.99)",
+        "score": 2.3534
+      },
+      {
+        "item_id": "B07W1BSXMB",
+        "title": "Product_B07W1BSXMB",
+        "score": 2.1482
+      },
+      {
+        "item_id": "B07P4CL9FN",
+        "title": "AUTOKAY New LCD Display Adhesive Strips Tape Opening Wheel Handle Tools Kit f...",
+        "score": 0.5538
+      },
+      {
+        "item_id": "B005E0N6RA",
+        "title": "Product_B005E0N6RA",
+        "score": 0.2448
+      },
+      {
+        "item_id": "B09KPJ9TY1",
+        "title": "Choiana Wireless Keyboard and Mouse Light Up Ergonomic Quiet Rechargeable Mou...",
+        "score": -0.0312
+      },
+      {
+        "item_id": "B014D3JJGA",
+        "title": "Product_B014D3JJGA",
+        "score": -1.1771
+      }
+    ],
+    "ground_truth_item_id": "B0BNZ4D72B"
+  },
+  {
+    "sample_id": "17",
+    "user_token": "AGBA4KDHR5UAYEH3LZQ7F565FERQ",
+    "user_history": [
+      {
+        "item_id": "B075278JS5",
+        "title": "SJCAM SJ8 Air 1296P 60FPS Action Camera 14MP WiFi Sports Cam with 160°Wide An..."
+      },
+      {
+        "item_id": "B00SNLGXE0",
+        "title": "Product_B00SNLGXE0"
+      },
+      {
+        "item_id": "B008R6OPQE",
+        "title": "Patriot 64GB Supersonic Rage Series USB 3.0 Flash Drive with Up to 180MB/sec-..."
+      },
+      {
+        "item_id": "B071CTLNR4",
+        "title": "SJCAM SJ7 STAR Dual Slot Battery Charger and Two Batteries 1000 mAh 3.8V Lith..."
+      },
+      {
+        "item_id": "B07GKW3FS4",
+        "title": "Product_B07GKW3FS4"
+      },
+      {
+        "item_id": "B00T0ROWE4",
+        "title": "ienza 2.5 mm Female to 3.5 mm Male 4 Poles Jack Stereo Adapter for Latest Sma..."
+      },
+      {
+        "item_id": "B01MS68EKL",
+        "title": "Mr.Shield [2-PACK] Designed For Samsung Galaxy Tab E 9.6 Inch [Tempered Glass..."
+      },
+      {
+        "item_id": "B00T3QBK60",
+        "title": "Product_B00T3QBK60"
+      },
+      {
+        "item_id": "B08LQZ83N1",
+        "title": "Silverstone IceGem 360, 360mm ARGB AIO Liquid Cooler with 3 x 120mm ARGB Fans..."
+      },
+      {
+        "item_id": "B07MYSX1ZL",
+        "title": "Product_B07MYSX1ZL"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B09DXYRH15",
+        "title": "Product_B09DXYRH15",
+        "score": -0.245
+      },
+      {
+        "item_id": "B07K7KDPZD",
+        "title": "USB C to USB Adapter, iBosi Cheng 4 in 1 USB C to HDMI Adapter with 4K HDMI, ...",
+        "score": -0.8897
+      },
+      {
+        "item_id": "B085NFPMGK",
+        "title": "ATUMTEK Monitor Mount - Dual Monitor Arm for 13\"-27\" Inch or 17.6 Lbs Each Ar...",
+        "score": -1.3808
+      },
+      {
+        "item_id": "B001RJMZRE",
+        "title": "Product_B001RJMZRE",
+        "score": -1.4685
+      },
+      {
+        "item_id": "B00852KPQ4",
+        "title": "1ft USB 3.0 A-to-A 1 Foot Cable 12\" Inch (A Male to A Male) Cable for PC Drive",
+        "score": -1.9139
+      },
+      {
+        "item_id": "B012FTXK9Q",
+        "title": "EXMAX® Metal Aluminum Alloy L-Shape Camera Flash Bracket Flashlight Camera Ho...",
+        "score": -2.2012
+      },
+      {
+        "item_id": "B000HDMUV2",
+        "title": "CableWholesale 6-Feet 2 RCA Male/2 RCA Male High Quality Audio Cable (10R2-02...",
+        "score": -2.3914
+      },
+      {
+        "item_id": "B0BC1NQ9D6",
+        "title": "Product_B0BC1NQ9D6",
+        "score": -2.5719
+      },
+      {
+        "item_id": "B083FZ9QG2",
+        "title": "NEXUM WiFi Wireless Audio Receiver, HiFi Music Adapter for Home Music Streami...",
+        "score": -2.6067
+      },
+      {
+        "item_id": "B072XLR2K7",
+        "title": "Radeon Vega Frontier Edition Liquid Retail",
+        "score": -4.0463
+      }
+    ],
+    "ground_truth_item_id": "B09DXYRH15"
+  },
+  {
+    "sample_id": "18",
+    "user_token": "AHYAIDSZQA4XIOBOYAWJI37VEBXA",
+    "user_history": [
+      {
+        "item_id": "B014ALPSGA",
+        "title": "Datacolor S5SSR100 Spyder5STUDIO Color Calibration Kit"
+      },
+      {
+        "item_id": "B01672IR6I",
+        "title": "Product_B01672IR6I"
+      },
+      {
+        "item_id": "B01LWLTKV0",
+        "title": "Cobra DSP9200BT Bluetooth Digital Laser & Radar Detector with DSP Digital Sig..."
+      },
+      {
+        "item_id": "B074F3M2W8",
+        "title": "NETGEAR WiFi Mesh Range Extender EX8000 - Coverage up to 2500 sq.ft. and 50 D..."
+      },
+      {
+        "item_id": "B076ZHXK6J",
+        "title": "Product_B076ZHXK6J"
+      },
+      {
+        "item_id": "B07L3B5QFR",
+        "title": "Product_B07L3B5QFR"
+      },
+      {
+        "item_id": "B089728G34",
+        "title": "Product_B089728G34"
+      },
+      {
+        "item_id": "B07RQRXV36",
+        "title": "ANTOP HDTV ＆ FM Amplified Antenna 85 Miles AT-800SBS with Dual Outputs Smart ..."
+      },
+      {
+        "item_id": "B01DEX43WU",
+        "title": "Product_B01DEX43WU"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B07XP2D123",
+        "title": "Neewer Green Screen, 5x6ft/1.5x1.8m Wall Ceiling Mountable Chroma Key Green B...",
+        "score": 0.9253
+      },
+      {
+        "item_id": "B085HFNT42",
+        "title": "Netgear Nighthawk WiFi 6 Mesh Range Extender EAX80 AX6000 Dual-Band Wireless ...",
+        "score": 0.689
+      },
+      {
+        "item_id": "B06XCJL1TF",
+        "title": "AVACOM AC/DC Adapter, Power Supply, 5V/2A, 10ft Cord, 3.5mm x 1.3mm Connector...",
+        "score": -0.0197
+      },
+      {
+        "item_id": "B09WK97B5R",
+        "title": "Product_B09WK97B5R",
+        "score": -0.3636
+      },
+      {
+        "item_id": "B012BQV694",
+        "title": "Product_B012BQV694",
+        "score": -0.3937
+      },
+      {
+        "item_id": "B09L14B23P",
+        "title": "Lightning to HDMI Adapter for TV Compatible with iPhone 12 13 pro max Splitte...",
+        "score": -1.1703
+      },
+      {
+        "item_id": "B06XX2RM8Y",
+        "title": "BUSlink USB 3.0 Dual Power Y Shape 2 X Type a to Micro B SuperSpeed Cable for...",
+        "score": -1.9019
+      },
+      {
+        "item_id": "B001UG8DPM",
+        "title": "Universal 6 FT. Value-Series Audio Y-Adapter Cable - Male Mini-Phone Stereo 3...",
+        "score": -2.4613
+      },
+      {
+        "item_id": "B0096BAS10",
+        "title": "American Bass Usa PH4000 MD 4000 Watt Mono Block Amplifier",
+        "score": -2.4834
+      },
+      {
+        "item_id": "B006Y4FQUA",
+        "title": "Insten 6 Pieces Home Button Sticker for iPhone/iPad/iPod touch (Dot/Strip)",
+        "score": -4.8784
+      }
+    ],
+    "ground_truth_item_id": "B085HFNT42"
+  },
+  {
+    "sample_id": "19",
+    "user_token": "AGFIVMUKJ6KNLIIDILCPHBOHZ2TA",
+    "user_history": [
+      {
+        "item_id": "B0016SN49Y",
+        "title": "CE Compass Component Video (YPbPr) / PC VGA to HDMI Converter with Auto Up-Scale"
+      },
+      {
+        "item_id": "B003C2T08G",
+        "title": "Product_B003C2T08G"
+      },
+      {
+        "item_id": "B004KSQANO",
+        "title": "Logitech Wireless Combo MK260 with Keyboard and Mouse"
+      },
+      {
+        "item_id": "B00554MLPI",
+        "title": "Home Security Battery Powered Vibration Detector Alarm"
+      },
+      {
+        "item_id": "B08T63XVMJ",
+        "title": "Product_B08T63XVMJ"
+      },
+      {
+        "item_id": "B08BWM58B4",
+        "title": "JUSYEA 2022 Android 11 Tablet 10.1 inch J5-W Tablets Ultra-Portable- RAM 4GB ..."
+      },
+      {
+        "item_id": "B0BDKPDH6G",
+        "title": "Product_B0BDKPDH6G"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B0BGKXSMRB",
+        "title": "Product_B0BGKXSMRB",
+        "score": 2.9945
+      },
+      {
+        "item_id": "B004RFGKCQ",
+        "title": "PNY XLR8 GeForce GTX 550 Ti 1024MB GDDR5 PCI-Express 2.0 DVI-I+DVI-I+HDMI min...",
+        "score": 2.8368
+      },
+      {
+        "item_id": "B09WDJT6V3",
+        "title": "USB C Hub, Aluminum Type C Hub with 4 USB 3.0 Ports USB Expander USB Splitter...",
+        "score": 2.6418
+      },
+      {
+        "item_id": "B08CGSKLHY",
+        "title": "Ocean Digital WR-210N Portable Internet Radio Wi-Fi 2.4” Color LCD Built-in B...",
+        "score": 2.433
+      },
+      {
+        "item_id": "B072KNB86W",
+        "title": "Product_B072KNB86W",
+        "score": -0.4956
+      },
+      {
+        "item_id": "B00T9N2NHW",
+        "title": "Bushnell Legend M Series 10x42 Binoculars, Black",
+        "score": -0.8526
+      },
+      {
+        "item_id": "B08P55VPGD",
+        "title": "Product_B08P55VPGD",
+        "score": -1.1253
+      },
+      {
+        "item_id": "B00Y1NXN2Y",
+        "title": "Dreo [ShockWave Series] Wireless Bluetooth Headphones Noise Insulation Headph...",
+        "score": -1.6825
+      },
+      {
+        "item_id": "B018R0CAZM",
+        "title": "X-TECH Wristband Band for Garmin Vivofit Replacement Strap Bands (Black)",
+        "score": -1.9869
+      },
+      {
+        "item_id": "B01M5KA29C",
+        "title": "Product_B01M5KA29C",
+        "score": -2.0117
+      }
+    ],
+    "ground_truth_item_id": "B0BGKXSMRB"
+  },
+  {
+    "sample_id": "20",
+    "user_token": "AGRIVMLOYWXS5MBWOWBNHIY2QUMQ",
+    "user_history": [
+      {
+        "item_id": "B08H81TFXM",
+        "title": "Product_B08H81TFXM"
+      },
+      {
+        "item_id": "B08Z74VDRS",
+        "title": "Product_B08Z74VDRS"
+      },
+      {
+        "item_id": "B08528ZCNX",
+        "title": "Product_B08528ZCNX"
+      },
+      {
+        "item_id": "B073QN2JBS",
+        "title": "Product_B073QN2JBS"
+      },
+      {
+        "item_id": "B09MLXGQLG",
+        "title": "Product_B09MLXGQLG"
+      },
+      {
+        "item_id": "B092ZHLLD4",
+        "title": "Case for iPad Pro 12.9 inch Case 2021 (5th Gen) Clear Shock Absorbing Flexibl..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B07P4HBRMV",
+        "title": "Product_B07P4HBRMV",
+        "score": 3.7055
+      },
+      {
+        "item_id": "B07FZ3T3R7",
+        "title": "Product_B07FZ3T3R7",
+        "score": 1.9158
+      },
+      {
+        "item_id": "B07627H21M",
+        "title": "SmartGuard 2-Year Portable Electronics Protection Plan ($25-$50) Email Shipping",
+        "score": 1.3358
+      },
+      {
+        "item_id": "B01N63K17Z",
+        "title": "Anker Powerline II Lightning Cable (10ft), Durable Cable, MFi Certified for i...",
+        "score": 0.6233
+      },
+      {
+        "item_id": "B07RQNZCTS",
+        "title": "BTECH QHM01 3.5mm Listen-ONLY Heavy-Duty Surveillance Earpiece (Includes earm...",
+        "score": 0.0407
+      },
+      {
+        "item_id": "B07JB9R4NJ",
+        "title": "IDiSON 4Pack 3ft Apple MFi Certified iPhone Lightning Cable Braided Nylon Fas...",
+        "score": -0.0593
+      },
+      {
+        "item_id": "B006ZSQHDK",
+        "title": "Bluetooth Keyboard with Tech-Grip Case for iPad Tablets",
+        "score": -0.1357
+      },
+      {
+        "item_id": "B001DGTELG",
+        "title": "Original Sony RMT-V504A DVD/ VCR Combo Player Remote Control (Replaces for RM...",
+        "score": -0.6128
+      },
+      {
+        "item_id": "B07ZRGQ9N3",
+        "title": "Miady 2-Pack EN-EL14 / EN-EL14a Battery & Dual LCD Charger Compatible with Ni...",
+        "score": -0.7404
+      },
+      {
+        "item_id": "B01MRZ0PD7",
+        "title": "BRAINWAVZ B100 Balanced Armature Professional Refrence Monitor Earbud Earphones",
+        "score": -1.1276
+      }
+    ],
+    "ground_truth_item_id": "B07P4HBRMV"
+  },
+  {
+    "sample_id": "21",
+    "user_token": "AFL2ES7X5VMVSSEC7MRN35LL53EA",
+    "user_history": [
+      {
+        "item_id": "B00CE5QOIG",
+        "title": "Product_B00CE5QOIG"
+      },
+      {
+        "item_id": "B01N336XEU",
+        "title": "Product_B01N336XEU"
+      },
+      {
+        "item_id": "B01N0AVJL9",
+        "title": "Smraza Raspberry Pi 4 Case, Acrylic Case with Cooling Fan, Heatsinks Compatib..."
+      },
+      {
+        "item_id": "B07YKNVRM2",
+        "title": "Product_B07YKNVRM2"
+      },
+      {
+        "item_id": "B083SDMXJ6",
+        "title": "Popglory Smart Watch, IP68 Waterproof Fitness Tracker with Heart Rate Monitor..."
+      },
+      {
+        "item_id": "B07ZKLYTMD",
+        "title": "iWALK Battery Pack for Oculus Quest 2, 4500mah Compact and Lightweight Batter..."
+      },
+      {
+        "item_id": "B0836CLRQ2",
+        "title": "Product_B0836CLRQ2"
+      },
+      {
+        "item_id": "B07P72V1BJ",
+        "title": "Smof Premium 30 Pin Bluetooth Adapter for Sounddock,Replace iPod/Phone /JBL/C..."
+      },
+      {
+        "item_id": "B0791TX5P5",
+        "title": "Fire TV Stick streaming device with Alexa built in, includes Alexa Voice Remo..."
+      },
+      {
+        "item_id": "B096DBPZVT",
+        "title": "Product_B096DBPZVT"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B07KFDS3PT",
+        "title": "Universal TV Stand - Table Top TV Stand for 32-55 inch LCD LED Flat Screen TV...",
+        "score": 3.1162
+      },
+      {
+        "item_id": "B08PSDT4DL",
+        "title": "eufy Security, Wi-Fi Video Doorbell Kit, 1080p-Grade Resolution, 120-day Batt...",
+        "score": 2.2689
+      },
+      {
+        "item_id": "B08P5PPWRB",
+        "title": "Product_B08P5PPWRB",
+        "score": 0.9512
+      },
+      {
+        "item_id": "B094ZX8JJJ",
+        "title": "Product_B094ZX8JJJ",
+        "score": 0.1914
+      },
+      {
+        "item_id": "B07PD2LG7Z",
+        "title": "Product_B07PD2LG7Z",
+        "score": -0.2403
+      },
+      {
+        "item_id": "B00LGVU3UE",
+        "title": "MiiKey MiiSport C Green Wireless Bluetooth 4.0 Headphone with Microphone",
+        "score": -0.9581
+      },
+      {
+        "item_id": "B01JGNKNNA",
+        "title": "DAOKI® 5 PCS DIY DS3231 Precision RTC Clock Memory Module for Arduino Raspber...",
+        "score": -1.0077
+      },
+      {
+        "item_id": "B0B3D3WPBX",
+        "title": "targeal iPhone Dongle to 3.5mm Headphone and Charger Adapter, 2 in 1 Aux Ster...",
+        "score": -1.1214
+      },
+      {
+        "item_id": "B00BBK072Y",
+        "title": "RASPBERRY PI PI FACE",
+        "score": -1.2172
+      },
+      {
+        "item_id": "B000BYXEWQ",
+        "title": "Safety Beam - Invisible Infrared Beam Alert / Alarm",
+        "score": -1.3853
+      }
+    ],
+    "ground_truth_item_id": "B07KFDS3PT"
+  },
+  {
+    "sample_id": "22",
+    "user_token": "AGQWDP3PCDHCLAKUNONTIWXIIGMQ",
+    "user_history": [
+      {
+        "item_id": "B00WBCBK6I",
+        "title": "Product_B00WBCBK6I"
+      },
+      {
+        "item_id": "B001OELZ1Y",
+        "title": "Product_B001OELZ1Y"
+      },
+      {
+        "item_id": "B082MRBXBL",
+        "title": "Product_B082MRBXBL"
+      },
+      {
+        "item_id": "B018NT4UUA",
+        "title": "Product_B018NT4UUA"
+      },
+      {
+        "item_id": "B07NSB9B35",
+        "title": "Pair KICKER 46CSC464 4x6\" 300 Watt 4-Ohm 2-Way Car Audio Coaxial Speakers CSC464"
+      },
+      {
+        "item_id": "B07WMLPSRL",
+        "title": "Product_B07WMLPSRL"
+      },
+      {
+        "item_id": "B07WT2S84D",
+        "title": "Product_B07WT2S84D"
+      },
+      {
+        "item_id": "B08MDY57X3",
+        "title": "E-BAT New A1527 Laptop Battery Compatible for Apple MacBook Retina 12 inch A1..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B086JPS2MS",
+        "title": "Product_B086JPS2MS",
+        "score": 3.2719
+      },
+      {
+        "item_id": "B08B13JGN4",
+        "title": "Product_B08B13JGN4",
+        "score": 1.8747
+      },
+      {
+        "item_id": "B01F2L0NFI",
+        "title": "Galaxy Tab A 7.0 Case, Heavy Duty i-Blason Samsung Galaxy Tab A 7 2016 Armorb...",
+        "score": 1.0252
+      },
+      {
+        "item_id": "B08BJ6KJLL",
+        "title": "Siwket USB Type-C Cable (3.3ft) Nylon Braided USB C Charging Cable for Samsun...",
+        "score": 0.6262
+      },
+      {
+        "item_id": "B07PQJRX82",
+        "title": "21W Replacement for Echo Alexa Charger for Echo1st & 2nd Gen, Fire TV (2nd Ge...",
+        "score": 0.4598
+      },
+      {
+        "item_id": "B08JNKKPD4",
+        "title": "Dell P2721Q 27 Inch 4K FHD, IP Ultra-Thin Bezel Monitor, USB-C, HDMI, Display...",
+        "score": -0.6953
+      },
+      {
+        "item_id": "B00VWEGKD4",
+        "title": "PCI-Express 6 Pin to 2 x 8 Pin (6+2) Video Card Y-Splitter Adapter Power Supp...",
+        "score": -0.7064
+      },
+      {
+        "item_id": "B00729M51E",
+        "title": "Original Battery Door Cover Lid for Logitech Harmony 890 895 Remote Control",
+        "score": -1.6132
+      },
+      {
+        "item_id": "B00B0EUST8",
+        "title": "Dell Latitude E6410 14.1\" Core i5 160GB Windows Professional 32bit Notebook",
+        "score": -1.6594
+      },
+      {
+        "item_id": "B004QK3HOQ",
+        "title": "ButterflyPhoto Essential Accessory Kit for Toshiba Camileo H30 X100 HD Camcor...",
+        "score": -2.1283
+      }
+    ],
+    "ground_truth_item_id": "B07PQJRX82"
+  },
+  {
+    "sample_id": "23",
+    "user_token": "AGXVHGEHFXCZ52XICEPFYU6FRWGA",
+    "user_history": [
+      {
+        "item_id": "B00007DTFU",
+        "title": "APC 19500SG-1G 4-Port 480Mbps USB 2.0 Hub"
+      },
+      {
+        "item_id": "B004NPOPWW",
+        "title": "Product_B004NPOPWW"
+      },
+      {
+        "item_id": "B002TLT10I",
+        "title": "Product_B002TLT10I"
+      },
+      {
+        "item_id": "B000A6PPOK",
+        "title": "Product_B000A6PPOK"
+      },
+      {
+        "item_id": "B00DNJZ58M",
+        "title": "Product_B00DNJZ58M"
+      },
+      {
+        "item_id": "B01AJU6S92",
+        "title": "iXCC 7-Port USB 3.0 SuperSpeed Hub with Individual On/Off Port Switches and 5..."
+      },
+      {
+        "item_id": "B00SQG15VI",
+        "title": "Ubiquiti NanoBeam ac 19, High-Performance airMAX Bridge 19dBi (NBE-5AC-19-US)"
+      },
+      {
+        "item_id": "B00HWL9BQ4",
+        "title": "Garmin GPSMAP 64st, TOPO U.S. 100K with High-Sensitivity GPS and GLONASS Rece..."
+      },
+      {
+        "item_id": "B015UKRNGS",
+        "title": "Product_B015UKRNGS"
+      },
+      {
+        "item_id": "B07KWXHLWT",
+        "title": "NinjaBatt Pro Battery for HP 800049-001 K104 800010-421 KI04 KIO4 HSTNN-LB6R ..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B0939CYGHY",
+        "title": "Product_B0939CYGHY",
+        "score": -0.3675
+      },
+      {
+        "item_id": "B000P8X8KQ",
+        "title": "Bushnell Spectator 4x30mm Extra-Wide Compact Binoculars, 900' FOV Ideal for S...",
+        "score": -1.1779
+      },
+      {
+        "item_id": "B07DFNM96Z",
+        "title": "ZLINK Z-Wave Plus Smart Light Dimmer with S2 and SmartStart, Amazon Alexa Rea...",
+        "score": -2.2636
+      },
+      {
+        "item_id": "B009YCGHB6",
+        "title": "ASUS PCE-AC66 Dual-Band Wireless-AC1750 Adapter",
+        "score": -2.6963
+      },
+      {
+        "item_id": "B01IIPNC8K",
+        "title": "Samsung Galaxy On5 Screen Protector (6-Pack), TechLink Solutions UltraClear -...",
+        "score": -3.4802
+      },
+      {
+        "item_id": "B003C2HRJK",
+        "title": "Product_B003C2HRJK",
+        "score": -3.6476
+      },
+      {
+        "item_id": "B07R5TKVSC",
+        "title": "Neewer Rollable 30x53cm LED Light Panel Mat on Fabric 80W 3800LUX/1m 5600K CR...",
+        "score": -3.7281
+      },
+      {
+        "item_id": "B07CPKN21B",
+        "title": "Product_B07CPKN21B",
+        "score": -3.8272
+      },
+      {
+        "item_id": "B08DHH3RMH",
+        "title": "ATOPINK Remanufactured Ink Cartridge Replacement for HP 64 XL 64XL (1 Tri-Col...",
+        "score": -4.3801
+      },
+      {
+        "item_id": "B09V7MX6ZB",
+        "title": "Product_B09V7MX6ZB",
+        "score": -4.9494
+      }
+    ],
+    "ground_truth_item_id": "B0939CYGHY"
+  },
+  {
+    "sample_id": "24",
+    "user_token": "AEEFVUD64OKNDZ6HIQJ2VIXEV76A",
+    "user_history": [
+      {
+        "item_id": "B00713AA5E",
+        "title": "Product_B00713AA5E"
+      },
+      {
+        "item_id": "B00713AA5E",
+        "title": "Product_B00713AA5E"
+      },
+      {
+        "item_id": "B00713AA5E",
+        "title": "Product_B00713AA5E"
+      },
+      {
+        "item_id": "B004VV8R86",
+        "title": "Mini DisplayPort to Composite Video and S-Video Converter with LED for HDTV DVD"
+      },
+      {
+        "item_id": "B004VV8R86",
+        "title": "Mini DisplayPort to Composite Video and S-Video Converter with LED for HDTV DVD"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B004VV8R86",
+        "title": "Mini DisplayPort to Composite Video and S-Video Converter with LED for HDTV DVD",
+        "score": 2.3599
+      },
+      {
+        "item_id": "B00JWT1B5I",
+        "title": "USB 2.0 to 7+6 13 Pin Slimline Slim SATA II Laptop CD/DVD Drive Adapter Cable",
+        "score": -1.7605
+      },
+      {
+        "item_id": "B004ZBOXH6",
+        "title": "Manfrotto ML120 Pocket-12 LED Light for Micro Four Thirds Cameras and DSLRs",
+        "score": -2.1474
+      },
+      {
+        "item_id": "B00A0EC0X6",
+        "title": "Thermalright True Spirit 120M (Made specifically for ATX + Micro ATX case user.)",
+        "score": -3.584
+      },
+      {
+        "item_id": "B002JOQIJM",
+        "title": "Sony CWSIC150T 6.5-inch Home Theater In-Ceiling Platinum Series Sposato Speak...",
+        "score": -4.3954
+      },
+      {
+        "item_id": "B0BFQFSDK7",
+        "title": "Product_B0BFQFSDK7",
+        "score": -5.1636
+      },
+      {
+        "item_id": "B07WGFMF9Y",
+        "title": "Product_B07WGFMF9Y",
+        "score": -5.2045
+      },
+      {
+        "item_id": "B073VV9TTK",
+        "title": "Klipsch Surround Dolby Atmos Bookshelf Home Speaker Set of 2, Black Vinyl (R-...",
+        "score": -5.2045
+      },
+      {
+        "item_id": "B08T69TXNS",
+        "title": "Ohuhu Laptop Stand, Ergonomic Aluminum Notebook Computer Holder, Laptop Riser...",
+        "score": -5.6056
+      },
+      {
+        "item_id": "B015IX72CM",
+        "title": "HP Sprout 23-inch Immersive All-in-One Computer with Stylus and Touch Mat, In...",
+        "score": -6.9635
+      }
+    ],
+    "ground_truth_item_id": "B004VV8R86"
+  },
+  {
+    "sample_id": "25",
+    "user_token": "AGD662UCTT4AG7QKJWCB2VVDD6SQ",
+    "user_history": [
+      {
+        "item_id": "B07PDHSLM6",
+        "title": "Echo Dot (3rd Gen) - Smart speaker with Alexa - Heather Gray"
+      },
+      {
+        "item_id": "B01GK2N6NO",
+        "title": "iMah BT183342/BT283342 2.4V 400mAh Ni-MH Battery Compatible with AT&T CL82207..."
+      },
+      {
+        "item_id": "B0047E8DN6",
+        "title": "Bryson Screen Cleaner Kit-Computer, TV, Laptop Spray with No Leak Trigger Noz..."
+      },
+      {
+        "item_id": "B08G8CM63G",
+        "title": "Product_B08G8CM63G"
+      },
+      {
+        "item_id": "B072J6X7YP",
+        "title": "Product_B072J6X7YP"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B08LKFVKK5",
+        "title": "Ainuowei 80 pcs Reusable Fastening Cable Ties 3 Sizes 6/8/10 inch Adjustable ...",
+        "score": 0.6255
+      },
+      {
+        "item_id": "B07C29Q12L",
+        "title": "GaoZo Speaker Wire To RCA Female Adapter, RCA Plug Cable，RCA Plug Adapter (Bl...",
+        "score": -0.2299
+      },
+      {
+        "item_id": "B07QNJCF7D",
+        "title": "Product_B07QNJCF7D",
+        "score": -1.7219
+      },
+      {
+        "item_id": "B07C2TJ7P3",
+        "title": "7XINbox 11.4V 64.98Wh 5700mAh BTY-M6J BTY-U6J Replacement Laptop Battery for ...",
+        "score": -2.4051
+      },
+      {
+        "item_id": "B0073AIXOA",
+        "title": "Product_B0073AIXOA",
+        "score": -2.4503
+      },
+      {
+        "item_id": "B07MVS5NRT",
+        "title": "Product_B07MVS5NRT",
+        "score": -2.5931
+      },
+      {
+        "item_id": "B00CHHCD0E",
+        "title": "Polk Audio TSx 220B Bookshelf Speaker - Cherry (Pack of 2)",
+        "score": -2.7558
+      },
+      {
+        "item_id": "B00009R9AE",
+        "title": "Hoya 58mm 81A Warming Multi Coated Glass Filter",
+        "score": -3.2103
+      },
+      {
+        "item_id": "B00QFY0TFG",
+        "title": "Night Owl Security 2 Pack of 60-Feet Extension Cables",
+        "score": -3.2914
+      },
+      {
+        "item_id": "B001ICU3FQ",
+        "title": "Lenovo Thinkvision L1940P 19-Inch Widescreen Flat Panel LCD Monitor (4424-HB6)",
+        "score": -4.3274
+      }
+    ],
+    "ground_truth_item_id": "B08LKFVKK5"
+  },
+  {
+    "sample_id": "26",
+    "user_token": "AGI4AB3FTHOGM4TM3DCDSHZ475DA",
+    "user_history": [
+      {
+        "item_id": "B07DG18J6X",
+        "title": "Product_B07DG18J6X"
+      },
+      {
+        "item_id": "B07DG18J6X",
+        "title": "Product_B07DG18J6X"
+      },
+      {
+        "item_id": "B07FZ8S74R",
+        "title": "Product_B07FZ8S74R"
+      },
+      {
+        "item_id": "B07FZ8S74R",
+        "title": "Product_B07FZ8S74R"
+      },
+      {
+        "item_id": "B09156QVFW",
+        "title": "Product_B09156QVFW"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B09156QVFW",
+        "title": "Product_B09156QVFW",
+        "score": 2.6772
+      },
+      {
+        "item_id": "B07FMLFGFR",
+        "title": "Product_B07FMLFGFR",
+        "score": 0.2527
+      },
+      {
+        "item_id": "B002XA8XNQ",
+        "title": "Insteon USB Interace PowerLinc Modem, 2413U - Dual-Band PLM makes controllers...",
+        "score": -0.369
+      },
+      {
+        "item_id": "B09T5S36JX",
+        "title": "Product_B09T5S36JX",
+        "score": -1.0838
+      },
+      {
+        "item_id": "B07D8SYZNC",
+        "title": "FELYBY Professional Condenser Microphone, Cardioid Recording Microphone Kit w...",
+        "score": -1.2999
+      },
+      {
+        "item_id": "B01NAWBGQH",
+        "title": "Catalyst Case for Apple Watch 42mm Series 2 - WaterProof Shock Resistant (Alp...",
+        "score": -1.4406
+      },
+      {
+        "item_id": "B089GQ47MG",
+        "title": "Ambison Matte Screen Protector Compatible With iPad 9th/8th/7th Generation 10...",
+        "score": -2.2442
+      },
+      {
+        "item_id": "B003V74WG2",
+        "title": "Product_B003V74WG2",
+        "score": -2.5163
+      },
+      {
+        "item_id": "B01EG5XSNK",
+        "title": "Product_B01EG5XSNK",
+        "score": -2.8459
+      },
+      {
+        "item_id": "B007951JOA",
+        "title": "25 5x7 White Picture Mats with White Core, for 4x6 Pictures",
+        "score": -3.3305
+      }
+    ],
+    "ground_truth_item_id": "B09156QVFW"
+  },
+  {
+    "sample_id": "27",
+    "user_token": "AEYA7NE2MT3DH2OJLKY2MHLKQ7RQ",
+    "user_history": [
+      {
+        "item_id": "B001J4ZOAW",
+        "title": "Metro ED500 DataVac 500-Watt 120 volt 0.75-HP Electric Blower Duster"
+      },
+      {
+        "item_id": "B003VAK1FA",
+        "title": "Product_B003VAK1FA"
+      },
+      {
+        "item_id": "B00C2DLI9A",
+        "title": "Product_B00C2DLI9A"
+      },
+      {
+        "item_id": "B00FJRS6FU",
+        "title": "Product_B00FJRS6FU"
+      },
+      {
+        "item_id": "B01892I8KO",
+        "title": "YuanKanJu Sudopo HDMI Cable (4K 60Hz, HDMI 2.0, 18Gbps, HDCP 2.2, HDR, Ethern..."
+      },
+      {
+        "item_id": "B01G9BEC5W",
+        "title": "Thermaltake Commander FP SATA Powered 10 Port 4-Pin PWM Fan Hub AC-023-AN1NAN..."
+      },
+      {
+        "item_id": "B07FB6FB19",
+        "title": "Product_B07FB6FB19"
+      },
+      {
+        "item_id": "B005H3Q59U",
+        "title": "Product_B005H3Q59U"
+      },
+      {
+        "item_id": "B07FB94T1K",
+        "title": "Product_B07FB94T1K"
+      },
+      {
+        "item_id": "B09DHTWR5N",
+        "title": "Product_B09DHTWR5N"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B09CGL4K96",
+        "title": "GINTOOYUN USB 3.0 Header Extension Cable, 19/20 Pin 1 to 2 Y Splitter Interna...",
+        "score": 2.934
+      },
+      {
+        "item_id": "B0BHT1WJYB",
+        "title": "Product_B0BHT1WJYB",
+        "score": 0.3532
+      },
+      {
+        "item_id": "B010LZRTP2",
+        "title": "Microsoft Surface Pro 3 Screen Protector, Tranesca Anti Scratch Crystal Clear...",
+        "score": -0.487
+      },
+      {
+        "item_id": "B0B6J7BVTR",
+        "title": "LILANZo Phone Tablet Holder for Bed, Cell Phone Tablet Stand for Desk, Adjust...",
+        "score": -0.5087
+      },
+      {
+        "item_id": "B00BUZG7MY",
+        "title": "New Vr10 Remote for Vizio M260va M320va M220va M190va E190va E220va E260va E2...",
+        "score": -1.093
+      },
+      {
+        "item_id": "B006XC56HQ",
+        "title": "AudioQuest - Cinnamon TosLink (Full to Full, 0.75m)",
+        "score": -1.9619
+      },
+      {
+        "item_id": "B09P13MB86",
+        "title": "Product_B09P13MB86",
+        "score": -2.2144
+      },
+      {
+        "item_id": "B008BLTLB4",
+        "title": "PLR Studio Series .43x High Definition Wide Angle Lens With Macro Attachment ...",
+        "score": -2.233
+      },
+      {
+        "item_id": "B00FAVIB5K",
+        "title": "TopCase Chevron Zig - Zag Silicone Keyboard Cover Skin for MacBook 13\" Unibod...",
+        "score": -2.9361
+      },
+      {
+        "item_id": "B00KEJO65C",
+        "title": "3x Sony Alpha A5000 A5100 A6000 Digital Camera Premium Clear LCD Screen Prote...",
+        "score": -3.5955
+      }
+    ],
+    "ground_truth_item_id": "B09CGL4K96"
+  },
+  {
+    "sample_id": "28",
+    "user_token": "AETS6I6UJH737MBMYWWRXT65EXVQ",
+    "user_history": [
+      {
+        "item_id": "B000OTEZ5I",
+        "title": "Product_B000OTEZ5I"
+      },
+      {
+        "item_id": "B00PYZ2BT4",
+        "title": "Product_B00PYZ2BT4"
+      },
+      {
+        "item_id": "B0117RFP0Y",
+        "title": "Product_B0117RFP0Y"
+      },
+      {
+        "item_id": "B01LXT0YGT",
+        "title": "Unitek Gold Plated 3.5mm Stereo Female to 2 Male Y-Splitter Aux Cable with Se..."
+      },
+      {
+        "item_id": "B00P0EQD1Q",
+        "title": "Product_B00P0EQD1Q"
+      },
+      {
+        "item_id": "B00IJ2J2K0",
+        "title": "AC Infinity MULTIFAN S5, Quiet Dual 80mm USB Fan, UL-Certified for Receiver D..."
+      },
+      {
+        "item_id": "B01MR76863",
+        "title": "Glass White Board Premium 24x36\" Whiteboard Dry Erase Board"
+      },
+      {
+        "item_id": "B071YLDZXF",
+        "title": "SONGMICS Bamboo Monitor Stand Riser, Laptop Stand, for Cellphone, TV, Printer..."
+      },
+      {
+        "item_id": "B071DWY2WP",
+        "title": "Product_B071DWY2WP"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B00MTWO5B2",
+        "title": "VIVO Single LCD Monitor Height Adjustable Desk Stand",
+        "score": -0.3321
+      },
+      {
+        "item_id": "B075S2Y5C3",
+        "title": "KINPS SoundCircular Bluetooth Speaker 32 Hours Play Time, IPX8 Waterproof, Po...",
+        "score": -1.8135
+      },
+      {
+        "item_id": "B0145RCBWS",
+        "title": "Ubiquiti AMG-PRO IEEE 802.11n 150 Mbit/s Wireless Range Extender",
+        "score": -2.9861
+      },
+      {
+        "item_id": "B007ZVJUX0",
+        "title": "Product_B007ZVJUX0",
+        "score": -3.5143
+      },
+      {
+        "item_id": "B001SER49W",
+        "title": "Product_B001SER49W",
+        "score": -3.5311
+      },
+      {
+        "item_id": "B0BGHLMWN1",
+        "title": "TDLIRH Waterproof Bluetooth Shower Speaker Bathroom Speaker Portable Outdoor ...",
+        "score": -3.7063
+      },
+      {
+        "item_id": "B08FDLBYYJ",
+        "title": "Product_B08FDLBYYJ",
+        "score": -3.742
+      },
+      {
+        "item_id": "B015NLYOHA",
+        "title": "Dell Inspiron 15.6 Inch Touchscreen Laptop with AMD Quad Core A8-7410 Process...",
+        "score": -4.1464
+      },
+      {
+        "item_id": "B005BHAQ42",
+        "title": "LimoStudio 800-840W Photography Studio Lighting Kit + 10' x 10' White Muslin ...",
+        "score": -4.4639
+      },
+      {
+        "item_id": "B000FJCSAG",
+        "title": "Sylvania 6615LG 15 Inch LCD Tv",
+        "score": -6.2474
+      }
+    ],
+    "ground_truth_item_id": "B08FDLBYYJ"
+  },
+  {
+    "sample_id": "29",
+    "user_token": "AGQKSSSZSS7ROLCVMZXGDR2MLOMQ",
+    "user_history": [
+      {
+        "item_id": "B000KUCQXY",
+        "title": "Behringer MICROMON MA400 Ultra-Compact Monitor Headphone Amplifier, Silver"
+      },
+      {
+        "item_id": "B0038W0K2U",
+        "title": "Product_B0038W0K2U"
+      },
+      {
+        "item_id": "B001UI4RTG",
+        "title": "NETGEAR RangeMax Wireless Router (WNR1000-100NAS (G54/N150))"
+      },
+      {
+        "item_id": "B00JOBU9L6",
+        "title": "ATian Protective Camera Lens Cap Cover + Housing Case Cover for Gopro Hd Hero..."
+      },
+      {
+        "item_id": "B00CES44EO",
+        "title": "Transcend 32GB MicroSDHC Class10 UHS-1 Memory Card with Adapter 45 MB/s (TS32..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B00GMGDFPI",
+        "title": "Product_B00GMGDFPI",
+        "score": -0.6123
+      },
+      {
+        "item_id": "B00HZ4UXVK",
+        "title": "C. Crane Versa USB WiFi Adapter 3 – High Power Long Range 802.11 B G N Wirele...",
+        "score": -2.159
+      },
+      {
+        "item_id": "B0060N6L86",
+        "title": "K-Musculo StackShot Automated Macro Rail Package, US AC Adapter",
+        "score": -4.0737
+      },
+      {
+        "item_id": "B01IHUJ6K4",
+        "title": "zdyCGTime Black 3.5mm Plug Male to 3 RCA Female Adaptor Audio Video Cable(25C...",
+        "score": -4.9512
+      },
+      {
+        "item_id": "B01AB8Q482",
+        "title": "Comp Bind Technology, Dust Cover Compatible with Canon Pixma Pro-100 Wireless...",
+        "score": -5.2072
+      },
+      {
+        "item_id": "B07YKGGQTJ",
+        "title": "Product_B07YKGGQTJ",
+        "score": -5.3217
+      },
+      {
+        "item_id": "B0B3C493HH",
+        "title": "Product_B0B3C493HH",
+        "score": -5.4315
+      },
+      {
+        "item_id": "B073CQVFLK",
+        "title": "HiLetgo 5pcs Mini ESP8266 ESP-12F Mini NodeMCU Lua 4M Bytes WiFi Module with ...",
+        "score": -5.9454
+      },
+      {
+        "item_id": "B08DP4NKGN",
+        "title": "Product_B08DP4NKGN",
+        "score": -6.3621
+      },
+      {
+        "item_id": "B0978W57PP",
+        "title": "CYNOVA Osmo Action Dual 3.5mm/USB-C Mic Adapter- Made for DJI Osmo Action wit...",
+        "score": -6.8851
+      }
+    ],
+    "ground_truth_item_id": "B0978W57PP"
+  },
+  {
+    "sample_id": "30",
+    "user_token": "AHK7R5OGSTYJGINHHFWPZ45KPZWA",
+    "user_history": [
+      {
+        "item_id": "B00IIGR1V4",
+        "title": "Kayond 13-13.3 Inch Laptop Messenger Bag for MacBook Pro/MacBook Air/Ultraboo..."
+      },
+      {
+        "item_id": "B00M8ABFX6",
+        "title": "SanDisk Ultra II 480GB Solid State Drive (SDSSDHII-480G-G25),Black"
+      },
+      {
+        "item_id": "B07RW44S7Y",
+        "title": "[Upgraded Version of T1] SUPAZO True Wireless Earbuds Built-in Microphone, Bl..."
+      },
+      {
+        "item_id": "B00B6ZCNGM",
+        "title": "Inateck PCI-e to USB 3.0 (4 Ports) PCI Express Card and 15-Pin Power Connecto..."
+      },
+      {
+        "item_id": "B089Q3LVC7",
+        "title": "TGOOD PC Gaming Headset Headphone Hook Holder Hanger Mount, Under - Desk Head..."
+      },
+      {
+        "item_id": "B08F9ZNZT6",
+        "title": "Product_B08F9ZNZT6"
+      },
+      {
+        "item_id": "B079P1VBDY",
+        "title": "Product_B079P1VBDY"
+      },
+      {
+        "item_id": "B076H3M8TK",
+        "title": "Product_B076H3M8TK"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B07KR62YBD",
+        "title": "Senso Bluetooth Headphones, Best Wireless Sports Earphones w/Mic IPX7 Waterpr...",
+        "score": 3.6119
+      },
+      {
+        "item_id": "B00TBHYYFK",
+        "title": "Noctua NH-U9S, Premium CPU Cooler with NF-A9 92mm Fan (Brown) for Desktop",
+        "score": 3.3018
+      },
+      {
+        "item_id": "B01B4BKJK4",
+        "title": "REOLINK 16CH 5MP Home Security Camera System, 8pcs Wired 5MP Outdoor PoE IP C...",
+        "score": 0.8089
+      },
+      {
+        "item_id": "B083DQX15L",
+        "title": "WooAwesome 5-Pack Wired Earbuds, in-Ear Headphones with 3.5mm Headphone Plug,...",
+        "score": -2.1504
+      },
+      {
+        "item_id": "B01BH99YDG",
+        "title": "Nikon COOLPIX S33 13.2MP Waterproof Digital Camera - Blue (Renewed)",
+        "score": -2.2788
+      },
+      {
+        "item_id": "B08V13ZZ4N",
+        "title": "SXDOOL AXIAL Cooling Fan 12cm, AC 115V 120V 120mm x 38mm High Speed CFM with ...",
+        "score": -2.6074
+      },
+      {
+        "item_id": "B01K3YNXAQ",
+        "title": "Brinno TLC200 Time Lapse and Stop Motion HD Video Camera - Green (BCC50 2016 ...",
+        "score": -2.8093
+      },
+      {
+        "item_id": "B00GMMJUJC",
+        "title": "Monitor Image CAR REAR VIEW PARKING REVERSE CAMERA FOR VW CAYENNE TIGUAN TOUA...",
+        "score": -3.2113
+      },
+      {
+        "item_id": "B004DOTKPK",
+        "title": "Mighty Bright XtraFlex2 LED Book Light",
+        "score": -3.5463
+      },
+      {
+        "item_id": "B005KK40ZQ",
+        "title": "(SET OF 2) 46MM Snap-On Lens Cap (for Camera Lenses with 46MM Filter Threads)...",
+        "score": -4.5933
+      }
+    ],
+    "ground_truth_item_id": "B00TBHYYFK"
+  },
+  {
+    "sample_id": "31",
+    "user_token": "AHZW7FKXL2W5XITCSJ7DMBHVSHIA",
+    "user_history": [
+      {
+        "item_id": "B01NAFRSZZ",
+        "title": "Product_B01NAFRSZZ"
+      },
+      {
+        "item_id": "B002DPUUL4",
+        "title": "Microsoft Wireless Mobile Mouse 4000 - Graphite. Comfortable Ergonomic design..."
+      },
+      {
+        "item_id": "B081DLFN5T",
+        "title": "ivoler [3-Pack] USB C Cable, (3ftX2+6ft) Type C Fast Charger A to C Nylon Bra..."
+      },
+      {
+        "item_id": "B08C2F61FN",
+        "title": "Product_B08C2F61FN"
+      },
+      {
+        "item_id": "B07XJ8C8F5",
+        "title": "Product_B07XJ8C8F5"
+      },
+      {
+        "item_id": "B07QNKNP4C",
+        "title": "Product_B07QNKNP4C"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B09CFP6J6D",
+        "title": "Product_B09CFP6J6D",
+        "score": 2.3484
+      },
+      {
+        "item_id": "B07Q4VMGDK",
+        "title": "Product_B07Q4VMGDK",
+        "score": 1.7734
+      },
+      {
+        "item_id": "B07VHQLF91",
+        "title": "Product_B07VHQLF91",
+        "score": -0.0661
+      },
+      {
+        "item_id": "B0BL3RJGM8",
+        "title": "Product_B0BL3RJGM8",
+        "score": -0.7743
+      },
+      {
+        "item_id": "B07KJKW6G2",
+        "title": "Guardzilla 2019 Indoor HD WiFi Security Camera with a 100dB Siren, Motion Det...",
+        "score": -1.4327
+      },
+      {
+        "item_id": "B00383YPMA",
+        "title": "HDMI Super High Speed Cable for Ethernet & 3D (6 feet)",
+        "score": -1.4925
+      },
+      {
+        "item_id": "B073VD6Q8S",
+        "title": "360 Degree Panoramic Camera WiFi Indoor IP Camera Fisheye Infrared Camera wit...",
+        "score": -1.8745
+      },
+      {
+        "item_id": "B00E8GYAW6",
+        "title": "Product_B00E8GYAW6",
+        "score": -2.0609
+      },
+      {
+        "item_id": "B0081W7SB8",
+        "title": "Product_B0081W7SB8",
+        "score": -2.8693
+      },
+      {
+        "item_id": "B008N8GELA",
+        "title": "Silverstone Tek Heligon CPU Cooler for Intel Socket LGA775/LGA1155/LGA1156/LG...",
+        "score": -3.511
+      }
+    ],
+    "ground_truth_item_id": "B09CFP6J6D"
+  },
+  {
+    "sample_id": "32",
+    "user_token": "AFCFYNKZNCBXW3JGDXQQCZMB3K2A",
+    "user_history": [
+      {
+        "item_id": "B01NAUIA6G",
+        "title": "Product_B01NAUIA6G"
+      },
+      {
+        "item_id": "B00U2W45WA",
+        "title": "Product_B00U2W45WA"
+      },
+      {
+        "item_id": "B01H6OQI1W",
+        "title": "KuWFi EasyCap USB 2.0 Capture Card Video TV DVD VHS Audio Capture Card 3 in 1..."
+      },
+      {
+        "item_id": "B082NM7VQG",
+        "title": "Poyiccot RCA Splitter Male to Male Cable, RCA Y Splitter 1 RCA Male to 2 RCA ..."
+      },
+      {
+        "item_id": "B0183JT776",
+        "title": "Smatree Full Aluminum Tripod Screw to DSLR Camera Flash Cold Shoe Mount Adapt..."
+      },
+      {
+        "item_id": "B07F68FCHD",
+        "title": "PSP Memory Stick Adapter, Funturbo Micro SD to Memory Stick PRO Duo MagicGate..."
+      },
+      {
+        "item_id": "B001670JES",
+        "title": "Sony 16GB Memory Stick PRO Duo Card"
+      },
+      {
+        "item_id": "B089NDSQVV",
+        "title": "Product_B089NDSQVV"
+      },
+      {
+        "item_id": "B079QHML21",
+        "title": "Product_B079QHML21"
+      },
+      {
+        "item_id": "B00SQ2CJUS",
+        "title": "Apple Thunderbolt to FireWire Adapter"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B07L17W3BQ",
+        "title": "Camera Mount Adapter for GoPro 11/10/9/MAX& Insta360 X3/X2/X/RS/R Ecosystem -...",
+        "score": 0.2614
+      },
+      {
+        "item_id": "B076D3FQRZ",
+        "title": "Product_B076D3FQRZ",
+        "score": -1.12
+      },
+      {
+        "item_id": "B0836SPTHP",
+        "title": "Product_B0836SPTHP",
+        "score": -1.2025
+      },
+      {
+        "item_id": "B08F6BY4LF",
+        "title": "Product_B08F6BY4LF",
+        "score": -2.1443
+      },
+      {
+        "item_id": "B0042TYYI4",
+        "title": "ASUS Eee PC 1015PEM-PU17-BK 10.1-Inch Netbook (Black)",
+        "score": -2.538
+      },
+      {
+        "item_id": "B00N8MANOA",
+        "title": "Seifelden 60GB 2.5in IDE/ATA Hard Drive 3 Year Warranty for Asus, HP, Dell, G...",
+        "score": -2.9631
+      },
+      {
+        "item_id": "B093RGM4T4",
+        "title": "FLYINGTECH Tablet 10 inch, Android 10.0 Tablets, 2GB RAM, 32GB ROM, Quad Core...",
+        "score": -3.7933
+      },
+      {
+        "item_id": "B005TLTOLG",
+        "title": "Bose Companion 2 Series I Multimedia Speaker System (Black)",
+        "score": -3.9617
+      },
+      {
+        "item_id": "B007HK147E",
+        "title": "TCL LE42FHDE5300 42-Inch 1080p Slim LED HDTV with 2-Year Limited Warranty (Bl...",
+        "score": -4.3262
+      },
+      {
+        "item_id": "B00061S2OO",
+        "title": "Nikon Coolpix 8800 8MP Digital Camera with 10x Vibration Reduction Optical Zo...",
+        "score": -4.802
+      }
+    ],
+    "ground_truth_item_id": "B07L17W3BQ"
+  },
+  {
+    "sample_id": "33",
+    "user_token": "AHIJJNJRBSQNNH5XJNKSK4CPTCLQ",
+    "user_history": [
+      {
+        "item_id": "B07X92JQJV",
+        "title": "Product_B07X92JQJV"
+      },
+      {
+        "item_id": "B0007WRQH6",
+        "title": "Product_B0007WRQH6"
+      },
+      {
+        "item_id": "B0052QDQP8",
+        "title": "Product_B0052QDQP8"
+      },
+      {
+        "item_id": "B003D3NEEU",
+        "title": "Product_B003D3NEEU"
+      },
+      {
+        "item_id": "B07MG3TLKM",
+        "title": "Product_B07MG3TLKM"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B0007L8BTY",
+        "title": "Product_B0007L8BTY",
+        "score": 3.9344
+      },
+      {
+        "item_id": "B07TCG5N5X",
+        "title": "Gold Plated Binding Post Banana Jacks Connectors Extra Long Shaft with Solder...",
+        "score": -0.9877
+      },
+      {
+        "item_id": "B09PNB9D2X",
+        "title": "Product_B09PNB9D2X",
+        "score": -1.185
+      },
+      {
+        "item_id": "B000F6KQ7G",
+        "title": "Product_B000F6KQ7G",
+        "score": -1.7272
+      },
+      {
+        "item_id": "B0058DN0C4",
+        "title": "IOGEAR USB Theater Sound Xperience GUADT51 (Black)",
+        "score": -1.827
+      },
+      {
+        "item_id": "B003AOC0F6",
+        "title": "Product_B003AOC0F6",
+        "score": -2.0038
+      },
+      {
+        "item_id": "B002KYE8PW",
+        "title": "Product_B002KYE8PW",
+        "score": -2.3608
+      },
+      {
+        "item_id": "B005LUVU7Q",
+        "title": "OtterBox Commuter-Series Hybrid Case for Motorola DROID Bionic - Black",
+        "score": -2.7164
+      },
+      {
+        "item_id": "B0002D6Q2G",
+        "title": "Product_B0002D6Q2G",
+        "score": -2.8226
+      },
+      {
+        "item_id": "B00DOVD9UA",
+        "title": "Product_B00DOVD9UA",
+        "score": -3.0397
+      }
+    ],
+    "ground_truth_item_id": "B0007L8BTY"
+  },
+  {
+    "sample_id": "34",
+    "user_token": "AGN6PSLG2QODABLAM3MGDPINRZDQ",
+    "user_history": [
+      {
+        "item_id": "B000FW60FW",
+        "title": "Product_B000FW60FW"
+      },
+      {
+        "item_id": "B00LZVP73S",
+        "title": "Logitech MK750 Wireless Solar Keyboard and Wireless Marathon Mouse Combo for PC"
+      },
+      {
+        "item_id": "B08KPXCTPX",
+        "title": "Product_B08KPXCTPX"
+      },
+      {
+        "item_id": "B08JTK2CGV",
+        "title": "Extension Cord 10 FT, NTONPOWER Flat Plug Power Strip with USB C,(PD 18W)3 Ou..."
+      },
+      {
+        "item_id": "B08RBX9994",
+        "title": "Uoeo 8 Pack Chassis Hard Drive Mounting Plastic Rails Chassis Hard Drive Rail..."
+      },
+      {
+        "item_id": "B07YFGMZVV",
+        "title": "Product_B07YFGMZVV"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B01B482RYI",
+        "title": "Product_B01B482RYI",
+        "score": 2.3995
+      },
+      {
+        "item_id": "B06XJJDJ21",
+        "title": "Product_B06XJJDJ21",
+        "score": 0.6984
+      },
+      {
+        "item_id": "B000ILK1NM",
+        "title": "Bryco MDV-50 MiniDV Tape Storage Rack",
+        "score": 0.4664
+      },
+      {
+        "item_id": "B099NJVQQ7",
+        "title": "rapthor 3500mAh Rechargeable Replacement Battery, Compatible with Harman Kard...",
+        "score": 0.4395
+      },
+      {
+        "item_id": "B003960ESA",
+        "title": "Product_B003960ESA",
+        "score": -0.7267
+      },
+      {
+        "item_id": "B004OEQKI4",
+        "title": "Foam Float Strap - Orange",
+        "score": -1.9003
+      },
+      {
+        "item_id": "B00MPJXRG8",
+        "title": "URPOWER® 4 Packs 2.4V Rechargeable Home Cordless Phone Battery for Uniden BT1...",
+        "score": -2.0049
+      },
+      {
+        "item_id": "B000068IGP",
+        "title": "Altec Lansing 220 2.0 Computer Speakers (2-Speaker, Black & Silver)",
+        "score": -2.5625
+      },
+      {
+        "item_id": "B07JP9T8KG",
+        "title": "Product_B07JP9T8KG",
+        "score": -2.6552
+      },
+      {
+        "item_id": "B00HAPT5B8",
+        "title": "TOP CASE - Keyboard Cover Skin for MacBook Unibody White 13\" / Old Generation...",
+        "score": -2.7173
+      }
+    ],
+    "ground_truth_item_id": "B01B482RYI"
+  },
+  {
+    "sample_id": "35",
+    "user_token": "AEUJCZL2L66GDMANFS5UVRIBSZMQ",
+    "user_history": [
+      {
+        "item_id": "B07357561L",
+        "title": "Product_B07357561L"
+      },
+      {
+        "item_id": "B00426HI8U",
+        "title": "Product_B00426HI8U"
+      },
+      {
+        "item_id": "B019D0LS4E",
+        "title": "Product_B019D0LS4E"
+      },
+      {
+        "item_id": "B009WHV3BM",
+        "title": "Product_B009WHV3BM"
+      },
+      {
+        "item_id": "B00W104BZC",
+        "title": "Kecko Defender Dual Layer Realtree Camo Pink Tree Mossy Shockproof Silicon Hy..."
+      },
+      {
+        "item_id": "B01L7PSJFO",
+        "title": "Product_B01L7PSJFO"
+      },
+      {
+        "item_id": "B0784G4J4K",
+        "title": "XRT112 Replace LCD LED TV Remote Control fit for Vizio Smart LED TV D500I-B1 ..."
+      },
+      {
+        "item_id": "B01MZEEFNX",
+        "title": "Product_B01MZEEFNX"
+      },
+      {
+        "item_id": "B07FXHN43Y",
+        "title": "Product_B07FXHN43Y"
+      },
+      {
+        "item_id": "B005KP473Q",
+        "title": "Product_B005KP473Q"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B073H552FJ",
+        "title": "Product_B073H552FJ",
+        "score": 3.5733
+      },
+      {
+        "item_id": "B0831BF1FH",
+        "title": "Product_B0831BF1FH",
+        "score": 2.9792
+      },
+      {
+        "item_id": "B004O0TRCO",
+        "title": "Onkyo TX-NR509 5.1 Channel Network A/V Receiver (Discontinued by Manufacturer)",
+        "score": -2.4969
+      },
+      {
+        "item_id": "B09XWXJ67Z",
+        "title": "Product_B09XWXJ67Z",
+        "score": -2.6956
+      },
+      {
+        "item_id": "B005SOZJJK",
+        "title": "Product_B005SOZJJK",
+        "score": -3.4576
+      },
+      {
+        "item_id": "B00YOMDJI0",
+        "title": "EPBOWPT Hand Wrist strap 360 Degrees Rotation Mount for GoPro HERO 4 3+ 3 2 1...",
+        "score": -3.8241
+      },
+      {
+        "item_id": "B008FC8GJM",
+        "title": "ViewSonic 8-Inch Digital Media Album with Auto On/Off Light Sensor (VFM820-70)",
+        "score": -4.2019
+      },
+      {
+        "item_id": "B01ESJPESG",
+        "title": "CableCreation USB 3.0 to Sata 22 Pin Power Cord with USB 2.0 External Power, ...",
+        "score": -4.3909
+      },
+      {
+        "item_id": "B08WM1RT8K",
+        "title": "Product_B08WM1RT8K",
+        "score": -4.5693
+      },
+      {
+        "item_id": "B00NBMVIRI",
+        "title": "DSTE Replacement for 2X KLIC-7002 Rechargeable Li-ion Battery Pack Compatible...",
+        "score": -5.1655
+      }
+    ],
+    "ground_truth_item_id": "B0831BF1FH"
+  },
+  {
+    "sample_id": "36",
+    "user_token": "AG4GMCX4UTEUFSW3VQAC7VHMT2VQ",
+    "user_history": [
+      {
+        "item_id": "B075XMZMWY",
+        "title": "Roku Ultra | 4K/HDR/HD Streaming Player with Enhanced Remote (Voice, Remote F..."
+      },
+      {
+        "item_id": "B01N19GZ0Z",
+        "title": "Product_B01N19GZ0Z"
+      },
+      {
+        "item_id": "B01ETRH0AM",
+        "title": "Certified Refurbished Fire TV Stick with Alexa Voice Remote | Streaming Media..."
+      },
+      {
+        "item_id": "B072Q3T89W",
+        "title": "RUBAN [2-Pack] Galaxy Tab S3 / Tab S2 Glass Screen Protector, Tempered Glass ..."
+      },
+      {
+        "item_id": "B00BJNYG1G",
+        "title": "GreatShield Universal Screen Cleaning Kit, Microfiber Cloth + 2 Sided Brush +..."
+      },
+      {
+        "item_id": "B07K1RZWMC",
+        "title": "Product_B07K1RZWMC"
+      },
+      {
+        "item_id": "B073DZK7VX",
+        "title": "Fintie Rotating Case for Samsung Galaxy Tab S3 9.7, Premium PU Leather 360 De..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B089K8M3WX",
+        "title": "Product_B089K8M3WX",
+        "score": 0.1916
+      },
+      {
+        "item_id": "B08BFKG7D8",
+        "title": "Product_B08BFKG7D8",
+        "score": -2.5165
+      },
+      {
+        "item_id": "B009IJXI58",
+        "title": "eFashion Solar Power Energy Cockroach Fun Gadget Office School",
+        "score": -2.5415
+      },
+      {
+        "item_id": "B00DRF3YVC",
+        "title": "VIVO Triple LCD Monitor Free Standing Desk Mount with Optional Bolt-Through M...",
+        "score": -2.6907
+      },
+      {
+        "item_id": "B07ZWF5PWP",
+        "title": "Product_B07ZWF5PWP",
+        "score": -2.7258
+      },
+      {
+        "item_id": "B074KSGWPV",
+        "title": "GoLIFEuP Wake Up Light Alarm Clock with Touch LED Display, Sunset and Sunrise...",
+        "score": -2.7514
+      },
+      {
+        "item_id": "B000S0TIOQ",
+        "title": "2 CTA CGA-S006 Rechargeable Li-ion Batteries + Mini Battery Charger + Cleanin...",
+        "score": -3.1707
+      },
+      {
+        "item_id": "B005OQEVFA",
+        "title": "Acer Aspire AS4743-6628 14-Inch HD Display Laptop",
+        "score": -3.2296
+      },
+      {
+        "item_id": "B005T6UQWC",
+        "title": "dCables Nikon CoolPix S3000 Battery Charger - Wall & Travel Charger for CoolP...",
+        "score": -4.6941
+      },
+      {
+        "item_id": "B07ZX9PM8J",
+        "title": "V BESTLIFE 1.5 M 6-Pin Removable Separation Handheld Mic Extension Cable Cord...",
+        "score": -6.553
+      }
+    ],
+    "ground_truth_item_id": "B089K8M3WX"
+  },
+  {
+    "sample_id": "37",
+    "user_token": "AENYQP22FZK64GSU4RB25GULI24A",
+    "user_history": [
+      {
+        "item_id": "B0777PCFQJ",
+        "title": "Echo Dot Wall Mount, A Space-Saving Dot Accessories for Dot (Black 1-Pack)"
+      },
+      {
+        "item_id": "B07TDBH1KJ",
+        "title": "JLAB Audio Jbuds Air True Wireless Signature Bluetooth Earbuds, Charging Case..."
+      },
+      {
+        "item_id": "B005CS82KK",
+        "title": "Two-Wire Surveillance Mic for MOTOROLA HT1000, JT1000, MT2000, GP900, GP9000,..."
+      },
+      {
+        "item_id": "B078WPW46H",
+        "title": "Product_B078WPW46H"
+      },
+      {
+        "item_id": "B08C1W5N87",
+        "title": "Product_B08C1W5N87"
+      },
+      {
+        "item_id": "B08LZ5RPWK",
+        "title": "Product_B08LZ5RPWK"
+      },
+      {
+        "item_id": "B07Q4FT7S2",
+        "title": "[BISEN] Fit for iPad Mini 5 (2019), iPad Mini 4 Privacy Screen Protector Temp..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B07X949PLL",
+        "title": "MONODEAL Wireless Headphones for TV with Optical, Digital Stereo Over Ear Hea...",
+        "score": 1.4944
+      },
+      {
+        "item_id": "B09L5Q5D22",
+        "title": "Product_B09L5Q5D22",
+        "score": 0.817
+      },
+      {
+        "item_id": "B07WDR4KZS",
+        "title": "Product_B07WDR4KZS",
+        "score": -0.0605
+      },
+      {
+        "item_id": "B09QH57JWZ",
+        "title": "Product_B09QH57JWZ",
+        "score": -0.81
+      },
+      {
+        "item_id": "B083XXNJD6",
+        "title": "Product_B083XXNJD6",
+        "score": -1.1937
+      },
+      {
+        "item_id": "B07VC24HXL",
+        "title": "TREBLAB xGo - Top True Wireless Earbuds of 2019 - HD Sound, Ultra Lightweight...",
+        "score": -1.3389
+      },
+      {
+        "item_id": "B003LTRLPY",
+        "title": "Replacement Battery for PLANTRONICS: 66278-01, CS70, CS70N",
+        "score": -1.651
+      },
+      {
+        "item_id": "B0140VM2QY",
+        "title": "HQRP AC Adapter Compatible with Shark SV780 Cordless Pet Perfect II Hand Vac ...",
+        "score": -2.0881
+      },
+      {
+        "item_id": "B07GRCY8V5",
+        "title": "SpeedTalk Mobile $5 Pet GPS Tracker SIM Card | 3 in 1 Simcard Standard, Micro...",
+        "score": -3.3664
+      },
+      {
+        "item_id": "B077P3JSJD",
+        "title": "Product_B077P3JSJD",
+        "score": -3.8382
+      }
+    ],
+    "ground_truth_item_id": "B09QH57JWZ"
+  },
+  {
+    "sample_id": "38",
+    "user_token": "AH626PYUO6AHVAG4S67U42HOMO4A",
+    "user_history": [
+      {
+        "item_id": "B00CO1I2FS",
+        "title": "Product_B00CO1I2FS"
+      },
+      {
+        "item_id": "B00OQVZDJM",
+        "title": "Kindle Paperwhite E-reader (Previous generation – 2015 release) - Black, 6\" H..."
+      },
+      {
+        "item_id": "B01D8TW00C",
+        "title": "Product_B01D8TW00C"
+      },
+      {
+        "item_id": "B00HQLE1Y2",
+        "title": "iBenzer Basic Soft-Touch Series Plastic Hard Case & Keyboard Cover for Apple ..."
+      },
+      {
+        "item_id": "B00OXUH1ZK",
+        "title": "iHome iBT72BYC Bluetooth Rechargeable Mini Speaker System"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B01DBV1OKY",
+        "title": "Product_B01DBV1OKY",
+        "score": 4.4194
+      },
+      {
+        "item_id": "B00U1VOVRG",
+        "title": "Foto&Tech Hot Shoe Cover Cap with Bubble Level, Compatible with Sony A1 A7S I...",
+        "score": -1.2701
+      },
+      {
+        "item_id": "B017TQXQTY",
+        "title": "Acctrend Sports Earphones Headphones Earbuds 3.5mm Ae9-sp in-Ear with Microph...",
+        "score": -1.3487
+      },
+      {
+        "item_id": "B007JRB0RY",
+        "title": "Product_B007JRB0RY",
+        "score": -1.4591
+      },
+      {
+        "item_id": "B00ASAI018",
+        "title": "1D Earbuds with Pink Logo",
+        "score": -1.8738
+      },
+      {
+        "item_id": "B00QTK9EGG",
+        "title": "Generic (TM) GB01 Bluetooth 4.0 Hands Free Car Kit with LCD Screen FM Transmi...",
+        "score": -1.9996
+      },
+      {
+        "item_id": "B06XRRK7VB",
+        "title": "TV Antenna,ANTOP Super Thin HDTV Digital Indoor Antenna Smartpass Amplifier 3...",
+        "score": -2.1189
+      },
+      {
+        "item_id": "B07MSGZJ46",
+        "title": "Product_B07MSGZJ46",
+        "score": -4.8109
+      },
+      {
+        "item_id": "B0007LCMBC",
+        "title": "Product_B0007LCMBC",
+        "score": -5.735
+      },
+      {
+        "item_id": "B00GQM1XH0",
+        "title": "Poetic SlimBook Case for Nokia Lumia 2520 10.1 Inch Window RT Tablet Black (3...",
+        "score": -6.6072
+      }
+    ],
+    "ground_truth_item_id": "B01DBV1OKY"
+  },
+  {
+    "sample_id": "39",
+    "user_token": "AFV7WCNQ32MZZEBARHPUMYQWEL5Q",
+    "user_history": [
+      {
+        "item_id": "B004G7D0EG",
+        "title": "SanDisk 32GB MicroSDHC High Speed Class 4 Card with MicroSD to SD Adapter"
+      },
+      {
+        "item_id": "B00838HV8K",
+        "title": "Skross World Travel Adaptor Combo for Europe and USA 1.500204"
+      },
+      {
+        "item_id": "B001CROHU4",
+        "title": "Product_B001CROHU4"
+      },
+      {
+        "item_id": "B00EWCUK98",
+        "title": "Sonos Play:1 - Compact Wireless Smart Speaker - White (Discontinued by manufa..."
+      },
+      {
+        "item_id": "B00MJZW4O4",
+        "title": "FLEXSON AAV-FLXP1WB1011 Wall Bracket for Play:1 SONOS Speakers, Single, White"
+      },
+      {
+        "item_id": "B01HAVT7MS",
+        "title": "HTTX 3.5mm Audio Stereo Headset Splitter, 1-in to 5-Out Multi-Port Headphone ..."
+      },
+      {
+        "item_id": "B00D6JWHWG",
+        "title": "MegaGear ''Ultra Light'' Professional Camera Case Bag for Canon EOS 70D, Rebe..."
+      },
+      {
+        "item_id": "B000P7O5DG",
+        "title": "Product_B000P7O5DG"
+      },
+      {
+        "item_id": "B00WWBCSG4",
+        "title": "Product_B00WWBCSG4"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B00B6OX4QQ",
+        "title": "Product_B00B6OX4QQ",
+        "score": -2.4198
+      },
+      {
+        "item_id": "B00U5UBQE4",
+        "title": "E Support Car Battery Isolator Disconnect Cut OFF Power Kill Switch",
+        "score": -2.8095
+      },
+      {
+        "item_id": "B06ZYLMZM5",
+        "title": "Product_B06ZYLMZM5",
+        "score": -3.0621
+      },
+      {
+        "item_id": "B002SXMRVM",
+        "title": "Induro AM25 Alloy 8M Monopod (Black)",
+        "score": -3.2138
+      },
+      {
+        "item_id": "B07CXMMFFV",
+        "title": "Product_B07CXMMFFV",
+        "score": -3.4796
+      },
+      {
+        "item_id": "B06X912HYF",
+        "title": "Tamron 10-24mm F/3.5-4.5 Di-II VC HLD Wide Angle Zoom Lens for Canon APS-C Di...",
+        "score": -3.4818
+      },
+      {
+        "item_id": "B01JUDP5NY",
+        "title": "10 Pairs 100mm JST 2 Pin Connector Plug Lead Wire for Rc Li-Po Battery Discha...",
+        "score": -3.8994
+      },
+      {
+        "item_id": "B015QQPMQY",
+        "title": "Product_B015QQPMQY",
+        "score": -4.1023
+      },
+      {
+        "item_id": "B009SIKV86",
+        "title": "RainbowImaging AF Confirm M42 Screw Mount Lens to Canon EOS EF Mount adapter,...",
+        "score": -4.711
+      },
+      {
+        "item_id": "B07J6V2H1H",
+        "title": "Sony MHC-M20 High Power Audio System with CD",
+        "score": -5.9216
+      }
+    ],
+    "ground_truth_item_id": "B00U5UBQE4"
+  },
+  {
+    "sample_id": "40",
+    "user_token": "AHRPOV6YSGW3SPSPCFAJIP6WCOIQ",
+    "user_history": [
+      {
+        "item_id": "B007IVDBTG",
+        "title": "Wasabi Power Battery (2-Pack) and Charger for Panasonic VW-VBK360 and Panason..."
+      },
+      {
+        "item_id": "B001TH7GUU",
+        "title": "Amazon Basics USB 2.0 Extension Cable - A-Male to A-Female - 9.8 Feet (3 Meters)"
+      },
+      {
+        "item_id": "B002HZJ1T2",
+        "title": "Zeikos ZE-TR5A Flexible Tripod"
+      },
+      {
+        "item_id": "B0072B5COY",
+        "title": "Panasonic HC-V500M Full HD SD Camcorder with 16GB Internal Memory (Black)"
+      },
+      {
+        "item_id": "B0025PKFUI",
+        "title": "VideoSecu TV Wall Mount Articulating Arm Tilt Swivel Bracket for Most 19-39\" ..."
+      },
+      {
+        "item_id": "B00C2L6LC6",
+        "title": "GMYLE Black PU Leather Slim Folio Magnetic Flip Stand Case Cover with Wake Up..."
+      },
+      {
+        "item_id": "B00L4A6ASG",
+        "title": "2 PACK of LED Circline T9 Lamp (8-inch) -- 4 Watts 910 Lumens EACH. Buy 2-PAC..."
+      },
+      {
+        "item_id": "B01ELN9PGG",
+        "title": "Product_B01ELN9PGG"
+      },
+      {
+        "item_id": "B01AWBA8U8",
+        "title": "Musou Digital Optical Coax to Analog RCA Audio Converter Adapter with Fiber C..."
+      },
+      {
+        "item_id": "B01B4W40VC",
+        "title": "Product_B01B4W40VC"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B07PFYM5MZ",
+        "title": "Product_B07PFYM5MZ",
+        "score": 0.6066
+      },
+      {
+        "item_id": "B073NYQ6N3",
+        "title": "Product_B073NYQ6N3",
+        "score": -1.184
+      },
+      {
+        "item_id": "B002JIMRFC",
+        "title": "Sony BDP-CX7000ES 400 Blu-ray Disc Mega Changer (Black) (2009 Model)",
+        "score": -2.5428
+      },
+      {
+        "item_id": "B010DB8LWE",
+        "title": "Micro USB Cables, 1ft/0.3m Data Sync Charging Cord Hi-speed Tangle Free by Bo...",
+        "score": -2.8076
+      },
+      {
+        "item_id": "B005FGRW1O",
+        "title": "NewPower99 Battery Replacement Kit with Battery, Video Instructions and Tools...",
+        "score": -4.0335
+      },
+      {
+        "item_id": "B083QBHDN7",
+        "title": "EZVIZ 2 Pack C1C 1080p Indoor Wi-Fi Camera with Built-In Mic",
+        "score": -4.3151
+      },
+      {
+        "item_id": "B08GZ6DS48",
+        "title": "Product_B08GZ6DS48",
+        "score": -4.5722
+      },
+      {
+        "item_id": "B074WZM5Q6",
+        "title": "ZOSI 2.0MP 1080P HD 1920TVL Hybrid 4-in-1 TVI/CVI/AHD/960H CVBS Home Security...",
+        "score": -4.9263
+      },
+      {
+        "item_id": "B004U4ADZ4",
+        "title": "AmScope SM-3BX-80S Professional Binocular Stereo Zoom Microscope, WH10x Eyepi...",
+        "score": -4.9656
+      },
+      {
+        "item_id": "B0B7GZ29HJ",
+        "title": "LINCO Car Headrest Mount Holder, Tablet Holder for Kids in Back Seats, Angle-...",
+        "score": -5.2262
+      }
+    ],
+    "ground_truth_item_id": "B07PFYM5MZ"
+  },
+  {
+    "sample_id": "41",
+    "user_token": "AG57WYVZ54TENI3ZFLKILL6LTJYQ",
+    "user_history": [
+      {
+        "item_id": "B00F19Q7AC",
+        "title": "Product_B00F19Q7AC"
+      },
+      {
+        "item_id": "B00VXPZCE0",
+        "title": "Sling Media Slingbox 350 - Full HD Media Streamer (Renewed)"
+      },
+      {
+        "item_id": "B00FXTBNFY",
+        "title": "AspenTek 2835 led Strip Connector 2 pin 8mm for SMD 3528 2835 Single Color Le..."
+      },
+      {
+        "item_id": "B00G6G5DJ0",
+        "title": "Product_B00G6G5DJ0"
+      },
+      {
+        "item_id": "B0042G49XM",
+        "title": "Product_B0042G49XM"
+      },
+      {
+        "item_id": "B075GY9SJD",
+        "title": "Holy Stone Intelligent Multi Drone Battery Charging Charger Hub 4 in 1 Quadco..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B01DN08VAY",
+        "title": "Apple TV Remote",
+        "score": -0.4819
+      },
+      {
+        "item_id": "B09QBY1LX5",
+        "title": "AdaLov Underwater Fishing Camera, [with DVR Recording] Ice Fishing Camera Und...",
+        "score": -2.5451
+      },
+      {
+        "item_id": "B00LM4N8E8",
+        "title": "FYY Samsung Galaxy Tab S 10.5 Inch Case - Ultra Slim Magnetic Smart Cover Mul...",
+        "score": -2.708
+      },
+      {
+        "item_id": "B01KJPEEN4",
+        "title": "Neewer® 77MM ND Filter Set (ND2 ND4 ND8) for The Canon EF 24-105mm f/4 L is U...",
+        "score": -4.1254
+      },
+      {
+        "item_id": "B0B68G2RFP",
+        "title": "Product_B0B68G2RFP",
+        "score": -4.2938
+      },
+      {
+        "item_id": "B01D06J1GO",
+        "title": "ESR Yippee Trifold Smart Case for iPad Pro 9.7, Translucent Frosted Back Magn...",
+        "score": -4.6067
+      },
+      {
+        "item_id": "B08NGQ2Q56",
+        "title": "Product_B08NGQ2Q56",
+        "score": -4.6251
+      },
+      {
+        "item_id": "B098BHMHCL",
+        "title": "WQNIDE (3 Pack) Case Cover for All-New TV Stick (3rd Gen) 2021 Release, Light...",
+        "score": -4.6525
+      },
+      {
+        "item_id": "B07DC2YNCV",
+        "title": "Product_B07DC2YNCV",
+        "score": -5.2054
+      },
+      {
+        "item_id": "B08L9CCMFB",
+        "title": "Product_B08L9CCMFB",
+        "score": -8.8262
+      }
+    ],
+    "ground_truth_item_id": "B01DN08VAY"
+  },
+  {
+    "sample_id": "42",
+    "user_token": "AFRMUCD6AVJEYEA76EUQ5AJMWXXA",
+    "user_history": [
+      {
+        "item_id": "B07D5V2ZXD",
+        "title": "Product_B07D5V2ZXD"
+      },
+      {
+        "item_id": "B085HWRJ3M",
+        "title": "12 AWG Wire, SHONSIN 12 Gauge Silicone Wire 100% Copper【10ft Red & 10ft Black..."
+      },
+      {
+        "item_id": "B00ZA74E1Y",
+        "title": "XO Vision IR630BL Universal IR Wireless Foldable Headphones - Black Wireless ..."
+      },
+      {
+        "item_id": "B0B9BPBDWG",
+        "title": "Product_B0B9BPBDWG"
+      },
+      {
+        "item_id": "B0BSHF7WHW",
+        "title": "Product_B0BSHF7WHW"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B07GBDMF12",
+        "title": "Product_B07GBDMF12",
+        "score": 3.1231
+      },
+      {
+        "item_id": "B07MLM39CD",
+        "title": "VGA Splitter Cable, Benfei VGA Y Splitter for Screen Duplication 1ft",
+        "score": 2.3388
+      },
+      {
+        "item_id": "B095NKBKCF",
+        "title": "Product_B095NKBKCF",
+        "score": 2.3038
+      },
+      {
+        "item_id": "B07BMVNJZP",
+        "title": "AOC AGON Curved Gaming Monitor 35\" (AG352UCG6), 1800R, Uwqhd 3440x1440 VA Pan...",
+        "score": 1.2472
+      },
+      {
+        "item_id": "B01G92JRZQ",
+        "title": "Factory Radio Add A Amp Amplifier Sub Interface Wire Harness Inline Converter...",
+        "score": 0.4
+      },
+      {
+        "item_id": "B07QVB1G48",
+        "title": "Sigma 18-35mm f/1.8 DC HSM Art Lens for Canon EF Mount (USA) Standard Bundle ...",
+        "score": -0.104
+      },
+      {
+        "item_id": "B08C9NKHVQ",
+        "title": "Product_B08C9NKHVQ",
+        "score": -1.0695
+      },
+      {
+        "item_id": "B002N5RZOY",
+        "title": "Winegard SK-1000 TRAV'LER DISH HD Satellite TV Antenna for the RV, Motorhome,...",
+        "score": -1.1759
+      },
+      {
+        "item_id": "B006KW3RDE",
+        "title": "JKase (TM) Sony Tablet S S1 Ultra-Slim Series Custom Fit Multi-Angle Rotating...",
+        "score": -1.3662
+      },
+      {
+        "item_id": "B008GO8RQ6",
+        "title": "NoiseHush NX80 Earphones Premium Bass Stereo Headphones In-Ear with Tangle Fr...",
+        "score": -1.899
+      }
+    ],
+    "ground_truth_item_id": "B07GBDMF12"
+  },
+  {
+    "sample_id": "43",
+    "user_token": "AEUKQVMTHOB5TO2BTUCVFULOFZEQ",
+    "user_history": [
+      {
+        "item_id": "B018TPL3VW",
+        "title": "Cellphone Accessories"
+      },
+      {
+        "item_id": "1935009184",
+        "title": "Ultrathin Book Light - Black"
+      },
+      {
+        "item_id": "B007Z8D3AE",
+        "title": "Monster Cable XP Compact High Performance Clear Jacket Speaker Wire (30 Ft)"
+      },
+      {
+        "item_id": "B00C1WQIXI",
+        "title": "AWO DT00751 / 78-6969-9875-2 / RLC-017 Replacement Lamp Bulb with Housing for..."
+      },
+      {
+        "item_id": "B00P1RQCXQ",
+        "title": "Geekria QuickFit Replacement Ear Pads for Sony MDR-V150 V200 V250 V300 V400 Z..."
+      },
+      {
+        "item_id": "B01AY4DBBQ",
+        "title": "Mini DisplayPort to HDMI VGA Adapter, ITANDA 2-in-1 HDTV Mdp Display Port to ..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B000MX03LQ",
+        "title": "Humminbird 780010-1 UC 3 Unit Cover",
+        "score": -1.8106
+      },
+      {
+        "item_id": "B0081XI2Y4",
+        "title": "EALLC Mini Displayport To VGA Adapter for Apple MacBook MacBook Air MacBook P...",
+        "score": -1.8873
+      },
+      {
+        "item_id": "B01LZ63DXP",
+        "title": "CT Sounds Universal Bass Knob - Digital Voltmeter, Blue LED Display, Remote G...",
+        "score": -2.3449
+      },
+      {
+        "item_id": "B072LVT9T4",
+        "title": "Altec Lansing IMW578 Life Jacket 3 Waterproof Bluetooth Speaker with Voice Co...",
+        "score": -2.4539
+      },
+      {
+        "item_id": "B07Z9JM6S8",
+        "title": "Bluetooth Neckband Headphones, Retractable Earbuds Wireless Headset Sports No...",
+        "score": -3.1906
+      },
+      {
+        "item_id": "B089JY6XNM",
+        "title": "NexusLink Gaming Router Extender | Optimized for Online Gaming, Streaming, an...",
+        "score": -3.602
+      },
+      {
+        "item_id": "B074KV2QLF",
+        "title": "Product_B074KV2QLF",
+        "score": -4.0314
+      },
+      {
+        "item_id": "B009QX0106",
+        "title": "PNY C-UA-UU-K01-06 6-Feet Micro USB Charge and Sync Cable",
+        "score": -4.1178
+      },
+      {
+        "item_id": "B00G7K60B0",
+        "title": "JOTO Premium Screen Protector Film for MS Microsoft Surface Pro 2 Tablet, Ant...",
+        "score": -4.5892
+      },
+      {
+        "item_id": "B004AHFF3G",
+        "title": "Rosewill LCD DLP Projector Adjustable Swivel Ceiling Mount (RPM-MP0010)",
+        "score": -5.3743
+      }
+    ],
+    "ground_truth_item_id": "B0081XI2Y4"
+  },
+  {
+    "sample_id": "44",
+    "user_token": "AHHDSPCUS763LBG7YIJXNLKVIDXQ",
+    "user_history": [
+      {
+        "item_id": "B00ENZRP0G",
+        "title": "Logitech Wireless Touch Keyboard k400 with Built-in Multi-Touch Touchpad - White"
+      },
+      {
+        "item_id": "B00FR19WQA",
+        "title": "15Pcs 40 Pin 2.54 mm Single Row (L 11MM) Male Header for Arduino Prototype Sh..."
+      },
+      {
+        "item_id": "B00M5WLZDW",
+        "title": "Kalevel 120pcs Breadboards Jumper Wires Male to Female Jumper Wires Male to M..."
+      },
+      {
+        "item_id": "B00A6SOGC4",
+        "title": "Phantom YoYo Compatible/Replacement for Dupont Cable 200mm Male to Female 40p..."
+      },
+      {
+        "item_id": "B00G1PNG54",
+        "title": "CanaKit Raspberry Pi 2 Ultimate Starter Kit with WiFi"
+      },
+      {
+        "item_id": "B00U0A0GY0",
+        "title": "Symphonized XTC Premium Genuine Wood in-Ear Noise-isolating Headphones with M..."
+      },
+      {
+        "item_id": "B00K8OWIFI",
+        "title": "SainSmart Hall Effect Sensor Switch Magnetic Detector for Arduino UNO R3 Motor"
+      },
+      {
+        "item_id": "B00E0NTPP4",
+        "title": "Product_B00E0NTPP4"
+      },
+      {
+        "item_id": "B009YCASUW",
+        "title": "Product_B009YCASUW"
+      },
+      {
+        "item_id": "B07Q1GHB5X",
+        "title": "Product_B07Q1GHB5X"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B09GK8DXF1",
+        "title": "Dual Dash Cam Front and Inside 1080P Dash Camera for Cars IR Night Vision Car...",
+        "score": 0.5754
+      },
+      {
+        "item_id": "B07X57R96B",
+        "title": "Product_B07X57R96B",
+        "score": -1.0795
+      },
+      {
+        "item_id": "B09BJDY42H",
+        "title": "Product_B09BJDY42H",
+        "score": -1.1186
+      },
+      {
+        "item_id": "B076B12973",
+        "title": "HYS 800MHz (806-941MHz) Stubby Antenna for Motorola 8505241U06 XTS2500 XTS300...",
+        "score": -1.2063
+      },
+      {
+        "item_id": "B01KHZ4XVY",
+        "title": "iPad Mini 5 Case, iPad Mini 4 Case,iPad Mini 4 Retina Case,BENTOBEN Kickstand...",
+        "score": -1.2604
+      },
+      {
+        "item_id": "B00IUICOUS",
+        "title": "Product_B00IUICOUS",
+        "score": -1.5963
+      },
+      {
+        "item_id": "B00QJO5OQG",
+        "title": "TXEsign Water-Resistant Lycra Zipper Carrying Case Bag Compatible with JAM Pl...",
+        "score": -2.1065
+      },
+      {
+        "item_id": "B08LQ6S64J",
+        "title": "Product_B08LQ6S64J",
+        "score": -2.5294
+      },
+      {
+        "item_id": "B004X69896",
+        "title": "Product_B004X69896",
+        "score": -2.5594
+      },
+      {
+        "item_id": "B07Z7H6S4N",
+        "title": "oldboytech 2 Pack Headphone Extension Cable, 3.5mm Extension [3.3ft/1M, Hi-Fi...",
+        "score": -3.5324
+      }
+    ],
+    "ground_truth_item_id": "B09GK8DXF1"
+  },
+  {
+    "sample_id": "45",
+    "user_token": "AEAUPRRGD6SG7U74SBZCVKX3OHHQ",
+    "user_history": [
+      {
+        "item_id": "B00DYQYLP2",
+        "title": "Kingston Digital 32 GB Class 4 microSDHC Flash Card with SD Adapter (SDC4/32G..."
+      },
+      {
+        "item_id": "B007XP4A92",
+        "title": "Lowpricenice Protective Leather Case + Mini USB Keyboard for 7 inch 7\" Tablet..."
+      },
+      {
+        "item_id": "B01LZVDMEL",
+        "title": "Product_B01LZVDMEL"
+      },
+      {
+        "item_id": "B01M4OOY4U",
+        "title": "Kintaro Classic – NES Inspired Raspberry Pi Case – Old Skool Entertainment Sy..."
+      },
+      {
+        "item_id": "B01LW7JJPJ",
+        "title": "Geek Theory 8Bitdo N30 Pro 2 Controller Bundle (N Edition) - Includes Carryin..."
+      },
+      {
+        "item_id": "B017VHXRYU",
+        "title": "Josi Minea 3.5mm Audio Jack Extender Headphone Adapter with 4-Pole 3.5mm Conn..."
+      },
+      {
+        "item_id": "B018BFWLRU",
+        "title": "Product_B018BFWLRU"
+      },
+      {
+        "item_id": "B073JYVKNX",
+        "title": "Product_B073JYVKNX"
+      },
+      {
+        "item_id": "B07CZ1T27V",
+        "title": "Product_B07CZ1T27V"
+      },
+      {
+        "item_id": "B075T5Y2MN",
+        "title": "fosa 1080P IPS 60fps 3.5 inch HDMI LCD Screen Display for Raspberry Pi 3 Mode..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B071FT92F8",
+        "title": "Mini Wireless Keyboard,H9 Mini Keyboard with Touchpad,Colorful Backlit Wirele...",
+        "score": 3.5115
+      },
+      {
+        "item_id": "B0B4QP1FPX",
+        "title": "Product_B0B4QP1FPX",
+        "score": -1.2356
+      },
+      {
+        "item_id": "B07L9NNCBY",
+        "title": "Product_B07L9NNCBY",
+        "score": -1.3311
+      },
+      {
+        "item_id": "B015KYSLAG",
+        "title": "MSI GS60 Ghost Pro 4K-053 15.6\" SLIM AND LIGHT GAMING LAPTOP NOTEBOOK i7-6700...",
+        "score": -1.4862
+      },
+      {
+        "item_id": "B06XS98LMS",
+        "title": "Samsung G550T GSM 4G LTE Unlocked Galaxy ON5 Smartphone",
+        "score": -1.6461
+      },
+      {
+        "item_id": "B00BHQ7TV4",
+        "title": "Glidecam HD-2000 Stabilizer System for Small Sized Video Cameras up to 2-6 Lb...",
+        "score": -1.8342
+      },
+      {
+        "item_id": "B01I6ZQM66",
+        "title": "Soutege S8 in-Ear Wired Earphone Earbuds 3.5mm Headphones with in-Line Microp...",
+        "score": -2.4118
+      },
+      {
+        "item_id": "B01N310431",
+        "title": "GUSO TV Antenna Indoor HDTV Digital Antenna 50 Miles Long Range with Built-in...",
+        "score": -2.784
+      },
+      {
+        "item_id": "B00004YKUB",
+        "title": "Fuji 23021121 HQ T-120 VHS Video Cassette (Discontinued by Manufacturer)",
+        "score": -3.5275
+      },
+      {
+        "item_id": "B00IMTQ4BK",
+        "title": "MSI GE70 Apache Pro-061 17.3-Inch Laptop",
+        "score": -4.1959
+      }
+    ],
+    "ground_truth_item_id": "B071FT92F8"
+  },
+  {
+    "sample_id": "46",
+    "user_token": "AEGQHQILGB4LWZWHXBL4FAW6QXKA",
+    "user_history": [
+      {
+        "item_id": "B07F68FCHD",
+        "title": "PSP Memory Stick Adapter, Funturbo Micro SD to Memory Stick PRO Duo MagicGate..."
+      },
+      {
+        "item_id": "B0028Q1CGK",
+        "title": "EZ Disc CD/DVD Disc Dispenser"
+      },
+      {
+        "item_id": "B07T9197KQ",
+        "title": "Tyler 13.3” Portable TV LCD Monitor 1080P Rechargeable Lithium Battery Operat..."
+      },
+      {
+        "item_id": "B00005I9P4",
+        "title": "Sony MVC-FD97 2MP Digital Camera with 10x Optical Zoom"
+      },
+      {
+        "item_id": "B01K76QRJE",
+        "title": "Avegant Glyph AG101 VR Video Headsets, Patented Retinal Imaging Technology MO..."
+      },
+      {
+        "item_id": "B08M8NQKVZ",
+        "title": "Product_B08M8NQKVZ"
+      },
+      {
+        "item_id": "B01A0KON6Q",
+        "title": "Product_B01A0KON6Q"
+      },
+      {
+        "item_id": "B09KQF1TM4",
+        "title": "ONGTEED Portable AM FM Radio Stereo Headset with Best Reception, Ear Protecti..."
+      },
+      {
+        "item_id": "B0839BXH89",
+        "title": "Zeadio Walkman Headphone Radio, FM Stereo Headset Radio Receiver"
+      },
+      {
+        "item_id": "B09KNH4MNC",
+        "title": "Product_B09KNH4MNC"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B07DS44FJW",
+        "title": "BRIGHTFOCAL New Screen Replacement for DELL INSPIRON 15 5555 5558 5559 Series...",
+        "score": 0.8598
+      },
+      {
+        "item_id": "B078LRLDH3",
+        "title": "Product_B078LRLDH3",
+        "score": -0.6792
+      },
+      {
+        "item_id": "B01EV6TG30",
+        "title": "Silicon Power/Marvell Controller Internal Solid State Drive- Free-Download SS...",
+        "score": -1.5658
+      },
+      {
+        "item_id": "B08RD7WHJB",
+        "title": "Product_B08RD7WHJB",
+        "score": -1.8346
+      },
+      {
+        "item_id": "B08DK9MK8P",
+        "title": "Product_B08DK9MK8P",
+        "score": -2.3994
+      },
+      {
+        "item_id": "B08ZRVYSGX",
+        "title": "Belker 12V 1A AC DC Adapter Wall Charger Power Adapter Supply for 12 Volt Ele...",
+        "score": -2.4555
+      },
+      {
+        "item_id": "B00RZ7ZWD6",
+        "title": "Product_B00RZ7ZWD6",
+        "score": -2.6735
+      },
+      {
+        "item_id": "B014JUDRZQ",
+        "title": "Product_B014JUDRZQ",
+        "score": -3.195
+      },
+      {
+        "item_id": "B016CKHAZO",
+        "title": "Product_B016CKHAZO",
+        "score": -3.25
+      },
+      {
+        "item_id": "B001Q9ER62",
+        "title": "Kenwood DNX6140 Wide Double-DIN In-Dash Nagivation with Built-in Bluetooth US...",
+        "score": -3.865
+      }
+    ],
+    "ground_truth_item_id": "B016CKHAZO"
+  },
+  {
+    "sample_id": "47",
+    "user_token": "AENMM3NKKZKZ7N4N5U4B2WU2A52A",
+    "user_history": [
+      {
+        "item_id": "B00NQG2XNC",
+        "title": "Product_B00NQG2XNC"
+      },
+      {
+        "item_id": "B00JO80LUI",
+        "title": "Rii I8 Mini 2.4Ghz Wireless Touchpad Keyboard With Mouse For Pc, Pad, Xbox 36..."
+      },
+      {
+        "item_id": "B06VSBVQWS",
+        "title": "Product_B06VSBVQWS"
+      },
+      {
+        "item_id": "B01HKWAJ6K",
+        "title": "SmartiPi Touch 1 - Case for The Official Raspberry Pi 7\" Touchscreen Display ..."
+      },
+      {
+        "item_id": "B072TQCCXR",
+        "title": "LSLYA 7inch HD Bluetooth MP5 Player TFT Touch Screen FM AM RDS Radio car Vide..."
+      },
+      {
+        "item_id": "B01FG9XS5I",
+        "title": "Product_B01FG9XS5I"
+      },
+      {
+        "item_id": "B079K244KZ",
+        "title": "Product_B079K244KZ"
+      },
+      {
+        "item_id": "B086953YKC",
+        "title": "Product_B086953YKC"
+      },
+      {
+        "item_id": "B016NUTG5K",
+        "title": "Bluetooth Audio Adapter for Music Streaming Sound System, esinkin W29-us Wire..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B01K6PBILI",
+        "title": "OTTERBOX DEFENDER SERIES Case for iPhone 8 PLUS & iPhone 7 PLUS (ONLY) - Frus...",
+        "score": -0.3858
+      },
+      {
+        "item_id": "B07C4NKGK3",
+        "title": "RCA Male To AV Screw Terminal Adapter 20-Pack Phono Plug solderless Converter...",
+        "score": -0.5148
+      },
+      {
+        "item_id": "B09Q2ZBMKW",
+        "title": "Product_B09Q2ZBMKW",
+        "score": -1.5886
+      },
+      {
+        "item_id": "B00JUESVZI",
+        "title": "Product_B00JUESVZI",
+        "score": -1.8131
+      },
+      {
+        "item_id": "B014W0I1YA",
+        "title": "Connectors Pro Pc Accessories 10 Pairs DB25 Male and Female D-Sub 25P Solder ...",
+        "score": -2.3455
+      },
+      {
+        "item_id": "B014F7BM3M",
+        "title": "Product_B014F7BM3M",
+        "score": -2.903
+      },
+      {
+        "item_id": "B0BG7386Q4",
+        "title": "Product_B0BG7386Q4",
+        "score": -3.252
+      },
+      {
+        "item_id": "B08Y97HMHZ",
+        "title": "Product_B08Y97HMHZ",
+        "score": -3.4951
+      },
+      {
+        "item_id": "B01MD1J4NY",
+        "title": "LG Aristo Case, LG Phoenix 3 Case, LG Risio 2 Case, LG Fortune Case, LG K8 20...",
+        "score": -4.2272
+      },
+      {
+        "item_id": "B00B3NH7JU",
+        "title": "Fintie Folio Case for Kindle Fire HD 7\" (2012 Old Model) - Slim Fit Leather C...",
+        "score": -4.4999
+      }
+    ],
+    "ground_truth_item_id": "B09Q2ZBMKW"
+  },
+  {
+    "sample_id": "48",
+    "user_token": "AFLCP4UXADN2Y3KPNDHTCA77IDEA",
+    "user_history": [
+      {
+        "item_id": "B00X5P8BJO",
+        "title": "Arteck HB030B Universal Slim Portable Wireless Bluetooth 3.0 7-Colors Backlit..."
+      },
+      {
+        "item_id": "B075WP8W37",
+        "title": "Universal Power Adapter 5V 3A Power Supply Multi-Voltage Adjustable Wall Char..."
+      },
+      {
+        "item_id": "B00CI8MT9W",
+        "title": "Corsair 2.5-Inch Solid State Drive and Hard Disk Drive Cloning Kit CSSD-UPGRA..."
+      },
+      {
+        "item_id": "B078PCB6F4",
+        "title": "COSPOR in Ear Wired Headphones, Magnetic Earphones Sweatproof Noise Cancellin..."
+      },
+      {
+        "item_id": "B07CRG94G3",
+        "title": "Product_B07CRG94G3"
+      },
+      {
+        "item_id": "B086JMZW4C",
+        "title": "Product_B086JMZW4C"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B07RF1XD36",
+        "title": "Product_B07RF1XD36",
+        "score": 5.1002
+      },
+      {
+        "item_id": "B00CPEZ4J6",
+        "title": "StarTech.com 4 Position Microphone and Headphone Splitter – 3.5 mm – 4 Pin / ...",
+        "score": 0.4015
+      },
+      {
+        "item_id": "B082KT4564",
+        "title": "MP3 Player with Bluetooth 5.0, AGPTEK Portable Music Player with Speaker 2.4 ...",
+        "score": -0.7917
+      },
+      {
+        "item_id": "B09FGFYSBG",
+        "title": "Product_B09FGFYSBG",
+        "score": -1.0744
+      },
+      {
+        "item_id": "B00C3X982S",
+        "title": "HooToo HT-PC002 SuperSpeed USB 3.0 2-Port PCI-E Add-on Expansion Card with In...",
+        "score": -1.2366
+      },
+      {
+        "item_id": "B01277BUAM",
+        "title": "SABRENT 3.5mm Gold Plated Premium Auxiliary Male to Male AUX Cable [Step Down...",
+        "score": -1.7633
+      },
+      {
+        "item_id": "B003ZVBP0U",
+        "title": "DataTale PAIR 2-Bay FireWire 800, USB, eSATA 2.5-inch RAID Enclosure",
+        "score": -2.3331
+      },
+      {
+        "item_id": "B007DK0FMI",
+        "title": "Sony MEXBT3000P Bluetooth CD/MP3 Receiver with Pandora Control (Discontinued ...",
+        "score": -2.4575
+      },
+      {
+        "item_id": "B006OV56LW",
+        "title": "Eathtek Laptop Replacement Keyboard with Backlit and Pointer for Dell E6320 E...",
+        "score": -2.682
+      },
+      {
+        "item_id": "B071X9XY16",
+        "title": "Highpoint RocketStor 6114V 4-Bay Raid 5 USB 3.1 Gen 2 Storage Enclosure",
+        "score": -3.0477
+      }
+    ],
+    "ground_truth_item_id": "B07RF1XD36"
+  },
+  {
+    "sample_id": "49",
+    "user_token": "AHJ7WNJOUC26FNW5KNVN2MAVAS7Q",
+    "user_history": [
+      {
+        "item_id": "B00DIUGW6A",
+        "title": "Product_B00DIUGW6A"
+      },
+      {
+        "item_id": "B00H8YOI04",
+        "title": "Shure SE846 Quad Driver Earphones w/ Y Cable & Music Phone Cable CBL-M+-K-EFS..."
+      },
+      {
+        "item_id": "B001OTZ8DA",
+        "title": "Sennheiser HD 800 Reference Dynamic Headphone"
+      },
+      {
+        "item_id": "B01B44XM9G",
+        "title": "SONY Walkman 8GB headphone-integrated NW-WS414 / B (Black)"
+      },
+      {
+        "item_id": "B01CQMN0HY",
+        "title": "Product_B01CQMN0HY"
+      },
+      {
+        "item_id": "B06XX8Q1CL",
+        "title": "NZXT Kraken X62 280mm - RL-KRX62-02 - AIO RGB CPU Liquid Cooler - CAM-Powered..."
+      },
+      {
+        "item_id": "B07D1TT7RN",
+        "title": "Product_B07D1TT7RN"
+      },
+      {
+        "item_id": "B07JWB5BSP",
+        "title": "Product_B07JWB5BSP"
+      },
+      {
+        "item_id": "B07HYQ4K87",
+        "title": "ASRock Motherboard (Z390 Phantom Gaming 9)"
+      },
+      {
+        "item_id": "B07GMZKNK6",
+        "title": "Product_B07GMZKNK6"
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B074T6691B",
+        "title": "Product_B074T6691B",
+        "score": 4.9813
+      },
+      {
+        "item_id": "B003TSCZV2",
+        "title": "NZXT CB 6V-R 6-Pin VGA Premium Extension Cable (Red)",
+        "score": 1.2936
+      },
+      {
+        "item_id": "B00A2BVAN8",
+        "title": "Product_B00A2BVAN8",
+        "score": 1.2808
+      },
+      {
+        "item_id": "B0036PFD80",
+        "title": "Sony BRAVIA KDL40NX700 40-Inch 1080p 120 Hz LED HDTV",
+        "score": 0.5063
+      },
+      {
+        "item_id": "B076Z8N8RS",
+        "title": "Product_B076Z8N8RS",
+        "score": -0.0119
+      },
+      {
+        "item_id": "B00JSI7VUC",
+        "title": "Gigabyte GTX 750 GDDR5-2GB 2xDVI-I/DVI-D/2xHDMI OC Graphics Card GV-N750OC-2GI",
+        "score": -0.2944
+      },
+      {
+        "item_id": "B006OQ48CA",
+        "title": "Blackmagic Design Mini Converter SDI Distribution",
+        "score": -1.0304
+      },
+      {
+        "item_id": "B009DI8DHC",
+        "title": "Acoustic Audio CS-PS8-B Front Firing Subwoofer (Black)",
+        "score": -1.3999
+      },
+      {
+        "item_id": "B01HSUYBS6",
+        "title": "Swann 1080p Digital Video Recorder with 8 PRO-T855 Cameras Surveillance Camer...",
+        "score": -2.2011
+      },
+      {
+        "item_id": "B07C5R3RN1",
+        "title": "Single Pack airi by Frontier Secure Air 4920 802.11AC 1600Mbps Smart Mesh Wi-...",
+        "score": -2.3453
+      }
+    ],
+    "ground_truth_item_id": "B074T6691B"
+  },
+  {
+    "sample_id": "50",
+    "user_token": "AFYPQG6U7YMSH22L3RIP5VWPEFTQ",
+    "user_history": [
+      {
+        "item_id": "B06XKWKD5J",
+        "title": "Product_B06XKWKD5J"
+      },
+      {
+        "item_id": "B00HSGR7R8",
+        "title": "LENTION Clear Screen Protector for 13-inch MacBook Pro with Retina Display (L..."
+      },
+      {
+        "item_id": "B008CR4R66",
+        "title": "Product_B008CR4R66"
+      },
+      {
+        "item_id": "B00HQLE2IC",
+        "title": "Product_B00HQLE2IC"
+      },
+      {
+        "item_id": "B00U21WD4S",
+        "title": "3-Pack Touch Screen Cleaner for Your iPad, Laptop, MacBook Pro, Computer, Cel..."
+      },
+      {
+        "item_id": "B00PFLR5ZC",
+        "title": "Litop Gradient Thin Silicone Keyboard Cover Keyboard Skin for Apple 13\" 15\" 1..."
+      },
+      {
+        "item_id": "B013CWS6TO",
+        "title": "Yoonek Graphics Batman Inspired Harley Quinn Decal Sticker for Car Window, La..."
+      }
+    ],
+    "candidates": [
+      {
+        "item_id": "B00K0CVUNY",
+        "title": "Evecase Laptop Shoulder Bag/Suit Fabric Multi-Functional Briefcase Carrying M...",
+        "score": 0.6679
+      },
+      {
+        "item_id": "B07519NZRZ",
+        "title": "BASN Smartcable MMCX Wireless Bluetooth Headphone Cable, Upgrade Neckband Hea...",
+        "score": -1.9676
+      },
+      {
+        "item_id": "B004I77CQ6",
+        "title": "Product_B004I77CQ6",
+        "score": -2.182
+      },
+      {
+        "item_id": "B00CIPVF4K",
+        "title": "Acoustic Research ARS60RD Bluetooth Wireless Speaker - Red",
+        "score": -2.6794
+      },
+      {
+        "item_id": "B081663GN3",
+        "title": "USB C to 3.5mm Aux Cable 6FT, Type C 3.5mm Audio Cord for Google Pixel 7 6 Pr...",
+        "score": -3.6457
+      },
+      {
+        "item_id": "B0B92P33S1",
+        "title": "Product_B0B92P33S1",
+        "score": -3.8581
+      },
+      {
+        "item_id": "B087LNFZ2T",
+        "title": "Product_B087LNFZ2T",
+        "score": -5.0082
+      },
+      {
+        "item_id": "B00CAX6A3G",
+        "title": "BitFenix ATX Mid Tower Case Without Power Supply, Black BFC-GHO-300-KKN1-RP",
+        "score": -5.2304
+      },
+      {
+        "item_id": "B002LGP3EY",
+        "title": "HP Personal Media Drive 2 TB USB 2.0 Desktop External Hard Drive AU183AA HD2000",
+        "score": -6.7985
+      },
+      {
+        "item_id": "B001D5MNAG",
+        "title": "Mushkin Enhanced Essentials DDR2-SODIMM 2 GB Laptop Memory 991577",
+        "score": -7.1984
+      }
+    ],
+    "ground_truth_item_id": "B00K0CVUNY"
+  }
+]

@@ -1,0 +1,113 @@
+# 04-user.yaml — user_service Deployment + ClusterIP Service (C-content 族)
+# ----------------------------------------------------------------------------
+# user_service(:5004) 用户资料读写。仿 M0 catalog 模板。
+# - DB 外接宿主 MySQL: DB_HOST=host.docker.internal(users 表读写, 非 items/inventory)。
+# - 去 Nacos: NACOS_ENABLED=false → 无下游服务调用, 退化为固定端口。
+# - OTLP 复用宿主 docker-compose collector: host.docker.internal:4317(gRPC)。
+# - label app=user 供 Service selector + Chaos Mesh PodChaos selector 共用。
+# - /health 路由【确认存在】(app.py:273), 用作探针。
+# - enableServiceLinks:false: 防 K8S 注入 USER_SERVICE_HOST=<ClusterIP> 撞应用 bind 变量
+#   (app.py __main__ 用 USER_SERVICE_HOST 作 app.run host) → 这里显式置 0.0.0.0 兜底。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user
+  namespace: recweb-chaos
+  labels:
+    app: user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: user
+          image: recweb-user:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5004          # 源码实测: USER_SERVICE_PORT 默认 5004
+          env:
+            - name: NACOS_ENABLED
+              value: "false"
+            # 显式 0.0.0.0 兜底(配 enableServiceLinks:false, 防 USER_SERVICE_HOST 撞 bind)
+            - name: USER_SERVICE_HOST
+              value: "0.0.0.0"
+            # ---- DB 外接宿主 MySQL ----
+            - name: DB_HOST
+              value: "host.docker.internal"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "shopify2"
+            - name: DB_USER
+              value: "recweb_k8s"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-cred
+                  key: password
+            # ---- OTel ----
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "user_service"          # 与裸进程栈一致(app.py setdefault)
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5004
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5004
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user          # 集群内 DNS: user.recweb-chaos.svc(同 ns 直接 user)
+  namespace: recweb-chaos
+  labels:
+    app: user
+spec:
+  type: ClusterIP
+  selector:
+    app: user
+  ports:
+    - name: http
+      port: 5004
+      targetPort: 5004

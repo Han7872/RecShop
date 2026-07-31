@@ -1,0 +1,25 @@
+# M2b-2 pod-failure 单根因(lifecycle/可用率): catalog 容器换 pause:latest → 不可用。
+# 探针 A 2026-06-27 实证语义:
+#   - 机制: 容器镜像换 gcr.io/google-containers/pause:latest → ready=false → catalog 不可用
+#     → carrier(pricing→catalog-gw→catalog)=404 / catalog 直连=000(connection refused)。
+#   - AllInjected=True 持续整窗(phase=Run, 适配 runner apply→poll AllInjected→delete 模式)。
+#   - inject→生效有【几秒延迟】(刚 AllInjected 时容器还没换完)→ gate 须 poll 到 ready==0 再判, 不能立即。
+#   - restart_count: inject +1、recover +1(共 +2), 【同 pod 原地重启, pod 不重建】(实测 8→10)。
+#     → 窗有效性门: restart_delta∈{1,2} 视为合法 pod-failure 签名(非作废 churn); >2 或【非 target pod】重启=churn 作废。
+#   - 恢复: duration 到期 或 runner delete CRD → container swap 回真镜像 → 自动恢复(再 +1 restart)。
+# target=catalog: 高 fan-in、只读 items(CHECKSUM 安全, pod-failure 不碰 DB 写)。诚实标 service-level(全 catalog caller 受影响, 非单边)。
+# pod-failure(非 pod-kill): pod-kill 是 one-shot(AllInjected 瞬时翻转 + pod 重建窗对不齐), 留 M3/M6; pod-failure 持续型已覆盖可用率语义。
+# 真窗靠 runner delete CRD 对齐(duration 给足); pod-failure 是 RCAEval/Nezha 已发表原子类, 克制不当卖点。
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-failure-catalog
+  namespace: recweb-chaos
+spec:
+  action: pod-failure
+  mode: all
+  selector:
+    namespaces: [recweb-chaos]
+    labelSelectors:
+      app: catalog
+  duration: "300s"

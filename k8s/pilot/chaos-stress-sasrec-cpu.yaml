@@ -1,0 +1,28 @@
+# DK12 F1 = sasrec_api service_cpu 饱和(推荐推理核心 CPU 打满)。
+# 镜像 chaos-stress-catalog-cpu.yaml,retarget labelSelector app:catalog→app:sasrec。
+# sasrec cpu limit=4 核(20-sasrec.yaml:105)→ ★workers=8(canonical,全曲线 sweep [3,4,6,8] 实测定案):
+#   全曲线(baseline recommend p95=43.4ms):W=3=2.71x(117.4ms,噪声)/ W=4=1.47x(64.0ms,NO-GO,非单调低于 W=3)/
+#     W=6=11.25x(488.1ms,首个干净信号)/ W=8=22.57x(979.4ms)。★机理=【噪声底(W≤4,跨 run 摆 1.1-2.71x 过不过由 run 定)
+#     vs 信号区(W≥6 干净单调)】跃迁,**非** "2× 超额阈值"(W=6=1.5× 超额就有 11x 干净信号 → 全曲线推翻两点过拟合叙事)。
+#   Scheinert 2026(arXiv:2603.02057)仅作 "CPU-Hog 注 ML 推理栈可定位(先例)" cite,**不**作 2× 数值平行或 latency-magnitude 外推(其 finding 是 localizability AC@1=1.00 非延迟倍数)。
+# ★flap 安全网(非"完全 de-risk"):真安全网=readyReplicas(sasrec)全 sweep 保持==1 + restart_delta==0(kubelet 路径);
+#   readinessProbe period15×fail3=45s NotReady 才掉线,partial_overlap 界定 F1 sasrec 窗 ≈30s<45s(数学有利但校准窗 ~22s 未直测该 45s 阈,build live-verify 首步兜)。
+#   kubectl-exec /health(livenessProbe timeoutSeconds=5)测得 health_max 0.17-0.28s 是单请求延迟,非 NotReady 持续期;health_fails 是 VM 饱和下 exec 瞬态污染,仅旁证不入判据。
+# ★不改 sasrec 源码/不重启 pod(避 9.2GB pickle 重载 ~40s);StressChaos 在容器内起 stress-ng,recover 靠 runner delete CRD 对齐真窗。
+# CHECKSUM: 纯 CPU 零 DB 写 → 平凡安全(recommend workload 写 recommendations 表另有 per-case cleanup)。
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: stress-sasrec-cpu
+  namespace: recweb-chaos
+spec:
+  mode: all
+  selector:
+    namespaces: [recweb-chaos]
+    labelSelectors:
+      app: sasrec
+  stressors:
+    cpu:
+      workers: 8
+      load: 100
+  duration: "300s"

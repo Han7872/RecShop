@@ -1,0 +1,27 @@
+# 三-01 pricing-纠缠 F1 RES: pricing 容器内 StressChaos cpu(stress-ng), fork chaos-stress-catalog-cpu.yaml
+#   (retarget app:catalog→app:pricing + metadata.name catalog→pricing)。
+# 机制: StressChaos stressors.cpu(workers=2 load=100) → pricing pod 内起 stress-ng → CPU 饱和。
+#   pricing 有 cgroup cpu limit 500m(46-pricing.yaml, = catalog/inventory)→ stress-ng 被 CFS 关进 pricing 容器
+#   → 单服务标签为真(仅 pricing CPU 抬 + cfs_throttle marker, catalog/其它全 flat)。
+# ★三-01 pricing-纠缠真身(上游三-07): RES 从 catalog 服务CPU 挪到 pricing pod CPU → RES@pricing pod ≠ DEP@catalog pod
+#   (2 不同 cgroup)= 真空间可分(比 T2 同压 catalog 多一个空间轴, 且 3 个不同根服务 pricing/catalog/catalog-gw)。
+# ★RES 仅由 pricing cfs_throttle metric 可见, 不在载体延迟上(catalog catlat 2000ms 淹没 pricing-cpu 几十ms) →
+#   gate 归因靠 cfs_throttle marker(deep_triple_pricing_cat_cfg_gate per_root_RES: pricing throttle>THROTTLE_EPS)。
+# 强度 workers=2/load=100: 慢非失败(沿用 catalog 版实证, 无 readiness flap churn); 若 pricing 被压重启则 gate fail-closed(非豁免 churn)。
+# AllInjected=True 立即; 真窗靠 runner delete CRD 对齐(非 duration)。CHECKSUM: 纯 CPU 零 DB 写 → 平凡安全。
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: stress-pricing-cpu
+  namespace: recweb-chaos
+spec:
+  mode: all
+  selector:
+    namespaces: [recweb-chaos]
+    labelSelectors:
+      app: pricing
+  stressors:
+    cpu:
+      workers: 2
+      load: 100
+  duration: "300s"

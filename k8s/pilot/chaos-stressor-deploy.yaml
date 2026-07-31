@@ -1,0 +1,37 @@
+# M3b S1 off-graph host_cpu 共因专用 stressor Deployment(noisy-neighbor 注入载体, 非业务服务)。
+# probe4 2026-06-27 实证语义(★推翻设计的真机制, 违反=白做):
+#   - 无 cpu limit + requests cpu=2: 非 BestEffort。BestEffort 会被有 requests 100m 的 victim 反优先 throttle=no-op
+#     (FSE'26 ~100% 初始 no-op); 高 requests(2 核=2048 CFS shares >> victim 100m=102 shares)抢 CPU + 无 limit 可溢出整 VM。
+#   - image recweb-user:latest + command sleep infinity: 只借容器壳, stress-ng 由 StressChaos 注入(chaos-stress-host-cpu.yaml),
+#     不跑 user_service(无端口/无探针)。
+#   - 强度见 StressChaos workers=12(=VM 12 vCPU sweet spot); 绝不 --vm(防 OOMKill)→ mem 仅 64Mi requests 足够 sleep+cpu stressor。
+#   - recover 兜底: runner delete StressChaos CRD + kubectl scale deploy/stressor --replicas=0(不依赖被饱和饿死的 chaos-controller)。
+# CHECKSUM: 纯 CPU 零 DB 写 → 平凡安全(probe5 实证 items/inventory 不变)。
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stressor
+  namespace: recweb-chaos
+  labels:
+    app: stressor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stressor
+  template:
+    metadata:
+      labels:
+        app: stressor          # StressChaos labelSelector(chaos-stress-host-cpu.yaml)命中此 label
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: stressor
+          image: recweb-user:latest      # 仅借容器壳; command 覆盖为 sleep infinity, 不跑 user_service
+          imagePullPolicy: IfNotPresent   # 本地 build 镜像, 不去 registry 拉(Clash 防雷)
+          command: ["sleep", "infinity"]
+          resources:
+            requests:
+              cpu: "2"           # ★ 高 CFS shares(2 核=2048 shares >> victim 100m=102)抢 CPU; 非 BestEffort 防 no-op
+              memory: "64Mi"     # 仅 sleep + stress-ng cpu(非 --vm)→ 内存极小
+            # ★ 故意【无 limits.cpu】: stress-ng 可溢出整 VM(12 vCPU)→ 多 co-located pod 同降级(off-graph 共因机制)

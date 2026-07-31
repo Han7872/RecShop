@@ -1,0 +1,100 @@
+# 02-llm-rerank.yaml — llm_rerank_service Deployment + ClusterIP Service
+# ----------------------------------------------------------------------------
+# llm_rerank_service(:5002) LLM 重排序(AI Picks)(A-llm-bff 族)。
+# - 无 DB, 故【不注】DB_* env。
+# - 去 Nacos: NACOS_ENABLED=false(app.py __main__ 仅在裸跑时注册, 与本服务运行无关)。
+# - 唯一下游 DeepSeek(外部 API, reranker.py 经 openai SDK→httpx 调 /v1), 非 K8S svc,
+#   key/base 经宿主 .env / DEEPSEEK_* env 注入, 这里不引入任何 K8S 下游。
+# - OTLP 复用宿主 docker-compose collector: host.docker.internal:4317(gRPC)。
+# - label app=llm_rerank_service 供 Service selector + Chaos Mesh selector 共用。
+# - 探针: /health 路由【确认存在】(app.py:180, 恒返 200 healthy) → httpGet /health。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-rerank
+  namespace: recweb-chaos
+  labels:
+    app: llm_rerank_service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llm_rerank_service
+  template:
+    metadata:
+      labels:
+        app: llm_rerank_service   # Service selector + Chaos Mesh labelSelector 命中此 label
+    spec:
+      enableServiceLinks: false   # 防 K8S 注入 *_SERVICE_HOST/PORT 撞应用变量(主循环 2026-06-25 实测 CrashLoop)
+      containers:
+        - name: llm-rerank
+          image: recweb-llm-rerank:latest
+          imagePullPolicy: IfNotPresent   # 本地 build 的镜像, 不去 registry 拉
+          ports:
+            - name: http
+              containerPort: 5002          # 源码实测: RERANK_PORT 默认 5002
+          env:
+            # ---- 去 Nacos ----
+            - name: NACOS_ENABLED
+              value: "false"
+            # ---- 无 DB, 不注 DB_* ----
+            # ---- DeepSeek 外部 API: 非 K8S svc, key/base 经宿主 .env 注入, 这里不引入。----
+            # ---- OTel: 复用宿主 docker-compose collector ----
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "llm_rerank_service"   # 与裸进程栈一致(app.py:64 setdefault), 保 Jaeger serviceName 不变
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          # ---- 探针: /health 确认存在(app.py:180, 恒 200)----
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5002
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5002
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"     # Flask + openai SDK, 无 DB 池, 轻量
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: llm-rerank          # 集群内 DNS: llm-rerank.recweb-chaos.svc(同 ns 直接 llm-rerank)
+  namespace: recweb-chaos
+  labels:
+    app: llm_rerank_service
+spec:
+  type: ClusterIP
+  selector:
+    app: llm_rerank_service
+  ports:
+    - name: http
+      port: 5002          # svc 端口与容器端口一致, 便于 port-forward / runner URL 零改
+      targetPort: 5002

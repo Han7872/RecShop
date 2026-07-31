@@ -1,0 +1,66 @@
+{
+  "case_id": "format_Recommendation_Synthesizer__r12",
+  "combo_id": "format_Recommendation_Synthesizer",
+  "kind": "format_violation",
+  "agent": "Recommendation_Synthesizer",
+  "subtype": "malformed_json",
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B00966IYPW",
+      "B00BQ5RYI4",
+      "B00JPRACS4",
+      "B004OVECU0"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 11
+  },
+  "trace_id": "675cce840cf158dfc03b1adc0cf77397",
+  "window": {
+    "start": "2026-07-27T15:07:21.178891+00:00",
+    "end": "2026-07-27T15:08:01.599430+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "Recommendation_Synthesizer"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "format_violation"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "none",
+      "User_Behavior_Analyzer": "none",
+      "Product_Analyzer": "none",
+      "Recommendation_Synthesizer": "format_violation"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "",
+    "divergent_needle_present": "",
+    "response_asin": "B00AJHDZSI",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "json_parsable",
+    "contract_expected_check": "json_parsable",
+    "contract_check_matches_expected": 1,
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

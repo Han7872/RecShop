@@ -1,0 +1,66 @@
+{
+  "case_id": "hallu_User_Behavior_Analyzer__r8",
+  "combo_id": "hallu_User_Behavior_Analyzer",
+  "kind": "hallucinate",
+  "agent": "User_Behavior_Analyzer",
+  "subtype": null,
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B008KRZDYI",
+      "B000086TIT",
+      "B006GWO5NE",
+      "B00HFAEBWG"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 7
+  },
+  "trace_id": "ead822c0eb49ee024c1038c1550e96fc",
+  "window": {
+    "start": "2026-07-27T13:38:51.794023+00:00",
+    "end": "2026-07-27T13:39:40.757644+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "User_Behavior_Analyzer"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "hallucinate"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "none",
+      "User_Behavior_Analyzer": "hallucinate",
+      "Product_Analyzer": "none",
+      "Recommendation_Synthesizer": "none"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "5~$20区间）的实用型配件，说明用户**理性消费，注重性价比**。 |\n| **🏷️ 品牌偏好** | 对**亚马逊官",
+    "divergent_needle_present": 1,
+    "response_asin": "B00U3FPN4U",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

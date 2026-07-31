@@ -1,0 +1,117 @@
+# 43-checkout.yaml — checkout_service Deployment + ClusterIP Service (B-trade 族)
+# ----------------------------------------------------------------------------
+# checkout_service(:5011) 结账编排(★扇出, 症状漂移源头): preview 三路 fan-out →
+#   cart_service / pricing_service / inventory_service。自身只读 cart_items, 不下单不写。
+# - 有 DB(mysql-connector 池, 只读 cart_items): DB_HOST=host.docker.internal。
+# - 三下游 svc 名: CART_SERVICE_URL / PRICING_SERVICE_URL / INVENTORY_SERVICE_URL。
+# - 去 Nacos: NACOS_ENABLED=false → _resolve_service_url() 走各 env fallback。
+# - /health 路由【确认存在】(app.py:413)。label app=checkout。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout
+  namespace: recweb-chaos
+  labels:
+    app: checkout
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: checkout
+  template:
+    metadata:
+      labels:
+        app: checkout
+    spec:
+      enableServiceLinks: false   # 防 K8S 注入 CHECKOUT_SERVICE_HOST/PORT 撞应用 bind 变量
+      containers:
+        - name: checkout
+          image: recweb-checkout:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5011          # 源码实测: CHECKOUT_SERVICE_PORT 默认 5011
+          env:
+            - name: NACOS_ENABLED
+              value: "false"
+            - name: CHECKOUT_SERVICE_HOST
+              value: "0.0.0.0"
+            # ---- 三路扇出下游: 全指向集群内 svc 名 ----
+            - name: CART_SERVICE_URL
+              value: "http://cart:5006"
+            - name: PRICING_SERVICE_URL
+              value: "http://pricing:5014"
+            - name: INVENTORY_SERVICE_URL
+              value: "http://inventory:5013"
+            # ---- DB 外接宿主 MySQL(只读 cart_items) ----
+            - name: DB_HOST
+              value: "host.docker.internal"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "shopify2"
+            - name: DB_USER
+              value: "recweb_k8s"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-cred
+                  key: password
+            # ---- OTel ----
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "checkout_service"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5011
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5011
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkout          # 集群内 DNS: checkout.recweb-chaos.svc
+  namespace: recweb-chaos
+  labels:
+    app: checkout
+spec:
+  type: ClusterIP
+  selector:
+    app: checkout
+  ports:
+    - name: http
+      port: 5011
+      targetPort: 5011

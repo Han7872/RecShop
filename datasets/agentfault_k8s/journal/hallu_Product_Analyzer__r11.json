@@ -1,0 +1,67 @@
+{
+  "case_id": "hallu_Product_Analyzer__r11",
+  "combo_id": "hallu_Product_Analyzer",
+  "kind": "hallucinate",
+  "agent": "Product_Analyzer",
+  "subtype": null,
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B003WGJYCY",
+      "B003KPBRRW",
+      "B00E4W7NH8",
+      "B012FARZ3M",
+      "B00E4W1644"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 10
+  },
+  "trace_id": "c079a254cef44fda78b99c94804e82f7",
+  "window": {
+    "start": "2026-07-27T13:54:18.066631+00:00",
+    "end": "2026-07-27T13:55:30.211415+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "Product_Analyzer"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "hallucinate"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "none",
+      "User_Behavior_Analyzer": "none",
+      "Product_Analyzer": "hallucinate",
+      "Recommendation_Synthesizer": "none"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "导航系统升级** 爱好者 |\n| **当前阶段** | 正在 **更换车载中控屏幕**，已购买了安装所需的各类适配器 |",
+    "divergent_needle_present": 1,
+    "response_asin": "B00NJTO4CY",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

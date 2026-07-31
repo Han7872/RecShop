@@ -1,0 +1,67 @@
+{
+  "case_id": "ctxdrift_synth_from_prod__r6",
+  "combo_id": "ctxdrift_synth_from_prod",
+  "kind": "context_drift",
+  "agent": "Recommendation_Synthesizer",
+  "subtype": null,
+  "field": null,
+  "drop": "Product_Analyzer",
+  "probe": {
+    "item_sequence": [
+      "B002P3F5EQ",
+      "B002VPE1WK",
+      "B002T3H49Q",
+      "B00F2ENU92",
+      "B01J2G4VBG"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 5
+  },
+  "trace_id": "6a7db6109ff4ab1bb6a5c7a7cf56cc2e",
+  "window": {
+    "start": "2026-07-27T14:25:24.886416+00:00",
+    "end": "2026-07-27T14:25:59.689369+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "Recommendation_Synthesizer"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "context_drift"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "none",
+      "User_Behavior_Analyzer": "none",
+      "Product_Analyzer": "none",
+      "Recommendation_Synthesizer": "context_drift"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "",
+    "divergent_needle_present": "",
+    "response_asin": "B01MR9KG7N",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "Product_Analyzer",
+    "context_drift_dropped_chars": 2325,
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

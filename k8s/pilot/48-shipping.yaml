@@ -1,0 +1,115 @@
+# 48-shipping.yaml — shipping_service Deployment + ClusterIP Service (B-trade 族)
+# ----------------------------------------------------------------------------
+# shipping_service(:5016) 发货: 建/查发货单, 建单后经 HTTP 通知 notification_service(深链尾)。
+# - 有 DB(mysql-connector 池): DB_HOST=host.docker.internal。
+#   ⚠⚠ 启动幂等建表(writes_db_on_startup): 容器首启对 shopify2 CREATE TABLE IF NOT EXISTS
+#       shipments(自有新表)。需 recweb_k8s 有 DDL 权限。【风险点, 见 notes】
+# - 下游 notification_service(建单后通知): NOTIFICATION_SERVICE_URL=http://notification:5021。
+#   注: notification_service 属另一族(C 类叶子), 其 svc(notification:5021)需另由对应 coder 落地;
+#   本服务的 NOTIFICATION_SERVICE_URL 已按约定指向该 svc 名(下游不在时建单仍成功, 通知尽力降级)。
+# - 去 Nacos: NACOS_ENABLED=false。/health 路由【确认存在】(app.py:327)。label app=shipping。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipping
+  namespace: recweb-chaos
+  labels:
+    app: shipping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shipping
+  template:
+    metadata:
+      labels:
+        app: shipping
+    spec:
+      enableServiceLinks: false   # 防 K8S 注入 SHIPPING_SERVICE_HOST/PORT 撞应用 bind 变量
+      containers:
+        - name: shipping
+          image: recweb-shipping:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5016          # 源码实测: SHIPPING_SERVICE_PORT 默认 5016
+          env:
+            - name: NACOS_ENABLED
+              value: "false"
+            - name: SHIPPING_SERVICE_HOST
+              value: "0.0.0.0"
+            # ---- 下游 notification(建单后通知): 指向集群内 svc 名 ----
+            - name: NOTIFICATION_SERVICE_URL
+              value: "http://notification:5021"
+            # ---- DB 外接宿主 MySQL(启动建 shipments 表) ----
+            - name: DB_HOST
+              value: "host.docker.internal"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "shopify2"
+            - name: DB_USER
+              value: "recweb_k8s"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-cred
+                  key: password
+            # ---- OTel ----
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "shipping_service"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5016
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5016
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipping          # 集群内 DNS: shipping.recweb-chaos.svc
+  namespace: recweb-chaos
+  labels:
+    app: shipping
+spec:
+  type: ClusterIP
+  selector:
+    app: shipping
+  ports:
+    - name: http
+      port: 5016
+      targetPort: 5016

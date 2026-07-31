@@ -1,0 +1,67 @@
+{
+  "case_id": "hallu_User_Behavior_Analyzer__r11",
+  "combo_id": "hallu_User_Behavior_Analyzer",
+  "kind": "hallucinate",
+  "agent": "User_Behavior_Analyzer",
+  "subtype": null,
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B003WGJYCY",
+      "B003KPBRRW",
+      "B00E4W7NH8",
+      "B012FARZ3M",
+      "B00E4W1644"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 10
+  },
+  "trace_id": "adc2d6b6f0456c9aa73a140936980577",
+  "window": {
+    "start": "2026-07-27T13:41:31.832784+00:00",
+    "end": "2026-07-27T13:42:19.065947+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "User_Behavior_Analyzer"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "hallucinate"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "none",
+      "User_Behavior_Analyzer": "hallucinate",
+      "Product_Analyzer": "none",
+      "Recommendation_Synthesizer": "none"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "手机配件与家庭娱乐**——用户历史中3/5的商品（B00E4W7NH8、B012FARZ3M、B00E4W1644）均为",
+    "divergent_needle_present": 1,
+    "response_asin": "B00NJTO4CY",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

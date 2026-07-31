@@ -1,0 +1,190 @@
+{
+  "dataset_dir": "D:\\AIProjects\\RecWeb2\\datasets/agentfault_k8s",
+  "n_context_drift_cases": 36,
+  "ledger_target_equals_gt_root": "36/36",
+  "x_vs_y": {
+    "verdict": "Y",
+    "locator_label": "structural canary ORACLE (deterministic upper bound; injection-point-visible signal sourced from the injection ledger; a real detector would reconstruct it from per-agent input-message structure, which requires capturing per-agent input prompts that reflect the post-pruning message set actually sent to the model — a known instrumentation gap)",
+    "evidence": {
+      "per_scenario": {
+        "ctxdrift_ub_from_seq": {
+          "target": "User_Behavior_Analyzer",
+          "dropped_upstream": "Sequence_Recommender",
+          "traces_with_target_llm_span": 13,
+          "dropped_msg_PRESENT_in_captured_input": 13,
+          "dropped_msg_ABSENT_in_captured_input": 0
+        },
+        "ctxdrift_prod_from_ub": {
+          "target": "Product_Analyzer",
+          "dropped_upstream": "User_Behavior_Analyzer",
+          "traces_with_target_llm_span": 13,
+          "dropped_msg_PRESENT_in_captured_input": 13,
+          "dropped_msg_ABSENT_in_captured_input": 0
+        },
+        "ctxdrift_synth_from_prod": {
+          "target": "Recommendation_Synthesizer",
+          "dropped_upstream": "Product_Analyzer",
+          "traces_with_target_llm_span": 13,
+          "dropped_msg_PRESENT_in_captured_input": 13,
+          "dropped_msg_ABSENT_in_captured_input": 0
+        }
+      },
+      "spans_dir_present": true,
+      "content_layer_input_captured": true,
+      "note": "In 39/39 (100%) of drift traces the dropped upstream message is STILL PRESENT in the target agent's captured llm.input_messages (name match). The content-layer input IS captured, but by the on_chat_model_start callback (fires before _generate, hence before the injector's messages[:]=kept prune) -> the span reflects the PRE-deletion state. The deletion is therefore NOT observable from the trajectory -> Y (ledger-only oracle).",
+      "totals": {
+        "traces": 39,
+        "dropped_present": 39,
+        "dropped_absent": 0
+      }
+    }
+  },
+  "outcome_counts": {
+    "recovered": 27,
+    "silent_wrong": 9
+  },
+  "scorer": "m9_score.mrcbench (MRCBench 四族); 4-agent single-root space",
+  "reference_rows": {
+    "Random (analytic)": {
+      "hit@1": 0.25,
+      "note": "1/4 agents; Hit@3=0.750, Hit@5=1.000 analytic"
+    },
+    "Constant-Synthesizer": {
+      "hit@1": 0.3333333333333333,
+      "by_scenario": {
+        "ctxdrift_prod_from_ub": 0.0,
+        "ctxdrift_synth_from_prod": 1.0,
+        "ctxdrift_ub_from_seq": 0.0
+      },
+      "note": "always blame Recommendation_Synthesizer; = fraction of ctxdrift cases rooted at Synthesizer (12/36, scenario(s): ctxdrift_synth_from_prod)"
+    }
+  },
+  "structural_locator": {
+    "kind": "oracle",
+    "label": "structural canary ORACLE (deterministic upper bound; injection-point-visible signal sourced from the injection ledger; a real detector would reconstruct it from per-agent input-message structure, which requires capturing per-agent input prompts that reflect the post-pruning message set actually sent to the model — a known instrumentation gap)",
+    "overall": {
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "ndcg@3": 1.0,
+      "hit@5": 1.0,
+      "recall@R": 1.0,
+      "mrr": 1.0
+    },
+    "hit1_by_scenario": {
+      "ctxdrift_prod_from_ub": 1.0,
+      "ctxdrift_synth_from_prod": 1.0,
+      "ctxdrift_ub_from_seq": 1.0
+    },
+    "source": "injection ledger / journal['agent'] (injection-point = downstream target)"
+  },
+  "observable_vs_oracle": {
+    "note": "Per-case source split. observed_detector = a GENUINE method: reads the post-pruning received-message names the injector now emits into the trajectory (span `agentfault.resolved_input`, attr `agentfault.resolved_input.msg_names`) and applies the chaosgraph AllRequiredNodesVisited set-diff (missing = expected_upstream - received). ledger_oracle = the upper-bound fallback used when that attribute is ABSENT (old / un-recollected data). The two numbers are NOT merged. On THIS dataset the attribute is present in 36/36 case(s) and absent in 0/36 — so the observable detector carries every case and the oracle fallback is empty.",
+    "source_counts": {
+      "observed_detector": 36
+    },
+    "observable_detector": {
+      "n": 36,
+      "hit@1": 1.0,
+      "overall": {
+        "hit@1": 1.0,
+        "hit@3": 1.0,
+        "ndcg@3": 1.0,
+        "hit@5": 1.0,
+        "recall@R": 1.0,
+        "mrr": 1.0
+      },
+      "label": "GENUINE observable detector (post-pruning received-msg set-diff; chaosgraph AllRequiredNodesVisited shape)"
+    },
+    "oracle_fallback": {
+      "n": 0,
+      "hit@1": null,
+      "overall": {
+        "hit@1": null,
+        "hit@3": null,
+        "ndcg@3": null,
+        "hit@5": null,
+        "recall@R": null,
+        "mrr": null
+      },
+      "label": "ledger-sourced ORACLE (upper bound; attribute absent -> fallback)"
+    }
+  },
+  "output_feature_blind": {
+    "convlen_anomaly_vs_clean_carrier": {
+      "overall": {
+        "hit@1": 0.4166666666666667,
+        "hit@3": 0.75,
+        "ndcg@3": 0.6087918965277834,
+        "hit@5": 1.0,
+        "recall@R": 0.4166666666666667,
+        "mrr": 0.6226851851851852
+      },
+      "hit1_by_scenario": {
+        "ctxdrift_prod_from_ub": 0.4166666666666667,
+        "ctxdrift_synth_from_prod": 0.0,
+        "ctxdrift_ub_from_seq": 0.8333333333333334
+      },
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "note": "per-agent |Δ conv_<A>_text_len| vs same-carrier normal case; seed-avg tie-break; OUTPUT-content feature. NOT a dependable locator: wildly scenario-unstable (by scenario: 0.833 `ctxdrift_ub_from_seq`, 0.417 `ctxdrift_prod_from_ub`, 0.000 `ctxdrift_synth_from_prod`; spread 0.833) — it tracks which agent emits the most variable free text, not the drop (the Synthesizer's templated tool-call output barely changes, hence 0.000 on `ctxdrift_synth_from_prod`). The overall 0.417 is carried by `ctxdrift_ub_from_seq` (0.833); under group-aware CV the same feature set collapses (Tier-A RF-content 0.000)."
+    },
+    "tierA_quoted": {
+      "Trivial span-anomaly [CORRECTED dur]": 0.028,
+      "Supervised ref: RF-infra ceiling (LOGO, seeds 0-4)": 0.228,
+      "Supervised ref: RF-content ceiling (LOGO, seeds 0-4)": 0.0
+    },
+    "tierA_quoted_source": {
+      "path": "D:\\AIProjects\\RecWeb2\\datasets/agentfault_k8s\\BASELINE_RESULTS.md",
+      "family": "context_drift",
+      "parsed_ok": true,
+      "parse_error": null,
+      "note": "Hit@1 column parsed at runtime from the Tier-A BASELINE_RESULTS.md table; NOT hardcoded. If parsing fails these read 'UNAVAILABLE (Tier-A parse FAILED — see stderr)' rather than a stale constant."
+    }
+  },
+  "outcome_stratification": {
+    "recovered": {
+      "n": 27,
+      "oracle_hit1": 1.0,
+      "convlen_hit1": 0.4074074074074074,
+      "run_ids": null
+    },
+    "silent_wrong": {
+      "n": 9,
+      "oracle_hit1": 1.0,
+      "convlen_hit1": 0.4444444444444444,
+      "run_ids": [
+        "ctxdrift_ub_from_seq__r3",
+        "ctxdrift_ub_from_seq__r8",
+        "ctxdrift_prod_from_ub__r3",
+        "ctxdrift_prod_from_ub__r4",
+        "ctxdrift_prod_from_ub__r8",
+        "ctxdrift_synth_from_prod__r3",
+        "ctxdrift_synth_from_prod__r6",
+        "ctxdrift_synth_from_prod__r7",
+        "ctxdrift_synth_from_prod__r8"
+      ]
+    }
+  },
+  "silent_wrong_run_ids": [
+    "ctxdrift_ub_from_seq__r3",
+    "ctxdrift_ub_from_seq__r8",
+    "ctxdrift_prod_from_ub__r3",
+    "ctxdrift_prod_from_ub__r4",
+    "ctxdrift_prod_from_ub__r8",
+    "ctxdrift_synth_from_prod__r3",
+    "ctxdrift_synth_from_prod__r6",
+    "ctxdrift_synth_from_prod__r7",
+    "ctxdrift_synth_from_prod__r8"
+  ],
+  "silent_wrong_caveat": "silent_wrong n=9/36 context_drift cases (run_ids: `ctxdrift_ub_from_seq__r3`, `ctxdrift_ub_from_seq__r8`, `ctxdrift_prod_from_ub__r3`, `ctxdrift_prod_from_ub__r4`, `ctxdrift_prod_from_ub__r8`, `ctxdrift_synth_from_prod__r3`, `ctxdrift_synth_from_prod__r6`, `ctxdrift_synth_from_prod__r7`, `ctxdrift_synth_from_prod__r8`) -> n=9 is too small for statistics; read it as a COUNT, not a rate (a binomial interval at n=9 spans most of [0,1]). The per-stratum Hit@1 is descriptive only.",
+  "content_track_consolidation": {
+    "structured_families": "Tier-A contract oracle Hit@1=1.000 on wrong_item_pick & 1.000 on format_violation (deterministic content locatable).",
+    "hallucinate": "content signal present (divergent_needle) but names FAMILY not agent; genuinely hard at agent granularity (Tier-A).",
+    "context_drift": "NOT content-locatable from OUTPUT/infra features (Tier-A RF-content 0.000, RF-infra 0.228, Trivial-corrected 0.028 vs random floor 0.250); only the input-structure canary (this script) catches it."
+  }
+}

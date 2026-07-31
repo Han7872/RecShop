@@ -1,0 +1,121 @@
+# 30-backend.yaml — backend_api Deployment + ClusterIP Service (M0 pilot)
+# ----------------------------------------------------------------------------
+# backend_api(:5000) 推荐编排。M0 walking skeleton(must-fix#3):
+#   经 K8S Service DNS 调 sasrec 纯推理 → 验跨服务 trace 关联 + 无残留 127.0.0.1:50xx 撞自己。
+# - DB 外接宿主 MySQL。
+# - 去 Nacos: NACOS_ENABLED=false → service_discovery.get_sasrec_api_url() 走 fallback,
+#   fallback = env SASREC_API_URL → 指向集群内 svc 名 http://sasrec:8200(同 ns)。
+# - OTLP 复用宿主 collector。
+#
+# ⚠ 写路径声明(必读, 二轮审查修订#5): backend_api 的 /api/recommend 全链路会 INSERT
+#   recommendations(+ /api/interactions 写 interactions)—— 不在 items/inventory CHECKSUM 覆盖内。
+#   M0 等价 diff / smoke 应直打 sasrec 纯推理路径(sasrec /recommend 自身无 DB 写),
+#   或对 backend_api 只打只读端点(如 /api/items 读)。勿在 M0 用 /api/recommend 触发写路径。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: recweb-chaos
+  labels:
+    app: backend_api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend_api
+  template:
+    metadata:
+      labels:
+        app: backend_api
+    spec:
+      enableServiceLinks: false   # 防 K8S 注入 *_SERVICE_HOST/PORT 撞应用变量(主循环 2026-06-25)
+      containers:
+        - name: backend
+          image: recweb-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5000          # 源码实测: BACKEND_PORT 默认 5000
+          env:
+            - name: NACOS_ENABLED
+              value: "false"
+            # ---- 下游 sasrec: 指向集群内 svc 名(去 Nacos fallback 用 SASREC_API_URL)----
+            # service_discovery.get_sasrec_api_url() → nacos 关 → 返回 env SASREC_API_URL。
+            # 必须指 http://sasrec:8200(svc 名), 不能留 127.0.0.1:8200(pod 内连自己, 撞不到 sasrec)。
+            - name: SASREC_API_URL
+              value: "http://sasrec:8200"
+            # ---- DB 外接宿主 MySQL ----
+            - name: DB_HOST
+              value: "host.docker.internal"   # 🔶 主循环实测确认: pod 内能否解析(同 catalog)
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "shopify2"
+            - name: DB_USER
+              value: "recweb_k8s"   # 只读用户(主循环 2026-06-25 建), 非 root@localhost
+            # DB_PASSWORD 经 K8S Secret 注入(主循环 2026-06-25: db-cred)
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-cred
+                  key: password
+            # ---- OTel ----
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "backend_api"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          # ---- 探针: /health 确认存在(app.py:638)。注意 backend /health 会探 sasrec,
+          #      sasrec 加载完前 backend /health 返 degraded(仍 200)。用 readiness 不阻塞太久。----
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: recweb-chaos
+  labels:
+    app: backend_api
+spec:
+  type: ClusterIP
+  selector:
+    app: backend_api
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000

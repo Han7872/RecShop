@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "updated": "2026-07-31",
+  "_doc": [
+    "Machine-readable dataset catalog for the public release.",
+    "Only agentfault_k8s + agentfault_k8s_whowhen are included in this repo."
+  ],
+  "datasets": {
+    "agentfault_k8s": {
+      "description": "Agent semantic fault dataset (B-tier, full 25-microservice K8S cluster)",
+      "total_cases": 108,
+      "faulted_cases": 96,
+      "zero_injection_controls": 12,
+      "families": {
+        "hallucinate": 36,
+        "context_drift": 36,
+        "wrong_item_pick": 12,
+        "format_violation": 12
+      },
+      "combos": 8,
+      "reps_per_combo": 12,
+      "key_files": [
+        "dataset_agentfault.csv",
+        "SUMMARY.md",
+        "EVAL_NOTES.md",
+        "BASELINE_RESULTS.md",
+        "RESULTS_WHENWHEN.md",
+        "limitations.json"
+      ]
+    },
+    "agentfault_k8s_whowhen": {
+      "description": "Who&When-format delivery view (drop-in for Who&When / A2P evaluation)",
+      "cases": 96,
+      "key_files": [
+        "Injection-Generated/",
+        "cases_index.json",
+        "README.md"
+      ]
+    }
+  }
+}

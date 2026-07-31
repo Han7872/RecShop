@@ -1,0 +1,66 @@
+{
+  "case_id": "hallu_User_Behavior_Analyzer__r9",
+  "combo_id": "hallu_User_Behavior_Analyzer",
+  "kind": "hallucinate",
+  "agent": "User_Behavior_Analyzer",
+  "subtype": null,
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B00E896U62",
+      "B00CLEGVX8",
+      "B00B4GM5D4",
+      "B00G5N0ZZQ"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 8
+  },
+  "trace_id": "740f3284c8fdf2a610cfe0c711244978",
+  "window": {
+    "start": "2026-07-27T13:39:43.551088+00:00",
+    "end": "2026-07-27T13:40:32.879770+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "User_Behavior_Analyzer"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "hallucinate"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "none",
+      "User_Behavior_Analyzer": "hallucinate",
+      "Product_Analyzer": "none",
+      "Recommendation_Synthesizer": "none"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "Pro） | 💻 **笔记本电脑保护壳/键盘膜套装** |\n| B00G5N0ZZQ | amFilm 屏幕保护膜（适用",
+    "divergent_needle_present": 1,
+    "response_asin": "B00EL94Z4I",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

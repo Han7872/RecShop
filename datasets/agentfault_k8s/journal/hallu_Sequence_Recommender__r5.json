@@ -1,0 +1,68 @@
+{
+  "case_id": "hallu_Sequence_Recommender__r5",
+  "combo_id": "hallu_Sequence_Recommender",
+  "kind": "hallucinate",
+  "agent": "Sequence_Recommender",
+  "subtype": null,
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B00AZR375I",
+      "B003SR3HJI",
+      "B007MHFMMU",
+      "B003OEDQBE",
+      "B00KH6E1NO",
+      "B00QPMVNWG"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 4
+  },
+  "trace_id": "7d17a2248eac8fd7c1fadeac638d8d9b",
+  "window": {
+    "start": "2026-07-27T13:23:12.639528+00:00",
+    "end": "2026-07-27T13:24:01.305750+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "Sequence_Recommender"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "hallucinate"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "hallucinate",
+      "User_Behavior_Analyzer": "none",
+      "Product_Analyzer": "none",
+      "Recommendation_Synthesizer": "none"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "家居用品消费者。\n\n---\n\n### 🏆 推荐商品 Top 5 及推荐理由\n\n| 排名 | 商品ID | 商品名称 |",
+    "divergent_needle_present": 1,
+    "response_asin": "B00IVPU786",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

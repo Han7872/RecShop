@@ -1,0 +1,66 @@
+{
+  "case_id": "hallu_Product_Analyzer__r9",
+  "combo_id": "hallu_Product_Analyzer",
+  "kind": "hallucinate",
+  "agent": "Product_Analyzer",
+  "subtype": null,
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B00E896U62",
+      "B00CLEGVX8",
+      "B00B4GM5D4",
+      "B00G5N0ZZQ"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 8
+  },
+  "trace_id": "cc1dbf456b514afe1af27205f2c3de2c",
+  "window": {
+    "start": "2026-07-27T13:52:32.037336+00:00",
+    "end": "2026-07-27T13:53:20.264148+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "Product_Analyzer"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "hallucinate"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "none",
+      "User_Behavior_Analyzer": "none",
+      "Product_Analyzer": "hallucinate",
+      "Recommendation_Synthesizer": "none"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "运动手环配件** |\n| B00CLEGVX8 | Kuzy 防眩光屏幕保护膜 - MacBook Air 11英寸 |",
+    "divergent_needle_present": 1,
+    "response_asin": "B00EL94Z4I",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

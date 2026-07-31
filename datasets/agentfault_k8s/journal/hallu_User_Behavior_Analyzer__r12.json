@@ -1,0 +1,66 @@
+{
+  "case_id": "hallu_User_Behavior_Analyzer__r12",
+  "combo_id": "hallu_User_Behavior_Analyzer",
+  "kind": "hallucinate",
+  "agent": "User_Behavior_Analyzer",
+  "subtype": null,
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B00966IYPW",
+      "B00BQ5RYI4",
+      "B00JPRACS4",
+      "B004OVECU0"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 11
+  },
+  "trace_id": "f2fc8adccd3b65418a1aa9a2a1d422a6",
+  "window": {
+    "start": "2026-07-27T13:42:21.885475+00:00",
+    "end": "2026-07-27T13:43:08.834295+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "User_Behavior_Analyzer"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "hallucinate"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "none",
+      "User_Behavior_Analyzer": "hallucinate",
+      "Product_Analyzer": "none",
+      "Recommendation_Synthesizer": "none"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "家居清洁 |\n| B00JPRACS4 | **BrightLine Bags Flex B7 飞行包** | 🎒 旅行",
+    "divergent_needle_present": 1,
+    "response_asin": "B00AJHDZSI",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

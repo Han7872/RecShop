@@ -1,0 +1,62 @@
+{
+  "case_id": "normal__r8",
+  "combo_id": "normal",
+  "kind": "normal",
+  "agent": null,
+  "subtype": null,
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B008KRZDYI",
+      "B000086TIT",
+      "B006GWO5NE",
+      "B00HFAEBWG"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 7
+  },
+  "trace_id": "31d1c158e273b3fddcc7db58f7143c54",
+  "window": {
+    "start": "2026-07-27T15:15:25.676771+00:00",
+    "end": "2026-07-27T15:16:12.603569+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [],
+    "n_root_causes": 0,
+    "fault_type_set": [],
+    "per_agent_fault": {
+      "Sequence_Recommender": "none",
+      "User_Behavior_Analyzer": "none",
+      "Product_Analyzer": "none",
+      "Recommendation_Synthesizer": "none"
+    },
+    "faulted": false,
+    "ledger_status": "none",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "",
+    "divergent_needle_present": "",
+    "response_asin": "B00VKIY9RG",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

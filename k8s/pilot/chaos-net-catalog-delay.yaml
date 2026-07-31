@@ -1,0 +1,22 @@
+# M2a F1(NET, primary): catalog-gw → catalog 边单边 netem delay。
+# 单边隔离: selector=catalog-gw 出向 + direction:to(【无 target】——target+ipset 不工作, 见 M2-impl-spec §0)
+#   → netem 挂 catalog-gw netns 出向(其唯一下游=catalog, 等价 catalog-gw→catalog 单边); catalog 其它 caller / catalog→MySQL / kubelet 探针 不受影响(规避 P4 探针坑)。
+# 强度 500ms/jitter50ms 标定: netem 每出向包延迟, 一次 HTTP 多包累积 ~4× → carrier ~2s(在 [1s,8s] 正中); 真窗靠 runner delete CRD 对齐(非 duration)。
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: net-f1-catalog-delay
+  namespace: recweb-chaos
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces: [recweb-chaos]
+    labelSelectors:
+      app: catalog-gw
+  direction: to
+  delay:
+    latency: "500ms"
+    jitter: "50ms"
+    correlation: "0"
+  duration: "300s"

@@ -1,0 +1,202 @@
+# 6a NginxConfigPrimitive 骨架(方案 P):catalog-gw nginx 反代挡在 catalog 前。
+# carrier 的 CATALOG_SERVICE_URL 重定向到 catalog-gw → 注 timeout/retry 误配沿 caller→catalog 边传播。
+# 注入 = pod 内 cp /confs/fX.conf → /etc/nginx/conf.d/default.conf + nginx -s reload(conf 在可写 emptyDir)。
+# baseline proxy_read_timeout 8s == 现有 requests 默认 timeout(基线行为不变)。
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalog-gw-confs
+  namespace: recweb-chaos
+data:
+  baseline.conf: |
+    upstream catalog_up { server catalog:5005; }
+    server {
+      listen 80;
+      location / {
+        proxy_pass http://catalog_up;
+        proxy_read_timeout 8s;
+        proxy_connect_timeout 8s;
+        proxy_send_timeout 8s;
+      }
+    }
+  f1-timeout.conf: |
+    # F1 timeout_misconfiguration: proxy_read_timeout 极短 → catalog 1.5s 响应被 50ms 截断 → 504
+    upstream catalog_up { server catalog:5005; }
+    server {
+      listen 80;
+      location / {
+        proxy_pass http://catalog_up;
+        proxy_read_timeout 50ms;
+        proxy_connect_timeout 8s;
+        proxy_send_timeout 8s;
+      }
+    }
+  f2-retry.conf: |
+    # F2 retry_policy_misconfiguration: proxy_next_upstream off(关上游重试)
+    # 注:需 catalog ≥2 replica + 诱导首次失败才有可观测信号(6a F2 gate 验,见 §11)
+    upstream catalog_up { server catalog:5005; }
+    server {
+      listen 80;
+      location / {
+        proxy_pass http://catalog_up;
+        proxy_read_timeout 8s;
+        proxy_connect_timeout 8s;
+        proxy_next_upstream off;
+      }
+    }
+  f2-base.conf: |
+    # F2 gate baseline: 2 upstream(catalog 好 + catalog-bad 坏)+ retry ON
+    # nginx 命中 catalog-bad(500)→ 重试到 catalog(200)→ 掩盖 → 低错误率
+    upstream catalog_up {
+      server catalog:5005;
+      server catalog-bad:5005 max_fails=0;
+    }
+    server {
+      listen 80;
+      location / {
+        proxy_pass http://catalog_up;
+        proxy_read_timeout 8s;
+        proxy_connect_timeout 8s;
+        proxy_next_upstream error timeout http_500 http_502 http_503;
+        proxy_next_upstream_tries 2;
+      }
+    }
+  f2-off.conf: |
+    # F2 retry_disabled: 同 2 upstream 但 retry OFF → 命中 catalog-bad 直接 500 → ~50% 错误率
+    upstream catalog_up {
+      server catalog:5005;
+      server catalog-bad:5005 max_fails=0;
+    }
+    server {
+      listen 80;
+      location / {
+        proxy_pass http://catalog_up;
+        proxy_read_timeout 8s;
+        proxy_connect_timeout 8s;
+        proxy_next_upstream off;
+      }
+    }
+  # ---- dual-root M1 三态(逐字照 TASK-K8S-M1-impl-spec §1, 已实证 3 态探针 GO) ----
+  ov-baseline.conf: |
+    # ov-baseline.conf  —— 健康基线(pre_fault / post_recovery / 幂等恢复用)
+    upstream catalog_up { server catalog:5005; }
+    server { listen 80; location / {
+      proxy_pass http://catalog_up;
+      proxy_read_timeout 8s; proxy_connect_timeout 8s;
+      proxy_next_upstream error timeout http_502 http_503; proxy_next_upstream_tries 2; } }
+  ov-f1on.conf: |
+    # ov-f1on.conf  —— F1 only(timeout 被 retry 掩盖 → ok≈1)
+    upstream catalog_up { server catalog-bad:5005 max_fails=0; server catalog:5005 backup; }
+    server { listen 80; location / {
+      proxy_pass http://catalog_up;
+      proxy_read_timeout 1s; proxy_connect_timeout 8s;
+      proxy_next_upstream timeout error http_502 http_503; proxy_next_upstream_tries 2; } }
+  ov-f1f2.conf: |
+    # ov-f1f2.conf  —— overlap(timeout + retry 关 → 504 → error≈1); 与 ov-f1on 仅差 proxy_next_upstream
+    upstream catalog_up { server catalog-bad:5005 max_fails=0; server catalog:5005 backup; }
+    server { listen 80; location / {
+      proxy_pass http://catalog_up;
+      proxy_read_timeout 1s; proxy_connect_timeout 8s;
+      proxy_next_upstream off; } }
+  # ---- M2a NET+CFG cross_class F2 amplifier(逐字照 TASK-K8S-M2-impl-spec §1, 机制全 live 实证) ----
+  ov-net-f2.conf: |
+    # ov-net-f2.conf  —— M2a F2 amplifier(CFG read_timeout 太短): 真 catalog 单 upstream + read_timeout 200ms + retry off
+    # NET egress delay(F1)让请求往返被抬高(~500ms egress delay)时, 200ms read 超时把被延迟抬高的响应放大成 504 = trigger_amplifier
+    #   (connect 放回 8s 不让它先 fire; 放大靠 read_timeout — 对齐上游 proxy_read_timeout 旋钮, 机制等价于 connect_timeout)
+    # 无 keepalive 指令(每请求新连, read_timeout 稳定触发)
+    upstream catalog_up { server catalog:5005; }
+    server { listen 80; location / {
+      proxy_pass http://catalog_up;
+      proxy_connect_timeout 8s;
+      proxy_read_timeout 200ms;
+      proxy_next_upstream off; } }
+  # ---- DK09 host_cpu×cfg_timeout F2(2026-07-02;LIT-FIT 裁决路径 B = trigger_amplifier,calibration 实测定 20ms)----
+  # host CPU 饱和把 catalog 后端 TTFB 抬高;read_timeout 设在【基线 TTFB(~15ms) < 阈值 < 受压 TTFB(~30-50ms)】窗口 →
+  #   overlap 窗(host stress + 本 conf)真实 504 爆发,F1_only 窗(host stress + 8s baseline conf)无超时 → cfg 根有独立业务遥测足迹
+  #   = metastable capacity-decreasing-trigger × timeout-amplification(OSDI'22;对齐上游 proxy_read_timeout 旋钮)。
+  # calibration-first 实测(scripts/chaos/ctk/calib_dk09_hostcfg.py, N=14-16):50ms→0 触发(擦边)· 25ms→21%(偏低 flaky)· 20ms→69% 稳健 + 无 stress 0% + catalog_direct 0%(slow-not-fail)。★build 用 20ms。
+  ov-hostcfg-f2.conf: |
+    # ov-hostcfg-f2.conf —— DK09 F2 amplifier(CFG read_timeout 太短,host-CPU 量级适配,calibration 实测定 20ms): 真 catalog 单 upstream + read_timeout 20ms + retry off
+    upstream catalog_up { server catalog:5005; }
+    server { listen 80; location / {
+      proxy_pass http://catalog_up;
+      proxy_connect_timeout 8s;
+      proxy_read_timeout 20ms;
+      proxy_next_upstream off; } }
+  # ---- DK14 catalog_latency×cfg_timeout F2 amplifier(2026-07-03; nested trigger_amplifier, 对齐上游双-07 DEP-01+CFG-02)----
+  # catlat cat_delay_ms=2000 让 catalog 响应 ~2s(整 during); read_timeout 收紧到 1000ms(<2000) 把被 catlat 抬高的响应放大成 504 = trigger_amplifier。
+  #   ★与 DK09 ov-hostcfg-f2 同构(真 catalog 单 upstream + retry off), 仅 read_timeout 量级适配 catlat: app-latency ~2000ms 远大于 host-CPU 抬升的 ~30-50ms → 收 1000ms 而非 20ms。
+  #   F1_only(baseline 8s conf)下 catalog 2s<8s → gw 200-slow(不 504); overlap(本 conf 1000ms)下 catalog 2s>1000ms → gw 504。connect 放回 8s 不先 fire; retry off 不掩盖。
+  #   ★★upstream=真 catalog:5005(绝不 catalog-bad — OV_F1F2_CONF 引 catalog-bad 在其未部署时 NXDOMAIN, must-fix)。
+  ov-catlat-f2.conf: |
+    # ov-catlat-f2.conf —— DK14 F2 amplifier(CFG proxy_read_timeout 收紧到 catlat 之下): 真 catalog 单 upstream + read_timeout 1000ms + retry off
+    upstream catalog_up { server catalog:5005; }
+    server { listen 80; location / {
+      proxy_pass http://catalog_up;
+      proxy_connect_timeout 8s;
+      proxy_read_timeout 1000ms;
+      proxy_next_upstream off; } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-gw
+  namespace: recweb-chaos
+  labels:
+    app: catalog-gw
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-gw
+  template:
+    metadata:
+      labels:
+        app: catalog-gw
+    spec:
+      enableServiceLinks: false
+      initContainers:
+        - name: seed-conf
+          image: nginx:alpine
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c", "cp /confs/baseline.conf /etc/nginx/conf.d/default.conf"]
+          volumeMounts:
+            - name: confs
+              mountPath: /confs
+            - name: live
+              mountPath: /etc/nginx/conf.d
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: confs
+              mountPath: /confs
+            - name: live
+              mountPath: /etc/nginx/conf.d
+      volumes:
+        - name: confs
+          configMap:
+            name: catalog-gw-confs
+        - name: live
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-gw
+  namespace: recweb-chaos
+spec:
+  selector:
+    app: catalog-gw
+  ports:
+    - port: 80
+      targetPort: 80

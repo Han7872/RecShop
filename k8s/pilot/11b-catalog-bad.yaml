@@ -1,0 +1,93 @@
+# dual-root M1 专用: catalog 的"慢 primary"副本(FAULT_DELAY_MS=2000)。
+# 作 catalog-gw 的 primary upstream(ov-f1on/ov-f1f2 里 catalog-bad primary + catalog backup)。
+# /health 豁免故障(≤2s<3s 仍 Ready 进 endpoints);/api 进程内 sleep 2s → 触发 read_timeout 1s 真 timeout。
+# F1(retry ON)时 timeout→failover 到好的 catalog(掩盖→200);F2(retry OFF)时 timeout 无 failover→504 暴露。
+# 独立 svc(catalog-bad)+ distinct OTEL 名(catalog_service_bad, 不污染 catalog 指标)。采集完即删。
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-bad
+  namespace: recweb-chaos
+  labels:
+    app: catalog-bad
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-bad
+  template:
+    metadata:
+      labels:
+        app: catalog-bad
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: catalog
+          image: recweb-catalog:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5005
+          env:
+            - name: NACOS_ENABLED
+              value: "false"
+            - name: CATALOG_SERVICE_HOST
+              value: "0.0.0.0"
+            - name: FAULT_DELAY_MS       # ★ 故障(dual-root M1): 慢 primary, 每非 /health 请求进程内 sleep 2000ms
+              value: "2000"             #   2s > catalog-gw read_timeout 1s → 触发真 timeout; < baseline 8s。与 FAULT_RAISE 不可并存。
+            - name: DB_HOST
+              value: "host.docker.internal"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "shopify2"
+            - name: DB_USER
+              value: "recweb_k8s"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-cred
+                  key: password
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "catalog_service_bad"   # distinct, 不污染 catalog_service
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          readinessProbe:
+            httpGet:
+              path: /health           # 豁免 FAULT_RAISE → 200 → Ready → 进 endpoints
+              port: 5005
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-bad
+  namespace: recweb-chaos
+spec:
+  type: ClusterIP
+  selector:
+    app: catalog-bad
+  ports:
+    - port: 5005
+      targetPort: 5005

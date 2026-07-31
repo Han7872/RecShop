@@ -1,0 +1,109 @@
+# 22-admin-audit.yaml — admin_audit_service Deployment + ClusterIP Service (C-content 族)
+# ----------------------------------------------------------------------------
+# admin_audit_service(:5022) 管理操作审计写一条/读最近(detail JSON, 叶子)。仿 M0 catalog 模板。
+# - DB 外接宿主 MySQL: DB_HOST=host.docker.internal(admin_audit_log 自有表读写, 非 items/inventory)。
+#   注: 源码无 _ensure_schema / 启动 CREATE TABLE, 假定表已由 schema.sql 预建(writes_db_on_startup=false)。
+# - 去 Nacos: NACOS_ENABLED=false → 无下游服务调用(审计叶子)。
+# - OTLP 复用宿主 collector: host.docker.internal:4317(gRPC)。
+# - label app=admin-audit; /health 路由【确认存在】(app.py:282)。
+# - enableServiceLinks:false + 显式 ADMIN_AUDIT_SERVICE_HOST=0.0.0.0 防撞 bind。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-audit
+  namespace: recweb-chaos
+  labels:
+    app: admin-audit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-audit
+  template:
+    metadata:
+      labels:
+        app: admin-audit
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: admin-audit
+          image: recweb-admin-audit:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5022          # 源码实测: ADMIN_AUDIT_SERVICE_PORT 默认 5022
+          env:
+            - name: NACOS_ENABLED
+              value: "false"
+            - name: ADMIN_AUDIT_SERVICE_HOST
+              value: "0.0.0.0"
+            - name: DB_HOST
+              value: "host.docker.internal"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "shopify2"
+            - name: DB_USER
+              value: "recweb_k8s"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-cred
+                  key: password
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "admin_audit_service"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5022
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5022
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-audit
+  namespace: recweb-chaos
+  labels:
+    app: admin-audit
+spec:
+  type: ClusterIP
+  selector:
+    app: admin-audit
+  ports:
+    - name: http
+      port: 5022
+      targetPort: 5022

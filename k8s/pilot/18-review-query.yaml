@@ -1,0 +1,113 @@
+# 18-review-query.yaml — review_query_service Deployment + ClusterIP Service (C-content 族)
+# ----------------------------------------------------------------------------
+# review_query_service(:5018) 商品评论列表读(JOIN users), 可选 enrich→catalog。仿 M0 backend 模板(带下游)。
+# - DB 外接宿主 MySQL: DB_HOST=host.docker.internal(reviews JOIN users 只读)。
+# - 去 Nacos: NACOS_ENABLED=false → _get_catalog_service_url() 走 fallback = env CATALOG_SERVICE_URL,
+#   指向集群内 svc 名 http://catalog:5005(同 ns)。
+# - OTLP 复用宿主 collector: host.docker.internal:4317(gRPC)。
+# - label app=review-query; /health 路由【确认存在】(app.py:409)。
+# - enableServiceLinks:false + 显式 REVIEW_QUERY_SERVICE_HOST=0.0.0.0 防撞 bind。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review-query
+  namespace: recweb-chaos
+  labels:
+    app: review-query
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review-query
+  template:
+    metadata:
+      labels:
+        app: review-query
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: review-query
+          image: recweb-review-query:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5018          # 源码实测: REVIEW_QUERY_SERVICE_PORT 默认 5018
+          env:
+            - name: NACOS_ENABLED
+              value: "false"
+            - name: REVIEW_QUERY_SERVICE_HOST
+              value: "0.0.0.0"
+            # ---- 下游 catalog: 去 Nacos fallback 用 CATALOG_SERVICE_URL, 指集群内 svc 名 ----
+            - name: CATALOG_SERVICE_URL
+              value: "http://catalog:5005"
+            # ---- DB 外接宿主 MySQL(reviews/users 只读 JOIN) ----
+            - name: DB_HOST
+              value: "host.docker.internal"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "shopify2"
+            - name: DB_USER
+              value: "recweb_k8s"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-cred
+                  key: password
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "review_query_service"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5018
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5018
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: review-query
+  namespace: recweb-chaos
+  labels:
+    app: review-query
+spec:
+  type: ClusterIP
+  selector:
+    app: review-query
+  ports:
+    - name: http
+      port: 5018
+      targetPort: 5018

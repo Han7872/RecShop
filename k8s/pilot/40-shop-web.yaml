@@ -1,0 +1,169 @@
+# 40-shop-web.yaml — shop_web Deployment + ClusterIP Service (A-llm-bff 族最复杂一极)
+# ----------------------------------------------------------------------------
+# shop_web(:3000) BFF / 三端 Blueprint 前台。本族最复杂服务:
+#   - SQLAlchemy ORM 经 PyMySQL 连宿主 MySQL shopify2(读权威 + 部分写; items/inventory 只读铁律)
+#   - Flask-Login 会话鉴权; Jinja2 模板 + static 已烤进镜像
+#   - HTTP 代理几乎所有下游域服务(app/service_discovery.py, NACOS=false 时读各 *_SERVICE_URL env)
+#   - AI 助手经 openai SDK→httpx 调 DeepSeek(外部 API, 非 K8S svc)
+# 编号说明: 端口 3000 的后两位 "00" 与 00-namespace.yaml 撞名, 故顺序号续 30-backend 取 40。
+#
+# - DB 外接宿主 MySQL: DB_HOST=host.docker.internal, config.py 拼 mysql+pymysql:// URI。
+#   ⚠ config.py:25 若 DB_PASSWORD 为空会 raise → 必须经 Secret 注入(同 catalog/backend)。
+# - 去 Nacos: NACOS_ENABLED=false → service_discovery 各 get_*_url() 读对应 *_SERVICE_URL env fallback。
+# - 下游 URL 全部指向集群内 svc 名(svc 短名 = 服务名连字符化, 端口 = 该下游文档端口)。
+#   其中 backend / sasrec(经 backend)/ catalog / rec-agent / llm-rerank 已由 M0 + 本族落地;
+#   其余域服务 svc 由对应族落地, 此处按约定 svc 名预填(svc 未就绪时该下游调用失败、不影响 shop_web 启动)。
+# - OTLP 复用宿主 docker-compose collector: host.docker.internal:4317(gRPC)。
+# - 探针: /health 路由【确认存在】(app/__init__.py:152, 不查库、恒返 200) → httpGet /health。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shop-web
+  namespace: recweb-chaos
+  labels:
+    app: shop_web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shop_web
+  template:
+    metadata:
+      labels:
+        app: shop_web   # Service selector + Chaos Mesh labelSelector 命中此 label
+    spec:
+      enableServiceLinks: false   # 防 K8S 注入 *_SERVICE_HOST/PORT 撞应用变量(主循环 2026-06-25 实测 CrashLoop)
+      containers:
+        - name: shop-web
+          image: recweb-shop-web:latest
+          imagePullPolicy: IfNotPresent   # 本地 build 的镜像, 不去 registry 拉
+          ports:
+            - name: http
+              containerPort: 3000          # 源码实测: SHOPWEB_PORT 默认 3000(run.py __main__)
+          env:
+            # ---- 去 Nacos ----
+            - name: NACOS_ENABLED
+              value: "false"
+            # ---- DB 外接宿主 MySQL(config.py mysql+pymysql://; items/inventory 只读铁律)----
+            - name: DB_HOST
+              value: "host.docker.internal"   # 🔶 主循环实测确认: pod 内能否解析(同 catalog/backend)
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "shopify2"
+            - name: DB_USER
+              value: "recweb_k8s"   # 只读用户(主循环 2026-06-25 建); ⚠ shop_web 有部分写路径(订单/评论/AI记忆等),
+                                    #   若 K8S 内要跑写端点需更高权限账号, M0 只读冒烟用此账号即可(notes 标注)。
+            # DB_PASSWORD 经 K8S Secret 注入(主循环 2026-06-25: db-cred); config.py 空密码会 raise, 必填。
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-cred
+                  key: password
+            # ---- 下游域服务 URL: 全部指向集群内 svc 名(service_discovery.py 各 *_SERVICE_URL fallback)----
+            # 推荐/重排链
+            - name: BACKEND_API_URL
+              value: "http://backend:5000"
+            - name: RERANK_SERVICE_URL
+              value: "http://llm-rerank:5002"
+            # 内容/资料链
+            - name: CATALOG_SERVICE_URL
+              value: "http://catalog:5005"
+            - name: SEARCH_SERVICE_URL
+              value: "http://search:5017"
+            - name: REVIEW_SERVICE_URL
+              value: "http://review:5003"
+            - name: REVIEW_QUERY_SERVICE_URL
+              value: "http://review-query:5018"
+            - name: ANNOUNCEMENT_SERVICE_URL
+              value: "http://announcement:5009"
+            - name: MERCHANT_SERVICE_URL
+              value: "http://merchant:5019"
+            - name: USER_SERVICE_URL
+              value: "http://user:5004"
+            - name: ADDRESS_SERVICE_URL
+              value: "http://address:5007"
+            - name: AI_MEMORY_SERVICE_URL
+              value: "http://ai-memory:5008"
+            # 交易链
+            - name: CART_SERVICE_URL
+              value: "http://cart:5006"
+            - name: ORDER_SERVICE_URL
+              value: "http://order:5010"
+            - name: CHECKOUT_SERVICE_URL
+              value: "http://checkout:5011"
+            - name: PAYMENT_SERVICE_URL
+              value: "http://payment:5012"
+            - name: INVENTORY_SERVICE_URL
+              value: "http://inventory:5013"
+            - name: PROMOTION_SERVICE_URL
+              value: "http://promotion:5015"
+            - name: SHIPPING_SERVICE_URL
+              value: "http://shipping:5016"
+            # 埋点/通知/审计
+            - name: INTERACTION_SERVICE_URL
+              value: "http://interaction:5020"
+            - name: NOTIFICATION_SERVICE_URL
+              value: "http://notification:5021"
+            - name: ADMIN_AUDIT_SERVICE_URL
+              value: "http://admin-audit:5022"
+            # ---- DeepSeek 外部 API: AI 助手用, 非 K8S svc, key/base 经宿主 .env 注入, 这里不引入。----
+            # ---- OTel: 复用宿主 docker-compose collector ----
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "shop_web"   # 与裸进程栈一致(__init__.py:28 setdefault), 保 Jaeger serviceName 不变
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          # ---- 探针: /health 确认存在(app/__init__.py:152, 不查库、恒 200)----
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"     # 最复杂服务(ORM + 三端 Blueprint + 多下游代理 + AI 助手), 比薄服务给足
+            limits:
+              cpu: "500m"
+              memory: "512Mi"     # 族特点: shop_web 最重, mem limit 给 512Mi(高于薄服务 256Mi)
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shop-web          # 集群内 DNS: shop-web.recweb-chaos.svc(同 ns 直接 shop-web)
+  namespace: recweb-chaos
+  labels:
+    app: shop_web
+spec:
+  type: ClusterIP
+  selector:
+    app: shop_web
+  ports:
+    - name: http
+      port: 3000          # svc 端口与容器端口一致, 便于 port-forward(前台入口) / runner URL 零改
+      targetPort: 3000

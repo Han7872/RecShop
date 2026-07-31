@@ -1,0 +1,19 @@
+# Phase0 load-bearing gate -- pip constraints (pins reproduce the main conda env
+# `recweb2` EXACTLY). ASCII-only on purpose: pip decodes this file with the system
+# locale (GBK on this Chinese Windows), so non-ASCII bytes crash the constraint parser.
+#
+# Purpose: install openinference-instrumentation-langchain into a THROWAWAY venv WITHOUT
+# allowing it to bump any production-stack version. If pip cannot find an openinference
+# version compatible with these pins, THAT resolution failure is itself the compat answer
+# (a legitimate NO-GO) -- do NOT loosen the langchain / langchain-core pins to satisfy it.
+#
+# Verified against conda env recweb2 (python3) 2026-07-16.
+langchain==0.3.24
+langchain-core==0.3.56
+langchain-openai==0.3.14
+langgraph==0.3.24
+opentelemetry-api==1.42.1
+opentelemetry-sdk==1.42.1
+opentelemetry-semantic-conventions==0.63b1
+opentelemetry-instrumentation==0.63b1
+wrapt==2.1.2

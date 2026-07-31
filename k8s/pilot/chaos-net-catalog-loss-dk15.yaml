@@ -1,0 +1,24 @@
+# DK15 catalog_latency_x_net_loss 专用 netem loss(2026-07-03): catalog-gw → catalog 边单边真丢包。
+# ★强度 85%(非共享 60%): DK15 的 root_a=catlat 是 app-latency(catalog before_request sleep)非 net_delay,
+#   不像 DK03 net_delay 那样放大 loss 的重传超时失败 → 纯 60% loss 只产 ~21% 请求 error(< 0.3 阈,smoke dk15_smoke_01 实测)。
+#   提到 85% 使纯 loss(无 net_delay boost)也产生 robust ≥0.3 请求级 error → per_root_B 稳过,保 0.3 阈与 DK03 一致(不降阈避免 fudge 嫌疑)。
+#   ★DK15 专用(独立 metadata.name=net-loss-catalog-dk15),不碰共享 chaos-net-catalog-loss.yaml → net_loss_single/DK03 的 60% 标定零影响。
+# ⚠ 诚实(承探针 B): netem qdisc 丢包【不进】cAdvisor dropped 计数 → gate 用 app 层 error_ratio 签名,绝不 claim 用 dropped-metric。
+# 真窗靠 runner delete CRD 对齐(非 duration)。loss 是 RCAEval 已发表原子类,克制不当卖点;85% 是工况标定非新颖性。
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: net-loss-catalog-dk15
+  namespace: recweb-chaos
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces: [recweb-chaos]
+    labelSelectors:
+      app: catalog-gw
+  direction: to
+  loss:
+    loss: "85"
+    correlation: "0"
+  duration: "300s"

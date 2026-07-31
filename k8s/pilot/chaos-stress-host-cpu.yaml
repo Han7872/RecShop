@@ -1,0 +1,31 @@
+# M3b S1 off-graph host_cpu 共因: stressor pod 内 StressChaos cpu(stress-ng)溢出整 VM(stressor 无 cpu limit)。
+# probe4/5/6 2026-06-27 实证语义(★推翻设计的真机制, 违反=白做):
+#   - 机制: StressChaos stressors.cpu(workers=12 load=100) → stressor pod(chaos-stressor-deploy.yaml, 无 cpu limit
+#     + requests cpu=2)内起 stress-ng → CPU 饱和整 VM(12 vCPU)→ 多 co-located pod(pricing/catalog/user)同降级。
+#   - 强度 workers=12 = VM 12 vCPU = sweet spot(probe4: 6[V/2]=NO-OP[6/12 核空闲 victim 被自身 requests 护住];
+#     24[2V]=过头, victim 信号不再增强但 Prometheus scrape 自身被饿出 metric gap)。
+#     workers=12 实测: VM_sat 99%, victim pricing 46→103ms(2.2×)/user 34→69ms(2×), 全 slow-not-fail(零 504), 控制面存活无 churn。
+#   - ★绝不 --vm(防 OOMKill): 仅 cpu stressor。
+#   - AllInjected=True 立即(probe2 同引擎可用); 真窗靠 runner delete CRD 对齐 + scale stressor→0 兜底(probe5: 饱和期 delete 0.2s actuate)。
+#     duration 300s 仅作硬上限兜底(非真窗)。
+# gate(runner common_cause_gate): host 根主判据 = carrier 空间多受害者(≥2 carrier during/baseline p95≥1.8× RELATIVE)
+#   + disjoint user 也降级(host 作用域判别器, S1-vs-S2)+ churn 门(全 ns pod restart_delta=0);
+#   VM_sat 仅 soft/post-hoc range query(高饱和下 during 实时 scrape 饿成 EMPTY → 不作 pass 硬判据, best-effort 记录)。
+#   RELATIVE ratio≥1.8×(probe4 实证 CPU 仅 +50-60ms 绝对, NET 借的 800ms 完全不适用)。
+# CHECKSUM: 纯 CPU 零 DB 写 → 平凡安全(probe5 实证)。
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: stress-host-cpu
+  namespace: recweb-chaos
+spec:
+  mode: all
+  selector:
+    namespaces: [recweb-chaos]
+    labelSelectors:
+      app: stressor
+  stressors:
+    cpu:
+      workers: 12
+      load: 100
+  duration: "300s"

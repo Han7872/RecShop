@@ -1,0 +1,30 @@
+# M3d S4 dual_podfail_staggered 的 F2 根: user 容器换 pause:latest → 不可用(仿 M2b catalog 版)。
+# 探针 10 2026-06-27 实证语义(★叶子 victim 检测口径, 违反=误判):
+#   - 机制: 容器镜像换 gcr.io/google-containers/pause:latest → ready=false → user 不可用(/profile 不可达)。
+#   - ★ user 是【叶子 victim】(无上游 service caller 经 service-routed 探出): 直连 port-forward 的 curl 对 pause-swap
+#     pod 有路由/连接缓存 quirk(probe10: 容器确 swap pause + restart+2, 但 pf-curl 仍 200)→ **检测不能靠 carrier-pf**,
+#     须走 availability(kubectl restart_delta∈{1,2} + ready 滞后)。pod-failure 机制本身 M2b(catalog)已证, target=user 泛化。
+#   - AllInjected=True 持续整窗(phase=Run, 适配 runner apply→poll AllInjected→delete 模式)。
+#   - inject→生效有【几秒延迟】(刚 AllInjected 时容器还没换完)。
+#   - restart_count: inject +1、recover +1(共 +2, 【同 pod 原地重启, pod 不重建】)。
+#     → 窗有效性门: restart_delta∈{1,2} 视为合法 pod-failure 签名(非作废 churn); >2 或【非 target pod】重启=churn 作废。
+#   - 恢复: duration 到期 或 runner delete CRD → container swap 回真镜像 → 自动恢复(再 +1 restart)。
+#     user 亦有 readinessProbe(/health:5004, initialDelay5/period10/failureThreshold3)→ ready 翻 false/true 滞后 ~35s,
+#     仅滞后 evidence(非 abort 条件), 同 catalog。
+# target=user: 与 catalog 调用图【不相交】(probe10: user_service 源码无 catalog 调用, /profile 直读 users 表)
+#   → different_request_path 前提满足; user 只读 /profile(无写) + pause-swap 无 DB → CHECKSUM 平凡安全。
+# DR13 parity: F1=catalog pod-failure【前半窗】× F2=user pod-failure【后半窗】, staggered(时间分离不重叠)= independent_parallel。
+# pod-failure(非 pod-kill): 容器换 pause:latest 持续型(AllInjected 整窗), 非 one-shot pod 重建; pod-kill 真重启留 M6。
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-failure-user
+  namespace: recweb-chaos
+spec:
+  action: pod-failure
+  mode: all
+  selector:
+    namespaces: [recweb-chaos]
+    labelSelectors:
+      app: user
+  duration: "300s"

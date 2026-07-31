@@ -1,0 +1,108 @@
+# 19-merchant.yaml — merchant_service Deployment + ClusterIP Service (C-content 族)
+# ----------------------------------------------------------------------------
+# merchant_service(:5019) 商家资料+店铺读取/部分更新(单事务, 店铺不存在自动建店)。仿 M0 catalog 模板。
+# - DB 外接宿主 MySQL: DB_HOST=host.docker.internal(merchants/shops 表读写, 非 items/inventory)。
+# - 去 Nacos: NACOS_ENABLED=false → 无下游服务调用。
+# - OTLP 复用宿主 collector: host.docker.internal:4317(gRPC)。
+# - label app=merchant; /health 路由【确认存在】(app.py:382)。
+# - enableServiceLinks:false + 显式 MERCHANT_SERVICE_HOST=0.0.0.0 防撞 bind。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: merchant
+  namespace: recweb-chaos
+  labels:
+    app: merchant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: merchant
+  template:
+    metadata:
+      labels:
+        app: merchant
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: merchant
+          image: recweb-merchant:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5019          # 源码实测: MERCHANT_SERVICE_PORT 默认 5019
+          env:
+            - name: NACOS_ENABLED
+              value: "false"
+            - name: MERCHANT_SERVICE_HOST
+              value: "0.0.0.0"
+            - name: DB_HOST
+              value: "host.docker.internal"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "shopify2"
+            - name: DB_USER
+              value: "recweb_k8s"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-cred
+                  key: password
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "merchant_service"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5019
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5019
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: merchant
+  namespace: recweb-chaos
+  labels:
+    app: merchant
+spec:
+  type: ClusterIP
+  selector:
+    app: merchant
+  ports:
+    - name: http
+      port: 5019
+      targetPort: 5019

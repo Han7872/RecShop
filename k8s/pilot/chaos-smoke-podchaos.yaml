@@ -1,0 +1,32 @@
+# chaos-smoke-podchaos.yaml — Chaos Mesh PodChaos pod-failure smoke(打 catalog)
+# ----------------------------------------------------------------------------
+# M0 pilot 第 6 条: 装 namespace-scoped Chaos Mesh 后跑 1 个 PodChaos pod-failure 打
+# catalog(mode=one, duration=30s), 观察 pod 状态变化 + OTel"遥测变暗"签名。
+#
+# ⚠ 模板, 不要现在 apply —— 集群还没起、Chaos Mesh 还没装。主循环装完 Chaos Mesh 再:
+#     kubectl apply -f k8s/pilot/chaos-smoke-podchaos.yaml
+#     kubectl get podchaos -n recweb-chaos    # 看 AllInjected
+#     kubectl get pods -n recweb-chaos -w      # 看 catalog pod 在 30s 内不可用→恢复
+#     kubectl delete -f k8s/pilot/chaos-smoke-podchaos.yaml
+#
+# pod-failure: 把目标容器临时换成 pause 镜像, 持续 duration 后自动恢复(真不可用窗)。
+# labelSelector app=catalog 对齐 10-catalog.yaml 的 pod label。
+# ----------------------------------------------------------------------------
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: smoke-catalog-pod-failure
+  namespace: recweb-chaos          # CRD 与目标同 ns(namespace-scoped Chaos Mesh)
+spec:
+  action: pod-failure
+  mode: one                        # 命中一个匹配 pod(M0 catalog 只有 1 replica)
+  duration: "30s"                  # 30s 不可用窗, 到点自动恢复
+  selector:
+    namespaces:
+      - recweb-chaos
+    labelSelectors:
+      app: catalog                 # 对齐 catalog pod label(10-catalog.yaml template.metadata.labels)
+# 🔶 主循环实测确认:
+#   - Chaos Mesh CRD apiVersion 是否仍是 chaos-mesh.org/v1alpha1(随装的 Chaos Mesh 版本核对)
+#   - duration 到点 pod 恢复时机 vs OTel 信号恢复时机(窗对齐靠 runner, 非 CRD 恢复时机;
+#     承 v1 service_restart=91s 健康等待同类问题)

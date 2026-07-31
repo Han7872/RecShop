@@ -1,0 +1,141 @@
+{
+  "_doc": "本树的机器可读披露清单。id 必须覆盖验收 --json-out 里所有 WARN / DISCLOSE-FAIL 项(规范 §7.3);每条的 n 里放**现算的数**,recompute 给可复跑的命令。验收命令见 SUMMARY.md §验收状态。",
+  "tree": "datasets/agentfault_k8s",
+  "verifier": "scripts/chaos/agentfault/k8s/verify_recollect_acceptance.py",
+  "acceptance_report": "(reports)/agentfault_k8s_acceptance.json",
+  "known_limitations": [
+    {
+      "id": "B4",
+      "severity": "DISCLOSE",
+      "status": "已归因,非劣化",
+      "n": {
+        "hist_slots": 1040,
+        "degraded_slots": 35,
+        "rate": 0.0337,
+        "ref_hist_slots": 1030,
+        "ref_degraded_slots": 29,
+        "ref_rate": 0.0282,
+        "distinct_degraded_ids": 27,
+        "of_which_not_in_authoritative_table": 26,
+        "ref_distinct_degraded_ids": 28,
+        "ref_not_in_table": 26
+      },
+      "text": "历史侧(get_product_details)劣化率 0.0337 略高于 REF 的 0.0282。**归因已做**:本树 27 个劣化 distinct id 里 **26 个根本不在权威表 shared/data/electronics.item 里** —— 它们是 agent(多为被注入幻觉后)**编造出来的 ASIN**,下游 get_product_details 查不到才回兜底串。REF 同样是 28 里 26 个编造。⇒ 两批机制相同、编造条数几乎一样(26 vs 26),率差来自槽数分母而非系统性劣化。**这不是数据缺陷,是故障信号的副产物**;但用『标题查得到与否』做检测特征的方法要注意它。",
+      "evidence": "逐 id 回权威表核对(在表里 1/27;REF 2/28)",
+      "recompute": "见 SUMMARY.md §附录A 的脚本片段"
+    },
+    {
+      "id": "C2",
+      "severity": "DISCLOSE",
+      "status": "结构性,非本轮回归",
+      "n": {
+        "combos_below_1.0": [
+          "format_Recommendation_Synthesizer"
+        ],
+        "format_ledger_traces": 1,
+        "format_faulted": 12,
+        "faulted_total": 96,
+        "recomputable_from_tree": 85,
+        "pct": 88.54,
+        "nowhere_on_disk": 11,
+        "ref_format_ledger_traces": 1,
+        "ref_format_faulted": 12
+      },
+      "text": "随树同发的 ledgers/format_Recommendation_Synthesizer.jsonl 只有 **1** 条 trace(应 12)。机制:sync_ledger 用 _write_local() **覆盖写**本地台账;format_* 是 per-rep combo(每个 rep 换实例、每 rep 重新 sync)⇒ 后一个 rep 把前一个盖掉,只剩最后一个。★**不是 K8S 特有、也不是本轮回归**:已发布的 agentfault_v2 的 format_* 同样是 1/12。★**GT 本身没丢**:root_cause_set / injected / ledger_status 是采集当时写进 CSV 与 journal 的,C1(GT 守恒)与 C5(kind×injected 交叉表)都 PASS。缺的是**原始台账这个随包工件**,影响的是『事后逐条证伪』而不是『GT 对不对』。全树可复算率 **85/96 = 88.54%**,不可复算的 11 条全部落在 format_* 这一个 combo。",
+      "evidence": "scripts/chaos/agentfault/k8s/measure_ledger_completeness.py --tree datasets/agentfault_k8s",
+      "recompute": "python scripts/chaos/agentfault/k8s/measure_ledger_completeness.py --tree datasets/agentfault_k8s"
+    },
+    {
+      "id": "C3",
+      "severity": "BLOCK-RELEASE",
+      "status": "真缺口但实际影响面已量化;采集侧未落地(规范 §8-P2),本轮不补",
+      "n": {
+        "faulted": 96,
+        "with_ground_truth_matched": 0,
+        "eval_scripts_reading_ground_truth_matched": 0,
+        "recomputable_from_shipped_ledger": 85,
+        "not_recomputable": 11,
+        "not_recomputable_all_in_combo": "format_Recommendation_Synthesizer",
+        "of_those_11_corroborated_by_contract_validator": 11
+      },
+      "text": "96/96 个 faulted case 的 journal 里没有 ground_truth.matched(原始台账条目)。runner 的 _determine_gt 在内存里算出了它,但 write_raw_journal 只落派生结论。**为什么本轮不补**:(a) 采集期改 runner 对本轮无效(代码已 import),却会让『盘上代码 == 产出这批数据的代码』不成立 —— 那是比 C3 FAIL 更坏的 provenance 污染;(b) 采后从随树同发的 ledgers/ 重算再写进 journal,只是把**本来就可推导**的东西再写一遍,反而给人『自包含』的错觉 —— 真正有价值的恰恰是台账丢失的那 11 条,而那部分补不出来。⇒ 如实 FAIL + 用 C2 的数说清实际影响面(88.54% 可复算)。落地 §8-P2 后重采才能真正关闭。\n\n【实际影响面(2026-07-27 实测,不是估计)】(1) **评测零影响**:全 eval 链 grep `ground_truth.matched` **零命中** —— 四套 harness 的 GT 都从 CSV 列取。C3 影响的只是『第三方能否逐条回溯注入证据』。(2) 85/96 可从随树 `ledgers/` 复算;不可复算的 **11 条全部落在 format_Recommendation_Synthesizer**。(3) ★那 11 条有**独立于台账**的佐证:`contract_check_matches_expected = 1`(**11/11**)——契约校验器检查真实 tool call 输出,确认观测到的契约违反**恰好是该 format_subtype 应造成的那一种**(r1 missing_field→required_fields / r2 type_violation→field_types / r4 malformed_json→json_parsable …),且 subtype 是确定性轮换,模式本身可核。\n★**但这套佐证有前提**:它成立是因为丢的恰好是 `format_violation` —— **确定性注入、契约可检**。同样的丢失若发生在 `hallucinate` 族(LLM 中介、无确定性契约特征),**残余不确定性就是真的**。⇒ C3 的严重性**依 combo 而定**,本批次丢的位置恰好是佐证最强的那个。闸报 FAIL 是对的 —— 它不该假设每次都这么走运。",
+      "evidence": "eval 链 grep 零命中;11 条无台账 case 的 contract_check_matches_expected 全 = 1",
+      "recompute": "grep -rn \"ground_truth.*matched\" scripts/chaos/agentfault/eval/  # 应零命中\npython scripts/chaos/agentfault/k8s/measure_ledger_completeness.py --tree datasets/agentfault_k8s"
+    },
+    {
+      "id": "A6-EVIDENCE-CLASS",
+      "severity": "DISCLOSE",
+      "status": "降一档,已如实标注",
+      "n": {
+        "evidence_class": "contemporaneous_run_log",
+        "invocations": 2,
+        "escape_flags": 0,
+        "warmup_min": 1
+      },
+      "text": "A6(逃生开关留痕)本轮走的是 **contemporaneous_run_log** 档,不是最强的 runner_emitted ——规范 §8-P1(runner 自己记 argv/开关)至今未落地。本档的证据是采集当时由 shell 实时写的运行日志(随树同发 provenance/collect_run.log),A6 会回日志原文重新 grep 六种逃生开关拼法,**不信 invocations.json 的自陈**。它证明『这条命令被发出过』,**不证明**『runner 内部没走别的分支』—— 这是它弱于 runner_emitted 的地方。",
+      "evidence": "provenance/invocations.json + provenance/collect_run.log",
+      "recompute": "python scripts/chaos/agentfault/k8s/verify_recollect_acceptance.py --tree datasets/agentfault_k8s --ref (archived) agentfault_v2 --only A6"
+    },
+    {
+      "id": "OBS-NORMAL-ARM-FABRICATION",
+      "severity": "DISCLOSE",
+      "status": "新观察,必须写进 EVAL_NOTES",
+      "n": {
+        "normal_cases": 12,
+        "normal_cases_with_fabricated_asin": 1,
+        "case": "normal__r12",
+        "fabricated_ids": 7,
+        "ref_normal_cases_with_fabricated_asin": 0
+      },
+      "text": "★零根臂(normal,**无任何注入**)里有 **1/12** 个 case(normal__r12)产出了 **7 个不存在于权威表的 ASIN**,agent 随后还对它们调了 get_product_details。即 **对照臂会自发幻觉**。REF(agentfault_v2)的 normal 臂 0/12 出现该现象。⇒ 结论要分开说:**结构信号**(agentfault.resolved_input 签名)在零根臂上的偏离率是 **0.000000**(H2 实测,98 条样本/4 agent);但**内容型『编造 ASIN』检测器**在零根臂上至少有 **1/12 ≈ 8.3%** 的假阳。评测里把『ASIN 查不到』当阳性特征时必须扣掉这个底噪。样本量小(n=12),该比例只作**下界提示**,不足以当稳定的假阳率估计。",
+      "evidence": "normal__r12 的 hist 面 7 个 id 逐一回权威表核对,0/7 命中",
+      "recompute": "见 SUMMARY.md §附录A"
+    },
+    {
+      "id": "ENV-SASREC-ITEMFILE",
+      "severity": "DISCLOSE",
+      "status": "本批次专有环境改动,采后已还原",
+      "n": {
+        "startup_s_before": 29,
+        "startup_s_after": 110,
+        "startup_probe_budget_s": 300,
+        "rss_gb_before": 10.02,
+        "rss_gb_after": 10.16,
+        "node_mem_gb": 32.8,
+        "titles_loaded": 1946161
+      },
+      "text": "为让候选侧有商品语义,本批次给 sasrec pod 以 subPath+readOnly 挂了 PVC recagent-data 里的 electronics.item(脚本 k8s/patch_sasrec_itemfile.ps1)。**这是 25 服务共享栈里的 sasrec = 传统 255 数据集的采集环境**,故采完即用 restore_sasrec_stock.ps1 还原。实测代价:启动 29s→110s(startupProbe 预算 300s)、RSS 10.02→10.16GB(+140MB,节点 32.8GB)。已采的传统 255 在盘上不受影响;但**后续若再采传统数据,环境已与那 255 不再逐字节一致**这一点必须记住。",
+      "evidence": "patch 脚本的 verify 段 + Prometheus 实测",
+      "recompute": "powershell -File scripts/chaos/agentfault/k8s/patch_sasrec_itemfile.ps1(幂等)"
+    },
+    {
+      "id": "CAND-FETCHK-DIFF-VS-REF",
+      "severity": "DISCLOSE",
+      "status": "有意的严格增量改动",
+      "n": {
+        "fetch_k_this": "min(top_k*10,100)",
+        "fetch_k_ref": "min(top_k*3,50)",
+        "calls": 129,
+        "calls_with_5_candidates": 129,
+        "calls_short_this": 0,
+        "ref_calls": 129,
+        "ref_calls_short": 9,
+        "ref_short_pct": 7.0
+      },
+      "text": "本树的过采倍数是 ×10(上限 100),REF(agentfault_v2)是 ×3(上限 50)。原因:SASRec top-K 里占位符标题约占**一半**(远高于权威表全表的 26.05%),×3 时实测约 **7%** 的候选调用只拿到 4 个候选(REF 129 次调用里 9 次)。**严格增量**:filtered[:top_k] 按 SASRec 原序取前 top_k,原本就有 ≥top_k 个存活的调用输出**逐字不变**,只把那 7% 从 4 补到 5。本树实测 **129/129 全是 5 个候选**。⇒ 与 REF 对读时,候选**条数**这一列本树更整齐;候选**内容**在非缺额调用上一致。",
+      "evidence": "候选条数分布:本树 {5:129};REF {4:9, 5:120}",
+      "recompute": "见 SUMMARY.md §附录A"
+    },
+    {
+      "id": "NO-PRE-WINDOW",
+      "severity": "DISCLOSE",
+      "status": "采集期物理条件,采后补不回",
+      "n": {
+        "pre_window_cases": 0
+      },
+      "text": "本树**没有注入前的净基线窗**(规范 §8-P4 未落地)。零根臂 normal(12 case)提供的是**跨 case** 的干净对照,不是**同 case 内**注入前后的对照。做『注入前 vs 注入后』同窗对比的方法在本树上做不了。",
+      "evidence": "journal 的 window 段只有单一窗",
+      "recompute": "n/a(采集期物理条件)"
+    }
+  ]
+}

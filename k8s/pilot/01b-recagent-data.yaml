@@ -1,0 +1,36 @@
+# 01b-recagent-data.yaml — rec-agent 的商品元数据卷(PVC recagent-data)
+# ----------------------------------------------------------------------------
+# 为什么单独一个文件、不并进 01-rec-agent.yaml:
+#   restore_recagent_stock.ps1 靠 `kubectl replace -f 01-rec-agent.yaml` 把整个 spec
+#   替换回 stock。01 保持"干净的 stock 定义"这条语义不能破 —— 采集用的镜像/内存上限/
+#   数据卷全部只写在 patch 脚本的 strategic merge patch 里,replace 一跑就全回去了。
+#   PVC 是独立生命周期对象,采完**保留不删**(267MB 数据不必重灌;重采即用)。
+#
+# 装的是什么:shared/data/electronics.item(266,818,680 B ≈ 254 MiB,1,946,169 行,
+#   26.05% 是 `Product_<id>` 占位符标题)。这是 agents/tools.py 的 title cache 源
+#   (`_load_title_cache` / `_filter_real_title` / `get_item_title` 全靠它)。
+#   ★该文件 gitignored(同模型权重,第三方须自备)→ 不烘进镜像:
+#     根 .dockerignore 里 `**/*.item` 与 pkl/pth/inter 同列,"大文件绝不进镜像"是本仓铁律;
+#     烘进去还会造成"镜像自足"的假象(其实第三方照样拿不到),且每改一行代码重传 254MiB。
+#
+# ★为什么不是 hostPath(已证伪):Docker Desktop 的 K8S 节点 `desktop-control-plane`
+#   是个 kind 容器,里面**没有** /run/desktop/mnt/host(实测 `docker exec ... ls` -> No such
+#   file or directory;`docker inspect` 的 Mounts 只有 /etc/kind/hosts.toml、/lib/modules
+#   和一个挂 /var 的 docker volume)。同一坑已记在 k8s/pilot/20-sasrec.yaml L115-117。
+#
+# 灌数据:powershell -ExecutionPolicy Bypass -File scripts/chaos/agentfault/k8s/load_recagent_data.ps1
+#   (WaitForFirstConsumer:PVC 必须先被 pod 挂上才会 Bound,所以顺序是 apply -> patch -> 灌)
+# ----------------------------------------------------------------------------
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: recagent-data
+  namespace: recweb-chaos
+  labels:
+    app: recommendation_agent
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: standard      # rancher local-path(集群默认), WaitForFirstConsumer
+  resources:
+    requests:
+      storage: 1Gi                # 254 MiB 数据 + 余量

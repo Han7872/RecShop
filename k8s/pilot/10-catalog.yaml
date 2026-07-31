@@ -1,0 +1,115 @@
+# 10-catalog.yaml — catalog_service Deployment + ClusterIP Service (M0 pilot)
+# ----------------------------------------------------------------------------
+# catalog_service(:5005) 高 fan-in 纯只读目录服务。M0 三服务最轻一极。
+# - DB 外接宿主 MySQL(must-fix#5): DB_HOST=host.docker.internal。
+# - 去 Nacos: NACOS_ENABLED=false → get_service_url 直返 fallback(catalog 无下游服务调用)。
+# - OTLP 复用宿主 docker-compose collector: host.docker.internal:4317(gRPC)。
+# - label app=catalog 供 Service selector + Chaos Mesh PodChaos selector 共用。
+# - /health 路由【确认存在】(app.py:356), 探活豁免 FAULT_RAISE, 直接用作探针。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog
+  namespace: recweb-chaos
+  labels:
+    app: catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog
+  template:
+    metadata:
+      labels:
+        app: catalog          # Service selector + Chaos Mesh labelSelector 命中此 label
+    spec:
+      enableServiceLinks: false   # 防 K8S 注入 CATALOG_SERVICE_HOST=<ClusterIP> 撞应用 bind 变量(主循环 2026-06-25 实测 CrashLoop)
+      containers:
+        - name: catalog
+          image: recweb-catalog:latest
+          imagePullPolicy: IfNotPresent   # 本地 build 的镜像, 不去 registry 拉(Clash 防雷 G7)
+          ports:
+            - name: http
+              containerPort: 5005          # 源码实测: CATALOG_SERVICE_PORT 默认 5005
+          env:
+            # ---- 去 Nacos ----
+            - name: NACOS_ENABLED
+              value: "false"
+            # 显式 0.0.0.0 兜底(配 enableServiceLinks:false, 防 CATALOG_SERVICE_HOST 撞 bind)
+            - name: CATALOG_SERVICE_HOST
+              value: "0.0.0.0"
+            # ---- DB 外接宿主 MySQL(items/inventory 只读铁律, 不引入任何写)----
+            - name: DB_HOST
+              value: "host.docker.internal"   # 🔶 主循环实测确认: Docker Desktop K8S pod 内能否解析
+                                              #    host.docker.internal(部分版本需 hostAliases 兜底)
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "shopify2"
+            - name: DB_USER
+              value: "recweb_k8s"   # 只读用户(主循环 2026-06-25 建, SELECT on shopify2), 非 root@localhost
+            # DB_PASSWORD 经 K8S Secret 注入(主循环 2026-06-25: kubectl create secret db-cred -n recweb-chaos)
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-cred
+                  key: password
+            # ---- OTel: 复用宿主 docker-compose collector(免装 OTel-on-K8S)----
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "catalog_service"        # 与裸进程栈一致, 保 Jaeger serviceName / exported_job 不变(G1)
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"   # 实测: compose collector OTLP gRPC 宿主映射 4317
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          # ---- 探针: /health 确认存在(app.py:356), DB 连不上返 degraded 但仍 200 ----
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5005
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5005
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"     # Flask + mysql-connector 池(pool_size=3)轻量
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog          # 集群内 DNS: catalog.recweb-chaos.svc(同 ns 直接 catalog)
+  namespace: recweb-chaos
+  labels:
+    app: catalog
+spec:
+  type: ClusterIP
+  selector:
+    app: catalog
+  ports:
+    - name: http
+      port: 5005          # svc 端口与容器端口一致, 便于 port-forward / runner URL 零改
+      targetPort: 5005

@@ -1,0 +1,67 @@
+{
+  "case_id": "hallu_Product_Analyzer__r4",
+  "combo_id": "hallu_Product_Analyzer",
+  "kind": "hallucinate",
+  "agent": "Product_Analyzer",
+  "subtype": null,
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B004LT8LS4",
+      "B00BFO4XSA",
+      "B00GGLANFY",
+      "B00P311V6I",
+      "B00PC3ZZ5A"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 3
+  },
+  "trace_id": "a16d250bc342837c4c633293d9664a5c",
+  "window": {
+    "start": "2026-07-27T13:47:46.409957+00:00",
+    "end": "2026-07-27T13:48:39.176787+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "Product_Analyzer"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "hallucinate"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "none",
+      "User_Behavior_Analyzer": "none",
+      "Product_Analyzer": "hallucinate",
+      "Recommendation_Synthesizer": "none"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "外设/电源配件** | 💰 低 |\n| B00BFO4XSA | XPAND X105-RF-X1 可充电3D RF/蓝",
+    "divergent_needle_present": 1,
+    "response_asin": "B00IVPU786",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-07-27T23:22:02.117362+08:00",
+  "out_dir": "D:\\AIProjects\\RecWeb2\\datasets\\agentfault_k8s",
+  "runs": 12,
+  "warmup": 1,
+  "probe_seq": [
+    "015600206X",
+    "6300215695",
+    "0446673145"
+  ],
+  "carrier_pool": "D:\\AIProjects\\RecWeb2\\scripts\\chaos\\agentfault\\assets\\carrier_pool.json",
+  "carrier_seq_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "combos": [
+    {
+      "combo": "hallu_Sequence_Recommender",
+      "kind": "hallucinate",
+      "skipped": false,
+      "reps": 12,
+      "written": 1,
+      "faulted_reps": 1,
+      "qc_ok": true,
+      "checksum_drift": false,
+      "checksum_before": {
+        "items": 3849590678,
+        "inventory": 3935678504
+      },
+      "checksum_after": {
+        "items": 3849590678,
+        "inventory": 3935678504
+      }
+    }
+  ],
+  "backend_meta": {
+    "backend": "k8s",
+    "namespace": "recweb-chaos",
+    "deployment": "rec-agent",
+    "image": "recweb-rec-agent:agentfault-v2",
+    "src_git_sha": "8dfab20",
+    "probe_path": "kubectl proxy -> svc/rec-agent:5001 (不用 port-forward)",
+    "prometheus": "http://localhost:9090",
+    "host_metric_source": "prom_container",
+    "otlp": "pod 沿用 stock OTEL_EXPORTER_OTLP_ENDPOINT(真 collector),与 traditional 255 同一条链路;两条线靠时间窗隔离,不改 service.name"
+  }
+}

@@ -1,0 +1,290 @@
+{
+  "ctxdrift_prod_from_ub__r1": {
+    "outcome": "recovered",
+    "carrier_seq_id": 0,
+    "clean_rec": "B00E6GRHBO",
+    "drift_rec": "B00E6GRHBO",
+    "clean_title": "LimoStudio 大型重型 10×9.8英尺 背景支架",
+    "drift_title": "LimoStudio 大型重型 10x9.8英尺背景支架"
+  },
+  "ctxdrift_prod_from_ub__r10": {
+    "outcome": "recovered",
+    "carrier_seq_id": 9,
+    "clean_rec": "B0791TX5P5",
+    "drift_rec": "B0791TX5P5",
+    "clean_title": "Fire TV Stick（带Alexa语音遥控的流媒体设备）",
+    "drift_title": "Fire TV Stick 流媒体设备（带 Alexa 语音遥控器）"
+  },
+  "ctxdrift_prod_from_ub__r11": {
+    "outcome": "recovered",
+    "carrier_seq_id": 10,
+    "clean_rec": "B00NJTO4CY",
+    "drift_rec": "B00NJTO4CY",
+    "clean_title": "SiriusXM SXV300V1 卫星广播车载调谐器",
+    "drift_title": "SiriusXM SXV300V1 卫星收音机车载调谐器"
+  },
+  "ctxdrift_prod_from_ub__r12": {
+    "outcome": "recovered",
+    "carrier_seq_id": 11,
+    "clean_rec": "B00AJHDZSI",
+    "drift_rec": "B00AJHDZSI",
+    "clean_title": "ARRIS SURFboard SB6141 DOCSIS 3.0 电缆调制解调器",
+    "drift_title": "ARRIS SURFboard SB6141 8x4 DOCSIS 3.0 Cable Modem"
+  },
+  "ctxdrift_prod_from_ub__r2": {
+    "outcome": "recovered",
+    "carrier_seq_id": 1,
+    "clean_rec": "B00EL94Z4I",
+    "drift_rec": "B00EL94Z4I",
+    "clean_title": "Tech Armor HD Clear Film Screen Protector Designed for Apple iPad Air 9.7",
+    "drift_title": "Tech Armor HD Clear Film Screen Protector - Apple iPad Air 9.7英寸"
+  },
+  "ctxdrift_prod_from_ub__r3": {
+    "outcome": "silent_wrong",
+    "carrier_seq_id": 2,
+    "clean_rec": "B07VTK654B",
+    "drift_rec": "B07PXGQC1Q",
+    "clean_title": "Echo Auto (1st gen) - Hands-free Alexa in your car",
+    "drift_title": "Apple AirPods (2代) 无线耳机"
+  },
+  "ctxdrift_prod_from_ub__r4": {
+    "outcome": "silent_wrong",
+    "carrier_seq_id": 3,
+    "clean_rec": "B00IVPU786",
+    "drift_rec": "B00IVPU7AO",
+    "clean_title": "Samsung 32GB EVO Class 10 Micro SDHC 存储卡（含适配器）",
+    "drift_title": "Samsung EVO 64GB 48/MB/s Micro SDXC Memory Card with Adapter"
+  },
+  "ctxdrift_prod_from_ub__r5": {
+    "outcome": "recovered",
+    "carrier_seq_id": 4,
+    "clean_rec": "B00IVPU786",
+    "drift_rec": "B00IVPU786",
+    "clean_title": "Samsung 32GB EVO Class 10 Micro SDHC 存储卡（含适配器）",
+    "drift_title": "Samsung 32GB Micro SDHC 存储卡 (Class 10, 48MB/s)"
+  },
+  "ctxdrift_prod_from_ub__r6": {
+    "outcome": "recovered",
+    "carrier_seq_id": 5,
+    "clean_rec": "B00OQVZDJM",
+    "drift_rec": "B00OQVZDJM",
+    "clean_title": "Kindle Paperwhite E-reader (Previous generation – 2015 release) - Black",
+    "drift_title": "Kindle Paperwhite E-reader (2015款，黑色，6英寸)"
+  },
+  "ctxdrift_prod_from_ub__r7": {
+    "outcome": "recovered",
+    "carrier_seq_id": 6,
+    "clean_rec": "B01LXDNNBW",
+    "drift_rec": "B01LXDNNBW",
+    "clean_title": "NEEWER 18寸环形灯套装（55W LED 5600K）",
+    "drift_title": "NEEWER 环形灯套件：18英寸/48cm 55W 5600K 可调光LED环形灯"
+  },
+  "ctxdrift_prod_from_ub__r8": {
+    "outcome": "silent_wrong",
+    "carrier_seq_id": 7,
+    "clean_rec": "B00VKIY9RG",
+    "drift_rec": "B00CX5P8FC",
+    "clean_title": "Fire HD 10 Tablet with Alexa",
+    "drift_title": "Amazon Fire TV - 1st Generation"
+  },
+  "ctxdrift_prod_from_ub__r9": {
+    "outcome": "recovered",
+    "carrier_seq_id": 8,
+    "clean_rec": "B00EL94Z4I",
+    "drift_rec": "B00EL94Z4I",
+    "clean_title": "Tech Armor HD Clear Film Screen Protector Designed for Apple iPad Air 9.7",
+    "drift_title": "Tech Armor HD Clear Film Screen Protector（适用于Apple iPad Air 9.7英寸）"
+  },
+  "ctxdrift_synth_from_prod__r1": {
+    "outcome": "recovered",
+    "carrier_seq_id": 0,
+    "clean_rec": "B00E6GRHBO",
+    "drift_rec": "B00E6GRHBO",
+    "clean_title": "LimoStudio 大型重型 10×9.8英尺 背景支架",
+    "drift_title": "LimoStudio 大型重型 10x9.8英尺 稳固背景架"
+  },
+  "ctxdrift_synth_from_prod__r10": {
+    "outcome": "recovered",
+    "carrier_seq_id": 9,
+    "clean_rec": "B0791TX5P5",
+    "drift_rec": "B0791TX5P5",
+    "clean_title": "Fire TV Stick（带Alexa语音遥控的流媒体设备）",
+    "drift_title": "Fire TV Stick（Alexa语音遥控版）"
+  },
+  "ctxdrift_synth_from_prod__r11": {
+    "outcome": "recovered",
+    "carrier_seq_id": 10,
+    "clean_rec": "B00NJTO4CY",
+    "drift_rec": "B00NJTO4CY",
+    "clean_title": "SiriusXM SXV300V1 卫星广播车载调谐器",
+    "drift_title": "SiriusXM SXV300V1 卫星收音机车载调谐器"
+  },
+  "ctxdrift_synth_from_prod__r12": {
+    "outcome": "recovered",
+    "carrier_seq_id": 11,
+    "clean_rec": "B00AJHDZSI",
+    "drift_rec": "B00AJHDZSI",
+    "clean_title": "ARRIS SURFboard SB6141 DOCSIS 3.0 电缆调制解调器",
+    "drift_title": "ARRIS SURFboard SB6141 8x4 DOCSIS 3.0 Cable Modem - 零售包装"
+  },
+  "ctxdrift_synth_from_prod__r2": {
+    "outcome": "recovered",
+    "carrier_seq_id": 1,
+    "clean_rec": "B00EL94Z4I",
+    "drift_rec": "B00EL94Z4I",
+    "clean_title": "Tech Armor HD Clear Film Screen Protector Designed for Apple iPad Air 9.7",
+    "drift_title": "Tech Armor HD Clear Film Screen Protector for Apple iPad Air 9.7"
+  },
+  "ctxdrift_synth_from_prod__r3": {
+    "outcome": "silent_wrong",
+    "carrier_seq_id": 2,
+    "clean_rec": "B07VTK654B",
+    "drift_rec": "B0791TX5P5",
+    "clean_title": "Echo Auto (1st gen) - Hands-free Alexa in your car",
+    "drift_title": "Fire TV Stick with Alexa Voice Remote"
+  },
+  "ctxdrift_synth_from_prod__r4": {
+    "outcome": "recovered",
+    "carrier_seq_id": 3,
+    "clean_rec": "B00IVPU786",
+    "drift_rec": "B00IVPU786",
+    "clean_title": "Samsung 32GB EVO Class 10 Micro SDHC 存储卡（含适配器）",
+    "drift_title": "Samsung 32GB up to 48MB/s EVO Class 10 Micro SDHC Card with Adapter"
+  },
+  "ctxdrift_synth_from_prod__r5": {
+    "outcome": "recovered",
+    "carrier_seq_id": 4,
+    "clean_rec": "B00IVPU786",
+    "drift_rec": "B00IVPU786",
+    "clean_title": "Samsung 32GB EVO Class 10 Micro SDHC 存储卡（含适配器）",
+    "drift_title": "Samsung 32GB EVO Class 10 Micro SDHC 存储卡（带适配器）"
+  },
+  "ctxdrift_synth_from_prod__r6": {
+    "outcome": "silent_wrong",
+    "carrier_seq_id": 5,
+    "clean_rec": "B00OQVZDJM",
+    "drift_rec": "B01MR9KG7N",
+    "clean_title": "Kindle Paperwhite E-reader (Previous generation – 2015 release) - Black",
+    "drift_title": "Amazon Basics 中型相机收纳包"
+  },
+  "ctxdrift_synth_from_prod__r7": {
+    "outcome": "silent_wrong",
+    "carrier_seq_id": 6,
+    "clean_rec": "B01LXDNNBW",
+    "drift_rec": "B004AZ38Z0",
+    "clean_title": "NEEWER 18寸环形灯套装（55W LED 5600K）",
+    "drift_title": "Heavy Duty Muslin Clamps 4 1/2 inch 6 Pack（重型幕布夹）"
+  },
+  "ctxdrift_synth_from_prod__r8": {
+    "outcome": "silent_wrong",
+    "carrier_seq_id": 7,
+    "clean_rec": "B00VKIY9RG",
+    "drift_rec": "B00CX5P8FC",
+    "clean_title": "Fire HD 10 Tablet with Alexa",
+    "drift_title": "Amazon Fire TV - 1st Generation"
+  },
+  "ctxdrift_synth_from_prod__r9": {
+    "outcome": "recovered",
+    "carrier_seq_id": 8,
+    "clean_rec": "B00EL94Z4I",
+    "drift_rec": "B00EL94Z4I",
+    "clean_title": "Tech Armor HD Clear Film Screen Protector Designed for Apple iPad Air 9.7",
+    "drift_title": "Tech Armor HD Clear Film Screen Protector for Apple iPad Air 9.7\""
+  },
+  "ctxdrift_ub_from_seq__r1": {
+    "outcome": "recovered",
+    "carrier_seq_id": 0,
+    "clean_rec": "B00E6GRHBO",
+    "drift_rec": "B00E6GRHBO",
+    "clean_title": "LimoStudio 大型重型 10×9.8英尺 背景支架",
+    "drift_title": "LimoStudio 大型重型 10×9.8 英尺稳固背景架"
+  },
+  "ctxdrift_ub_from_seq__r10": {
+    "outcome": "recovered",
+    "carrier_seq_id": 9,
+    "clean_rec": "B0791TX5P5",
+    "drift_rec": "B0791TX5P5",
+    "clean_title": "Fire TV Stick（带Alexa语音遥控的流媒体设备）",
+    "drift_title": "Fire TV Stick（带Alexa语音遥控）"
+  },
+  "ctxdrift_ub_from_seq__r11": {
+    "outcome": "recovered",
+    "carrier_seq_id": 10,
+    "clean_rec": "B00NJTO4CY",
+    "drift_rec": "B00NJTO4CY",
+    "clean_title": "SiriusXM SXV300V1 卫星广播车载调谐器",
+    "drift_title": "SiriusXM SXV300V1 卫星收音机车载调谐器"
+  },
+  "ctxdrift_ub_from_seq__r12": {
+    "outcome": "recovered",
+    "carrier_seq_id": 11,
+    "clean_rec": "B00AJHDZSI",
+    "drift_rec": "B00AJHDZSI",
+    "clean_title": "ARRIS SURFboard SB6141 DOCSIS 3.0 电缆调制解调器",
+    "drift_title": "ARRIS SURFboard SB6141 8x4 DOCSIS 3.0 Cable Modem"
+  },
+  "ctxdrift_ub_from_seq__r2": {
+    "outcome": "recovered",
+    "carrier_seq_id": 1,
+    "clean_rec": "B00EL94Z4I",
+    "drift_rec": "B00EL94Z4I",
+    "clean_title": "Tech Armor HD Clear Film Screen Protector Designed for Apple iPad Air 9.7",
+    "drift_title": "Tech Armor HD Clear Film Screen Protector（适用于 Apple iPad Air 9.7英寸）"
+  },
+  "ctxdrift_ub_from_seq__r3": {
+    "outcome": "silent_wrong",
+    "carrier_seq_id": 2,
+    "clean_rec": "B07VTK654B",
+    "drift_rec": "B0791TX5P5",
+    "clean_title": "Echo Auto (1st gen) - Hands-free Alexa in your car",
+    "drift_title": "Fire TV Stick 流媒体设备（含Alexa语音遥控器）"
+  },
+  "ctxdrift_ub_from_seq__r4": {
+    "outcome": "recovered",
+    "carrier_seq_id": 3,
+    "clean_rec": "B00IVPU786",
+    "drift_rec": "B00IVPU786",
+    "clean_title": "Samsung 32GB EVO Class 10 Micro SDHC 存储卡（含适配器）",
+    "drift_title": "Samsung 32GB EVO Class 10 Micro SDHC 存储卡（含适配器）"
+  },
+  "ctxdrift_ub_from_seq__r5": {
+    "outcome": "recovered",
+    "carrier_seq_id": 4,
+    "clean_rec": "B00IVPU786",
+    "drift_rec": "B00IVPU786",
+    "clean_title": "Samsung 32GB EVO Class 10 Micro SDHC 存储卡（含适配器）",
+    "drift_title": "Samsung 32GB EVO Class 10 Micro SDHC 存储卡（含适配器）"
+  },
+  "ctxdrift_ub_from_seq__r6": {
+    "outcome": "recovered",
+    "carrier_seq_id": 5,
+    "clean_rec": "B00OQVZDJM",
+    "drift_rec": "B00OQVZDJM",
+    "clean_title": "Kindle Paperwhite E-reader (Previous generation – 2015 release) - Black",
+    "drift_title": "Kindle Paperwhite E-reader"
+  },
+  "ctxdrift_ub_from_seq__r7": {
+    "outcome": "recovered",
+    "carrier_seq_id": 6,
+    "clean_rec": "B01LXDNNBW",
+    "drift_rec": "B01LXDNNBW",
+    "clean_title": "NEEWER 18寸环形灯套装（55W LED 5600K）",
+    "drift_title": "NEEWER Ring Light Kit: 18\"/48cm Outer 55W 5600K Dimmable LED Ring Light"
+  },
+  "ctxdrift_ub_from_seq__r8": {
+    "outcome": "silent_wrong",
+    "carrier_seq_id": 7,
+    "clean_rec": "B00VKIY9RG",
+    "drift_rec": "B00U3FPN4U",
+    "clean_title": "Fire HD 10 Tablet with Alexa",
+    "drift_title": "Amazon Fire TV with 4K Ultra HD"
+  },
+  "ctxdrift_ub_from_seq__r9": {
+    "outcome": "recovered",
+    "carrier_seq_id": 8,
+    "clean_rec": "B00EL94Z4I",
+    "drift_rec": "B00EL94Z4I",
+    "clean_title": "Tech Armor HD Clear Film Screen Protector Designed for Apple iPad Air 9.7",
+    "drift_title": "Tech Armor HD Clear Film Screen Protector - Apple iPad Air 9.7\""
+  }
+}

@@ -1,0 +1,113 @@
+# 40-review.yaml — review_service Deployment + ClusterIP Service (B-trade 族)
+# ----------------------------------------------------------------------------
+# review_service(:5003) 评论写/审核/回复 + 单事务重算 items.rating(无鉴权内网端点)。
+# - 有 DB(mysql-connector 池): DB_HOST=host.docker.internal 外接宿主 MySQL shopify2。
+#   ⚠ 本服务会 UPDATE items.rating/review_count(写路径)。M0 安全窗 smoke 只打 /health 与读;
+#     勿在只读 CHECKSUM 窗触发 POST /api/reviews(会改 items)—— 与 items 只读铁律相关, 留意。
+# - 无下游服务调用(独立)。
+# - 去 Nacos: NACOS_ENABLED=false。OTLP 复用宿主 collector :4317(gRPC)。
+# - /health 路由【确认存在】(app.py:311), 探活用之。
+# - label app=review 供 Service selector + Chaos Mesh PodChaos selector 共用。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review
+  namespace: recweb-chaos
+  labels:
+    app: review
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review
+  template:
+    metadata:
+      labels:
+        app: review
+    spec:
+      enableServiceLinks: false   # 防 K8S 注入 REVIEW_SERVICE_HOST/PORT 撞应用 bind 变量(M0 实测 CrashLoop)
+      containers:
+        - name: review
+          image: recweb-review:latest
+          imagePullPolicy: IfNotPresent   # 本地 build, 不去 registry(绕 Clash G7)
+          ports:
+            - name: http
+              containerPort: 5003          # 源码实测: REVIEW_SERVICE_PORT 默认 5003
+          env:
+            - name: NACOS_ENABLED
+              value: "false"
+            # 显式 0.0.0.0 兜底(配 enableServiceLinks:false, 防 REVIEW_SERVICE_HOST 撞 bind)
+            - name: REVIEW_SERVICE_HOST
+              value: "0.0.0.0"
+            # ---- DB 外接宿主 MySQL ----
+            - name: DB_HOST
+              value: "host.docker.internal"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "shopify2"
+            - name: DB_USER
+              value: "recweb_k8s"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-cred
+                  key: password
+            # ---- OTel ----
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "review_service"       # 与裸进程栈一致(app.py setdefault)
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5003
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5003
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: review          # 集群内 DNS: review.recweb-chaos.svc(同 ns 直接 review)
+  namespace: recweb-chaos
+  labels:
+    app: review
+spec:
+  type: ClusterIP
+  selector:
+    app: review
+  ports:
+    - name: http
+      port: 5003
+      targetPort: 5003

@@ -1,0 +1,60 @@
+{
+  "_doc": "A6 要的采集调用留痕。**证据等级 = contemporaneous_run_log**：每个字段都能在随树同发的 provenance/collect_run.log 里逐字复核，A6 会真的回去复核（不信本文件的自陈，自己再 grep 一遍逃生开关）。★仍弱于 runner_emitted：它证明'这条命令被发出过'，不证明'runner 内部没走别的分支'——该局限须进 limitations.json。",
+  "evidence_class": "contemporaneous_run_log",
+  "run_log": "provenance/collect_run.log",
+  "generated_by": "scripts/chaos/agentfault/k8s/make_collect_provenance.py",
+  "run_summary_snapshot": "provenance/run_summary_snapshot_01.json",
+  "run_summary_note": "run_summary.json 是每次调用**覆盖写**的（A5 判据：只作旁证）。本快照是在下一次调用覆盖它之前留的。",
+  "escape_cli_checked": [
+    "--allow-inject-residue",
+    "--allow-mixed-tree",
+    "--k8s-allow-inject-residue",
+    "--k8s-skip-code-parity",
+    "--skip-code-parity",
+    "--skip-preflight"
+  ],
+  "invocations": [
+    {
+      "index": 0,
+      "argv": "python3 ${REPO_DIR}/scripts/chaos/agentfault/collect/agentfault_runner.py --runs 12 --out-dir datasets/agentfault_k8s --backend k8s --k8s-ns recweb-chaos --k8s-deploy rec-agent --k8s-proxy http://127.0.0.1:8001 --prom-url http://localhost:9090 --k8s-image-hint agentfault-v2 --k8s-host-metrics prom --kubectl /c/Program Files/Docker/Docker/resources/bin/kubectl",
+      "runs": 12,
+      "warmup": 1,
+      "only": null,
+      "combos": [
+        "hallu_Sequence_Recommender",
+        "hallu_User_Behavior_Analyzer",
+        "hallu_Product_Analyzer",
+        "ctxdrift_ub_from_seq",
+        "ctxdrift_prod_from_ub",
+        "ctxdrift_synth_from_prod",
+        "wrongpick_Recommendation_Synthesizer",
+        "format_Recommendation_Synthesizer",
+        "normal"
+      ],
+      "n_combos_declared_by_runner": 9,
+      "escape_flags_seen_in_argv": [],
+      "k8s_skip_code_parity": false,
+      "k8s_allow_inject_residue": false,
+      "allow_mixed_tree": false,
+      "skip_preflight": false,
+      "segment_tail_ok": true
+    },
+    {
+      "index": 1,
+      "argv": "python3 ${REPO_DIR}/scripts/chaos/agentfault/collect/agentfault_runner.py --runs 12 --out-dir datasets/agentfault_k8s --backend k8s --only hallu_Sequence_Recommender --k8s-ns recweb-chaos --k8s-deploy rec-agent --k8s-proxy http://127.0.0.1:8001 --prom-url http://localhost:9090 --k8s-image-hint agentfault-v2 --k8s-host-metrics prom --kubectl /c/Program Files/Docker/Docker/resources/bin/kubectl",
+      "runs": 12,
+      "warmup": 1,
+      "only": "hallu_Sequence_Recommender",
+      "combos": [
+        "hallu_Sequence_Recommender"
+      ],
+      "n_combos_declared_by_runner": 1,
+      "escape_flags_seen_in_argv": [],
+      "k8s_skip_code_parity": false,
+      "k8s_allow_inject_residue": false,
+      "allow_mixed_tree": false,
+      "skip_preflight": false,
+      "segment_tail_ok": true
+    }
+  ]
+}

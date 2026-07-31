@@ -1,0 +1,67 @@
+{
+  "case_id": "hallu_Sequence_Recommender__r11",
+  "combo_id": "hallu_Sequence_Recommender",
+  "kind": "hallucinate",
+  "agent": "Sequence_Recommender",
+  "subtype": null,
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B003WGJYCY",
+      "B003KPBRRW",
+      "B00E4W7NH8",
+      "B012FARZ3M",
+      "B00E4W1644"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 10
+  },
+  "trace_id": "42440103b1d9e6071f76259d7d3a6be2",
+  "window": {
+    "start": "2026-07-27T13:28:41.441526+00:00",
+    "end": "2026-07-27T13:29:35.574777+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "Sequence_Recommender"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "hallucinate"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "hallucinate",
+      "User_Behavior_Analyzer": "none",
+      "Product_Analyzer": "none",
+      "Recommendation_Synthesizer": "none"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "厨房电器设备** 有浓厚兴趣。\n\n---\n\n### 🏆 推荐结果 Top-5\n\n| 排名 | 商品ID | 推荐得分 |",
+    "divergent_needle_present": 1,
+    "response_asin": "B00O27MR44",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

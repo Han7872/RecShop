@@ -1,0 +1,67 @@
+{
+  "case_id": "hallu_Product_Analyzer__r7",
+  "combo_id": "hallu_Product_Analyzer",
+  "kind": "hallucinate",
+  "agent": "Product_Analyzer",
+  "subtype": null,
+  "field": null,
+  "drop": null,
+  "probe": {
+    "item_sequence": [
+      "B07J4SDWN4",
+      "B0723D3FVL",
+      "B07JR2Q1G1",
+      "B01LXJFMGF",
+      "B07PPL1M2T"
+    ],
+    "top_k": 5,
+    "carrier_seq_id": 6
+  },
+  "trace_id": "eb2fffb7117d2186c9990c64566db66a",
+  "window": {
+    "start": "2026-07-27T13:50:40.650001+00:00",
+    "end": "2026-07-27T13:51:46.274561+00:00"
+  },
+  "ground_truth": {
+    "root_cause_agent_set": [
+      "Product_Analyzer"
+    ],
+    "n_root_causes": 1,
+    "fault_type_set": [
+      "hallucinate"
+    ],
+    "per_agent_fault": {
+      "Sequence_Recommender": "none",
+      "User_Behavior_Analyzer": "none",
+      "Product_Analyzer": "hallucinate",
+      "Recommendation_Synthesizer": "none"
+    },
+    "faulted": true,
+    "ledger_status": "injected",
+    "source": "injection_ledger"
+  },
+  "content_track": {
+    "divergent_needle": "华为用户**（出现Type-C转接头） |\n| **🎬 创作场景** | 视频录制、直播、教学演示、产品俯拍评测 |\n|",
+    "divergent_needle_present": 1,
+    "response_asin": "B01LXDNNBW",
+    "response_asin_is_sentinel": "",
+    "toolcall_asin_is_sentinel": "",
+    "contract_first_failed_check": "",
+    "contract_expected_check": "",
+    "contract_check_matches_expected": "",
+    "context_drift_dropped_agent": "",
+    "context_drift_dropped_chars": "",
+    "non_target_injected": []
+  },
+  "checksum": {
+    "before": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "after": {
+      "items": 3849590678,
+      "inventory": 3935678504
+    },
+    "alarm": false
+  }
+}

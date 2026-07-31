@@ -1,0 +1,115 @@
+# 45-inventory.yaml — inventory_service Deployment + ClusterIP Service (B-trade 族)
+# ----------------------------------------------------------------------------
+# inventory_service(:5013) 库存: 查可用(stock-reserved)/预留(FOR UPDATE 防超卖); 调 catalog 校验。
+# - 有 DB(mysql-connector 池): DB_HOST=host.docker.internal。
+#   ⚠⚠ 启动幂等建表(writes_db_on_startup): 容器首启对 shopify2 CREATE TABLE IF NOT EXISTS
+#       `inventory`(本服务自有新表 —— 注意名字与"业务 inventory 只读铁律"里的 inventory 表
+#        是【两码事】: 铁律指的旧业务表; 本服务自有 inventory 库存表)。需 recweb_k8s 有 DDL 权限。
+#       【风险点, 见 notes: DB_USER 权限 + 表名歧义需主循环核对】
+# - 下游 catalog_service(校验): CATALOG_SERVICE_URL=http://catalog:5005。
+# - 去 Nacos: NACOS_ENABLED=false。/health 路由【确认存在】(app.py:469)。label app=inventory。
+# ----------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory
+  namespace: recweb-chaos
+  labels:
+    app: inventory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory
+  template:
+    metadata:
+      labels:
+        app: inventory
+    spec:
+      enableServiceLinks: false   # 防 K8S 注入 INVENTORY_SERVICE_HOST/PORT 撞应用 bind 变量
+      containers:
+        - name: inventory
+          image: recweb-inventory:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5013          # 源码实测: INVENTORY_SERVICE_PORT 默认 5013
+          env:
+            - name: NACOS_ENABLED
+              value: "false"
+            - name: INVENTORY_SERVICE_HOST
+              value: "0.0.0.0"
+            # ---- 下游 catalog(校验): 指向集群内 svc 名 ----
+            - name: CATALOG_SERVICE_URL
+              value: "http://catalog:5005"
+            # ---- DB 外接宿主 MySQL(启动建 inventory 表) ----
+            - name: DB_HOST
+              value: "host.docker.internal"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "shopify2"
+            - name: DB_USER
+              value: "recweb_k8s"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-cred
+                  key: password
+            # ---- OTel ----
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "inventory_service"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.docker.internal:4317"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+            # ---- K8s downward-API -> OTEL_RESOURCE_ATTRIBUTES (labels-enrichment: pod/ns/node resource attrs) ----
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: POD_NAMESPACE
+              valueFrom: {fieldRef: {fieldPath: metadata.namespace}}
+            - name: NODE_NAME
+              valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(POD_NAMESPACE),k8s.node.name=$(NODE_NAME)"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5013
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5013
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory          # 集群内 DNS: inventory.recweb-chaos.svc
+  namespace: recweb-chaos
+  labels:
+    app: inventory
+spec:
+  type: ClusterIP
+  selector:
+    app: inventory
+  ports:
+    - name: http
+      port: 5013
+      targetPort: 5013

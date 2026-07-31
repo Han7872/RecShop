@@ -1,0 +1,1 @@
+{"ts": 1785164881.5936065, "trace_id": "675cce840cf158dfc03b1adc0cf77397", "agent": "Recommendation_Synthesizer", "kind": "format_violation", "status": "injected", "mechanism": "deterministic_structure_corruption", "target": "Synthesize_Recommendation.tool_call", "violation": {"subtype": "malformed_json", "field": "(whole)"}}
