@@ -1,8 +1,8 @@
 # traditional_v2_strict51 — 传统基础设施故障数据集 v2（strict51 协议化重采）
 
 > **完整数据集（255 case，全量三模态遥测 + GT + doc 层）托管在 Google Drive：**
-> 🔗 **（待上传后回填链接）**
-> 文件 = `strict51_20260819.zip`（346.1 MiB），SHA256 =
+> 🔗 https://drive.google.com/drive/folders/1-YcWVTDeD1T-F_E_70-K4mvEcfRZhem2 （`Dataset/` 子目录）
+> 文件 = `strict51_20260819.zip`（346.1 MB），SHA256 =
 > `79624aea3a00315c4b65a6dfef471e9835fc91a752c8e5be4198962a426dc62f`。
 > 下载后解压到本目录（`datasets/traditional_v2_strict51/`）即可使用。
 
