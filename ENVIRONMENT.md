@@ -37,3 +37,18 @@ locally (`recweb-*:latest`, see `k8s/`) on top of `nginx:alpine` for the gateway
   versions work the same way.
 - MySQL must be reachable from inside the cluster (host service). With
   `NACOS_ENABLED=false` the services fall back to fixed `DB_HOST` from `.env`.
+
+## Data sources & attribution
+
+The recommendation-side data assets (`services/sasrec_api/` model weights,
+`electronics.inter`, `shared/data/electronics.item`, and the item catalog seeded
+into MySQL) are **derived from the Amazon Reviews 2023 dataset (Electronics
+category)**, published by McAuley Lab (UCSD):
+
+- Source: https://amazon-reviews-2023.github.io/ (also on HuggingFace: McAuley-Lab/Amazon-Reviews-2023)
+- Required citation when used: Hou et al., "Bridging Language and Items for
+  Retrieval and Recommendation," arXiv:2403.03952 (2024).
+- The source dataset ships no explicit license; it is used here for academic
+  research with attribution. This project is not affiliated with Amazon or
+  McAuley Lab. To regenerate the assets from the official source instead of
+  downloading ours, fetch the Electronics category from the link above.
