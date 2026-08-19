@@ -54,6 +54,7 @@ The fault-injection + collection toolkit lives under `scripts/chaos/`. One-click
 | `scripts/chaos/ctk/collect-single-spread.sh` | single 55 (pod-failure & service-CPU, 6 services) | `datasets/k8s_pilot/single_spread/` |
 | `scripts/chaos/ctk/collect-single-recagent.sh` | single 15 (rec-agent, + agent-span side capture) | `datasets/k8s_pilot/single_recagent/` |
 | `scripts/chaos/ctk/collect-g2ext.sh` | G2ext batch — dual 25 + triple 20 (all-distinct multi-root) | `datasets/k8s_pilot/{dual,triple}_ext/` |
+| `scripts/chaos/ctk/run-traditional-v2-lite.ps1` | **traditional v2 (strict51)** — protocol-controlled resample: 51 scenarios x 5 blocks RCBD, frozen identity chain, per-case qualification gates, disclosed amendments | your `--lite-root` (see `datasets/traditional_v2_strict51/README.md`) |
 | `scripts/chaos/agentfault/run_collect_agentfault.sh` | agent semantic faults — 9 combos × 12 reps (108) | `datasets/agentfault_k8s/` |
 
 > `collect-{single,dual,triple}.sh` (without `-dense`) are the v18 predecessors — kept for provenance, **do not run** (use the `-dense` versions).

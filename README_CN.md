@@ -54,6 +54,7 @@ python scripts/setup/start.py --stop   # 停止
 | `scripts/chaos/ctk/collect-single-spread.sh` | single 55（pod 崩 & 服务 CPU，6 个服务） | `datasets/k8s_pilot/single_spread/` |
 | `scripts/chaos/ctk/collect-single-recagent.sh` | single 15（rec-agent，附带 agent-span 阴性采集） | `datasets/k8s_pilot/single_recagent/` |
 | `scripts/chaos/ctk/collect-g2ext.sh` | G2ext 批次——双 25 + 三 20（全异服务多根） | `datasets/k8s_pilot/{dual,triple}_ext/` |
+| `scripts/chaos/ctk/run-traditional-v2-lite.ps1` | **traditional v2（strict51）**——协议化重采：51 场景 × 5 区组 RCBD、冻结身份链、逐 case 资格门、修正案留痕 | 自定 `--lite-root`（见 `datasets/traditional_v2_strict51/README.md`） |
 | `scripts/chaos/agentfault/run_collect_agentfault.sh` | Agent 语义故障——9 combo × 12 rep（108） | `datasets/agentfault_k8s/` |
 
 > `collect-{single,dual,triple}.sh`（不带 `-dense`）是 v18 前身——仅为溯源保留，**勿照跑**（请用 `-dense` 版）。
