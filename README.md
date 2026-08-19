@@ -27,6 +27,8 @@ Pre-computed evaluation results ship inside `datasets/agentfault_k8s/` (`BASELIN
 
 ```bash
 python scripts/setup/install.py        # install Python deps (large model assets must be supplied — see below)
+
+Pinned platform versions (Docker / K8s / Chaos Mesh / MySQL / OTel stack, captured from the collection cluster): see **`ENVIRONMENT.md`**.
 python scripts/setup/init_db.py        # build DB + load items + demo seed  (set DB_PASSWORD env; needs electronics.item)
 python scripts/setup/start.py          # start all 25 services (offline mode by default)
 python scripts/setup/start.py --stop   # stop

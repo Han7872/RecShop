@@ -27,6 +27,8 @@
 
 ```bash
 python scripts/setup/install.py        # 装 Python 依赖(大模型资产需自备,见下)
+
+平台版本钉版清单（Docker / K8s / Chaos Mesh / MySQL / OTel 栈，采集集群实测）：见 **`ENVIRONMENT.md`**。
 python scripts/setup/init_db.py        # 建库 + 灌商品 + demo 种子(设 DB_PASSWORD 环境变量; 需 electronics.item)
 python scripts/setup/start.py          # 启动 25 服务(默认离线模式)
 python scripts/setup/start.py --stop   # 停止
