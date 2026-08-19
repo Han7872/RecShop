@@ -4,7 +4,7 @@ per-case delivery layout (M4b Phase 5, delivery packaging).
 
 PURPOSE
   Hand RecWeb2 k8s_pilot RCA benchmark to shijie. Her format (authoritative:
-  (project docs)/REF-shijie-k8s-v2-sample-schema.md) = per-case flat folder
+  docs/blackboard/REF-shijie-k8s-v2-sample-schema.md) = per-case flat folder
   + raw/{metrics,traces,logs,operations} + metadata.json + groundtruth.json +
   summary.md. Our raw/ modality structure + top-level files are ALREADY aligned
   (M3-M4b rebuild). The schema delta is resolved by adapter mr2_load_adapter.py
@@ -15,7 +15,7 @@ PURPOSE
 
 WHAT IT DOES (per case in <pilot-dir>/cases/*/*/):
   1. Run adapter (reuse mr2_load_adapter.adapt_case) into
-     (runtime) package/<arity>/<case_id>/  -- NOT into <case>/mr2/.
+     datasets/_runtime/package/<arity>/<case_id>/  -- NOT into <case>/mr2/.
      ★ ALWAYS regenerated (2026-07-13). The old "reuse mr2/ if it exists unless --force"
        shortcut is how 15 stale-GT cases got copied into a delivery package: the adapter
        output was cached, the GT behind it had been fixed, nobody re-ran it. Regenerating
@@ -49,7 +49,7 @@ WHAT IT DOES (per case in <pilot-dir>/cases/*/*/):
      (--bare: skip all three top-level; per-case folders lay flat under <out>/.)
 
 CONSTRAINTS (IRON)
-  - READ-ONLY on (native trees)  source (never mutate). Enforced, not merely
+  - READ-ONLY on datasets/k8s_pilot/ source (never mutate). Enforced, not merely
     promised: dataset_registry.assert_not_native() gates both --out and the adapter
     runtime dir. --keep-source additionally skips the adapter write entirely
     (runtime dir must already be populated, else that case errors).
@@ -73,8 +73,8 @@ the accepted 20260709 deliveries; she has already written a loader against those
 
 USAGE
   python package_for_delivery.py                      # combined -> default out
-  python package_for_delivery.py --pilot-dir (native trees) single \
-      --out output/k8s_pilot_delivery/single
+  python package_for_delivery.py --pilot-dir datasets/k8s_pilot/single \
+      --out datasets/k8s_pilot_delivery/single
   python package_for_delivery.py --limit 3            # smoke (3 cases)
   python package_for_delivery.py --dry-run            # plan only, no writes
 """
@@ -1076,7 +1076,7 @@ def _extract_root_evidence(meta, native_summary_text):
 def build_shijie_summary(out_case_dir, meta, native_summary_text, case_dir, mr2_dir):
     """Build 上游's 6-bullet summary.md content from derived metadata.
 
-    Layout (authoritative: (project docs)/REF-shijie-k8s-v2-sample-schema.md):
+    Layout (authoritative: docs/blackboard/REF-shijie-k8s-v2-sample-schema.md):
         # <folder name>
         <blank>
         - storage_layout: <single_dir_stage_tagged | ...>
@@ -1188,7 +1188,7 @@ def assemble_case(case_dir, out_case_dir, mr2_dir, dry_run=False, meta=None,
     case_dir = Path(case_dir)
     out_case_dir = Path(out_case_dir)
     # ★ 2026-07-13: adapter 产物不再住在 native 树里 (<case>/mr2/), 由调用方显式传入
-    #   ((runtime) package/<tag>/<case_id>/)。没有 native 缺省值 —— 不留后门。
+    #   (datasets/_runtime/package/<tag>/<case_id>/)。没有 native 缺省值 —— 不留后门。
     mr2 = Path(mr2_dir)
     raw = case_dir / "raw"
     folder_name = out_case_dir.name
@@ -1239,7 +1239,7 @@ def assemble_case(case_dir, out_case_dir, mr2_dir, dry_run=False, meta=None,
     # NOT shipped to delivery (it carries rich narrative affected_services /
     # intensity fields the adapter strips from groundtruth.json, which previously
     # needed a B7 reconciling footnote); the source native summary.md is left
-    # untouched (preserves full detail in (native trees) ). The delivery
+    # untouched (preserves full detail in datasets/k8s_pilot/). The delivery
     # summary.md is an idempotent pure-function of metadata + raw/ files, so it
     # never references affected_services and has no B7 contradiction.
     native_summary_text = ""
@@ -1364,6 +1364,66 @@ def find_cases(pilot_dir):
         if (cd / "raw" / "metrics" / "metrics_v2.jsonl").exists():
             out.append(cd)
     return out
+
+
+# ---------------------------------------------------------------------------
+# P0-8 release gate (HANDOFF-2026-08-10 §7 P0-8, §15 forbidden list)
+# ---------------------------------------------------------------------------
+# v1's packager did NOT check ready_for_release at all (Diagnosis §2.6,
+# key-finding #7): it admitted 2 known-bad cases (podfail_cart_r4,
+# podfail_recagent_r2) and a dual08_uni_r5 whose aggregate gate masked an
+# unrecovered leg. This gate reads metadata.json and rejects any case whose
+# release fields are false OR missing (handoff §7: "any false/missing release
+# field immediately rejects the case"). `--no-strict-gate` is a legacy-debug
+# escape hatch that keeps the old permissive behavior (warn but still copy).
+
+def check_release_gate(case_dir):
+    """P0-8 release gate for one case (HANDOFF §7 P0-8).
+
+    Reads `case_dir/metadata.json` and returns (ok, reason):
+      - ready_for_release missing or False            -> (False, "ready_for_release=false or missing")
+      - sample_status == "blocked"                    -> (False, "sample_status=blocked")
+      - checksum_guard missing                        -> (False, "checksum_guard missing")
+      - checksum_guard.zero_drift is False            -> (False, "checksum drift")
+      - metadata.json missing or unparseable          -> (False, "metadata unreadable: <error>")
+      - otherwise                                     -> (True, "")
+
+    Strict semantics (HANDOFF §7): a MISSING ready_for_release is a rejection,
+    not a silent pass. checksum_guard follows the same rule — a missing
+    checksum_guard is itself a rejection under the strict gate, so v1 legacy
+    cases that never recorded one cannot sneak through unverified; an explicit
+    zero_drift=False is a checksum-drift rejection. Callers that genuinely need
+    the legacy permissive path must pass --no-strict-gate.
+
+    `case_dir` may be a str or Path. The case is NEVER mutated.
+    """
+    case_dir = Path(case_dir)
+    meta_path = case_dir / "metadata.json"
+    try:
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+    except FileNotFoundError as e:
+        return (False, "metadata unreadable: %s" % e)
+    except (OSError, ValueError) as e:
+        return (False, "metadata unreadable: %s" % e)
+
+    # 1. ready_for_release — explicit True required; missing is fail-closed.
+    if meta.get("ready_for_release") is not True:
+        return (False, "ready_for_release=false or missing")
+
+    # 2. sample_status — "blocked" means a human or upstream gate held it back.
+    if meta.get("sample_status") == "blocked":
+        return (False, "sample_status=blocked")
+
+    # 3. checksum_guard — a missing checksum_guard is itself a rejection under
+    #    the strict gate (HANDOFF §7 "missing release field immediately
+    #    rejects"). An explicit zero_drift=False is a checksum-drift rejection.
+    cg = meta.get("checksum_guard")
+    if cg is None:
+        return (False, "checksum_guard missing")
+    if isinstance(cg, dict) and cg.get("zero_drift") is False:
+        return (False, "checksum drift")
+
+    return (True, "")
 
 
 def load_eval_case_ids(features_dir=None):
@@ -1510,9 +1570,9 @@ See `adapter/README.md`. Normally unnecessary (already pre-applied).
 
 ## Pointers
 - Machine-readable case index + mapping: **`MANIFEST.json`**.
-- Format authority: `(project docs)/REF-shijie-k8s-v2-sample-schema.md`
+- Format authority: `docs/blackboard/REF-shijie-k8s-v2-sample-schema.md`
   (shipped separately in the RecWeb2 repo, not in this delivery).
-- Adapter transform spec + acceptance: `(project docs)/archive/TASK-K8S-M4b-impl-spec.md`.
+- Adapter transform spec + acceptance: `docs/blackboard/archive/TASK-K8S-M4b-impl-spec.md`.
 """
 
 
@@ -1665,13 +1725,13 @@ def write_collect_script(out_case_dir, meta, dry_run=False):
 def main():
     ap = argparse.ArgumentParser(
         description="Package RecWeb2 k8s_pilot into shijie per-case delivery tree.")
-    ap.add_argument("--pilot-dir", default="(native trees) combined",
+    ap.add_argument("--pilot-dir", default="datasets/k8s_pilot/combined",
                     help="source pilot dir (default combined; also single/dual/triple)")
     ap.add_argument("--out", default=None,
-                    help="output dir (default <repo>/output/k8s_pilot_delivery/<arity>/)")
+                    help="output dir (default <repo>/datasets/k8s_pilot_delivery/<arity>/)")
     ap.add_argument("--keep-source", action="store_true",
                     help="skip the adapter write step entirely; reuse whatever is already "
-                         "in (runtime) package/<arity>/<case_id>/ (else that case errors).")
+                         "in datasets/_runtime/package/<arity>/<case_id>/ (else that case errors).")
     ap.add_argument("--force", action="store_true",
                     help="(no-op since 2026-07-13) the adapter now ALWAYS regenerates; "
                          "there is no stale-reuse path left to force past. Kept so existing "
@@ -1694,7 +1754,7 @@ def main():
                          "FULL set while the caller believed it was the eval set).")
     ap.add_argument("--features-dir", default=None,
                     help="dir holding features_k8s.csv for --eval-only "
-                         "(default: (runtime) features; see dataset_registry.feature_csv).")
+                         "(default: datasets/_runtime/features; see dataset_registry.feature_csv).")
     ap.add_argument("--flat-traces", action="store_true",
                     help="flatten raw/traces/*_traces.jsonl in the DELIVERY to shijie "
                          "flat shape (1 row per trace_id, parent_span_id null, span_id==trace_id) "
@@ -1722,6 +1782,18 @@ def main():
                          "len(set(root_cause_services)). Folder arity counts injected "
                          "FAULTS, not distinct root SERVICES (30/140 cases differ), and "
                          "MRCBench R=|G| / IDCG=min(K,|G|) need |G|. Pure key add.")
+    # --- P0-8 release gate (HANDOFF §7 P0-8). Default ON (safe): any case whose
+    #     ready_for_release / sample_status / checksum_guard is false OR missing
+    #     is rejected and NOT copied. --no-strict-gate is a legacy-debug escape
+    #     hatch that warns but still copies (DO NOT use for real deliveries). ---
+    gate = ap.add_mutually_exclusive_group()
+    gate.add_argument("--strict-gate", dest="strict_gate", action="store_true",
+                      default=True,
+                      help="(default) P0-8: reject cases whose release fields are "
+                           "false/missing; they are excluded and NOT copied.")
+    gate.add_argument("--no-strict-gate", dest="strict_gate", action="store_false",
+                      help="legacy-debug ONLY: warn on release-field failures but still "
+                           "copy the case. Do NOT use for real deliveries.")
     a = ap.parse_args()
 
     repo_root = Path(__file__).resolve().parents[3]
@@ -1733,9 +1805,9 @@ def main():
 
     arity = pilot_dir.name  # combined/single/dual/triple
     out_dir = Path(a.out).resolve() if a.out else \
-        (repo_root / ("output/k8s_pilot_delivery/%s" % arity)).resolve()
+        (repo_root / ("datasets/k8s_pilot_delivery/%s" % arity)).resolve()
 
-    # ★ native 采集树是只读的:交付包和 adapter 产物都【不许】落进 (native trees) 。
+    # ★ native 采集树是只读的:交付包和 adapter 产物都【不许】落进 datasets/k8s_pilot/。
     #   一次性收口, 早炸早好(以前是写完才发现自己污染了源数据)。
     DR.assert_not_native(out_dir)
     # dry-run 不建目录(dry-run 就该一个字节都不写)
@@ -1777,10 +1849,28 @@ def main():
     fault_types_seen = set()
     errors = []
     global_stats = {"unmapped_sources": set(), "unmapped_units": set()}
+    # P0-8 excluded ledger — cases rejected by the release gate. Printed as a
+    # summary at the end (count + reason). A copy is NOT written to disk here;
+    # build_full_delivery.py owns the cross-tree excluded_ledger.json.
+    excluded = []  # list of {"case_id", "reason"}
 
     for case_dir in cases:
+        # ----- P0-8 release gate (HANDOFF §7 P0-8). -----
+        # Run BEFORE the adapter write / copy: a rejected case must not be
+        # assembled into the delivery at all. --no-strict-gate downgrades the
+        # hard reject to a warn-but-still-copy (legacy debug only).
+        gate_ok, gate_reason = check_release_gate(case_dir)
+        if not gate_ok:
+            if a.strict_gate:
+                print("[pkg] GATE-REJECT %s: %s (excluded; not copied)"
+                      % (case_dir.name, gate_reason))
+                excluded.append({"case_id": case_dir.name, "reason": gate_reason})
+                continue
+            else:
+                print("[pkg] GATE-WARN %s: %s (--no-strict-gate: copied anyway)"
+                      % (case_dir.name, gate_reason))
         try:
-            # 1. Adapter -> (runtime) package/<tag>/<case_id>/  (NOT <case>/mr2/).
+            # 1. Adapter -> datasets/_runtime/package/<tag>/<case_id>/  (NOT <case>/mr2/).
             #    ★ 2026-07-13 两处改动, 都是被真事故逼出来的:
             #    (a) 落点搬出 native 树 (assert_not_native 在 adapt_case 里把门).
             #    (b) 【总是重生】—— 旧逻辑是 "mr2/ 存在就复用, 除非 --force". 于是一份
@@ -1864,6 +1954,20 @@ def main():
     if global_stats["unmapped_units"]:
         print("[pkg] WARN unmapped units (REF silent, kept as-is): "
               + ", ".join(sorted(global_stats["unmapped_units"])))
+
+    # P0-8 excluded-ledger summary (HANDOFF §7 P0-8: "any false/missing release
+    # field immediately rejects the case"). Print how many cases were excluded
+    # and why, so a human can see exactly what the gate swallowed.
+    if excluded:
+        from collections import Counter
+        reason_counts = Counter(e["reason"] for e in excluded)
+        print("[pkg] GATE excluded %d case(s) by reason:" % len(excluded))
+        for reason, cnt in sorted(reason_counts.items()):
+            print("      %3d x %s" % (cnt, reason))
+        for e in excluded:
+            print("      - %s: %s" % (e["case_id"], e["reason"]))
+    else:
+        print("[pkg] GATE: 0 cases excluded (all passed release gate)")
 
     print("[pkg] DONE cases_ok=%d cases_err=%d fault_types=%d out=%s"
           % (len(entries), len(errors), len(fault_types_seen), out_dir))

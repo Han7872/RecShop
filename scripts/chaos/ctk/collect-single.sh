@@ -23,7 +23,6 @@
 #   Windows C:/ / D:/ 路径；service→service URL 用 127.0.0.1 不用 localhost。
 #   长 fault-injection 用 nohup 【不用 run_in_background】——后者被 harness SIGKILL
 #     reaped → Python finally 不跑 → 集群留脏（本 session 血泪）。
-#   commit 不加 Co-Authored-By: Claude 尾注；origin/main 永不 push（只推 feat 分支）。
 #   CHECKSUM 铁律：items=3849590678 / inventory=3935678504，逐 case fail-closed，
 #     【绝不 --skip-checksum】。db_lock：LOCK 前 pre / UNLOCK+确认释放后 post，绝不锁期间核。
 # -----------------------------------------------------------------------------

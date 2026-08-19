@@ -1,0 +1,26 @@
+# strict51 冻结身份链：这些文件的磁盘字节参与 SHA256 身份校验（freeze report
+# source_sha256 / contract artifact）。仓库 core.autocrlf=true 会在 checkout 时把
+# CRLF smudge 进文本文件，历史上一度造成合并后身份断链（须手工 git cat-file blob
+# 裸写恢复）。此处钉 eol=lf：repo 内归一为 LF、checkout 恒出 LF，任何机器
+# clone/checkout/reset 后身份链不再依赖手工恢复。
+# （ps1 为 Docker 4.82 typed 探针补丁后版本，与 freeze 记录的补丁前哈希差异属
+#   已披露合法差异，钉 LF 同样适用。）
+scripts/chaos/ctk/chaos_k8s_runner.py eol=lf
+scripts/chaos/ctk/run-traditional-v2-lite.ps1 eol=lf
+scripts/chaos/ctk/traditional_v2_lite/b1_lite.py eol=lf
+scripts/chaos/ctk/traditional_v2_lite/contract.py eol=lf
+scripts/chaos/ctk/traditional_v2_lite/smoke_lite.py eol=lf
+scripts/chaos/ctk/traditional_v2_lite/verifier_adapter.py eol=lf
+docs/acceptance/contracts/traditional-v2-lite-strict51-20260816/strict51-contract.json eol=lf
+docs/acceptance/contracts/traditional-v2-lite-strict51-20260816/strict51-freeze-report.json eol=lf
+# freeze report environment_identity_core.component_sha256 所列组件(裸文件名,落位
+# traditional_v2_lite/);smoke_lite._check_identity 运行时比对组件 SHA(E5S002),
+# 未钉时 fresh clone 会 CRLF smudge 断链(2026-08-19 对抗审核发现,verifier_adapter
+# 已因位列 source_sha256 在上方钉过,此处补齐其余 7 个)。
+scripts/chaos/ctk/traditional_v2_lite/artifact_manifest.py eol=lf
+scripts/chaos/ctk/traditional_v2_lite/cleanup_audit.py eol=lf
+scripts/chaos/ctk/traditional_v2_lite/control_adapter.py eol=lf
+scripts/chaos/ctk/traditional_v2_lite/evidence.py eol=lf
+scripts/chaos/ctk/traditional_v2_lite/phase_journal.py eol=lf
+scripts/chaos/ctk/traditional_v2_lite/telemetry_journal.py eol=lf
+scripts/chaos/ctk/traditional_v2_lite/workload_driver.py eol=lf

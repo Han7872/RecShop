@@ -15,7 +15,12 @@ datasets/k8s_pilot/
 logs/
 scratchpad/
 report/
-docs/
+docs/*
+!docs/acceptance
+docs/acceptance/*
+!docs/acceptance/contracts
+docs/acceptance/contracts/*
+!docs/acceptance/contracts/traditional-v2-lite-strict51-20260816
 tests/
 CLAUDE.md
 AGENTS.md

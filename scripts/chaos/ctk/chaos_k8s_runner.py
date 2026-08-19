@@ -1,11 +1,11 @@
 """chaos_k8s_runner — K8S config-injection 三阶段采集 runner（迭代 6b 骨架）。
 
 上游 K8S v2 格式 per-case 文件夹采集器（REF-shijie-k8s-v2-sample-schema.md §1-§5）。
-范围(M1, dual-root CFG+CFG): 双根因 config 故障, nested trigger_amplifier(TASK-K8S-M1-impl-spec,现 (project docs)/archive/)。
+范围(M1, dual-root CFG+CFG): 双根因 config 故障, nested trigger_amplifier(TASK-K8S-M1-impl-spec,现 docs/blackboard/archive/)。
   - F1 (primary)   = client_timeout_too_short: 切 ov-f1on(慢 primary catalog-bad + read_timeout 8s→1s + retry ON)
   - F2 (amplifier) = retry_disabled:           切 ov-f1f2(同上但 proxy_next_upstream off → 504 暴露)
   F2 嵌套在 F1 窗内(+offset 注 / +offset+dur 恢复) → overlap_window == F2 窗。经 catalog-gw NginxConfigPrimitive。
-产 *一个* 上游 K8S v2 格式的 per-case 文件夹: (native trees) <case_id>/。
+产 *一个* 上游 K8S v2 格式的 per-case 文件夹: datasets/k8s_pilot/<case_id>/。
 
 三阶段（REF §2）: pre_fault 60s / during_fault 60s / post_recovery 60s @ poll 2s = 30 snapshot/阶段。
 注入时序: pre 采完 → 注 F1(ov-f1on) → during 采(中途 +14s 注 F2/+45s 恢复 F2) → 恢复 F1(baseline) → post 采。
@@ -43,6 +43,93 @@ import time
 import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
+
+
+# Optional Lite engineering-smoke event sink.  It is deliberately closed and
+# disabled unless both smoke-only CLI arguments are supplied.  Normal runner
+# invocations never construct it and retain the legacy execution path.
+_LITE_SMOKE_EVENTS = frozenset(
+    {
+        "injection_transition_started",
+        "leg_invoked",
+        "leg_active_confirmed",
+        "all_active_confirmed",
+        "recovery_transition_started",
+        "leg_recovered",
+        "cleanup_result",
+        "recovery_confirmed",
+    }
+)
+_lite_smoke_sink = None
+
+
+class _LiteSmokeEventSink:
+    def __init__(self, path, attempt_token):
+        if not os.path.isabs(path) or not attempt_token or any(c not in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._-" for c in attempt_token):
+            raise ValueError("invalid Lite smoke event sink path/token")
+        self.path = os.path.realpath(path)
+        self.attempt_token = attempt_token
+        self._lock = threading.Lock()
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+        self._fd = os.open(self.path, flags, 0o600)
+
+    def emit(self, event, payload):
+        if event not in _LITE_SMOKE_EVENTS or type(payload) is not dict:
+            raise ValueError("invalid Lite smoke event")
+        record = {
+            "attempt_token": self.attempt_token,
+            "event": event,
+            "monotonic_ns": time.monotonic_ns(),
+            "payload": payload,
+        }
+        raw = (json.dumps(record, sort_keys=True, separators=(",", ":"), ensure_ascii=False) + "\n").encode("utf-8")
+        with self._lock:
+            os.write(self._fd, raw)
+            os.fsync(self._fd)
+
+    def close(self):
+        with self._lock:
+            if self._fd is not None:
+                os.close(self._fd)
+                self._fd = None
+
+
+def _lite_smoke_emit(event, **payload):
+    if _lite_smoke_sink is not None:
+        _lite_smoke_sink.emit(event, payload)
+
+
+def _lite_smoke_invoke_leg(fid, kind, target_identity, action,
+                           resource_kind=None, resource_name=None, resource_uid=None):
+    _lite_smoke_emit("leg_invoked", fid=fid, kind=kind, target_identity=target_identity,
+                     resource_kind=resource_kind, resource_name=resource_name)
+    result = action()
+    attempt_label = None
+    if _lite_smoke_sink is not None and resource_kind and resource_name and resource_kind != "offgraph":
+        _label = f"recshop.io/lite-smoke-attempt={_lite_smoke_sink.attempt_token}"
+        _cp = _kubectl(["label", resource_kind, resource_name, _label, "--overwrite"], timeout=20)
+        if _cp.returncode != 0:
+            raise RuntimeError(f"Lite smoke ownership label failed: {resource_kind}/{resource_name}")
+        _cp = _kubectl(["get", resource_kind, resource_name, "-o", "json"], timeout=20)
+        if _cp.returncode != 0:
+            raise RuntimeError(f"Lite smoke ownership readback failed: {resource_kind}/{resource_name}")
+        _obj = json.loads(_cp.stdout)
+        resource_uid = (_obj.get("metadata") or {}).get("uid")
+        attempt_label = ((_obj.get("metadata") or {}).get("labels") or {}).get("recshop.io/lite-smoke-attempt")
+        if not resource_uid or attempt_label != _lite_smoke_sink.attempt_token:
+            raise RuntimeError(f"Lite smoke ownership binding invalid: {resource_kind}/{resource_name}")
+    elif _lite_smoke_sink is not None and resource_uid:
+        attempt_label = _lite_smoke_sink.attempt_token
+    _lite_smoke_emit("leg_active_confirmed", fid=fid, kind=kind, target_identity=target_identity,
+                     resource_kind=resource_kind, resource_name=resource_name,
+                     resource_uid=resource_uid, attempt_label=attempt_label)
+    return result
+
+
+def _lite_smoke_recover_leg(fid, kind, target_identity, action):
+    result = action()
+    _lite_smoke_emit("leg_recovered", fid=fid, kind=kind, target_identity=target_identity)
+    return result
 
 try:
     import psutil
@@ -260,7 +347,7 @@ STRESSOR_DEPLOY_YAML = os.path.join(ROOT, "k8s", "pilot", "chaos-stressor-deploy
 STRESS_HOST_YAML = os.path.join(ROOT, "k8s", "pilot", "chaos-stress-host-cpu.yaml")
 STRESS_HOST_CRD_NAME = "stress-host-cpu"    # StressChaos metadata.name(供 AllInjected poll)
 STRESS_HOST_KIND = "stresschaos"            # Chaos Mesh kind(kubectl get <kind> <name>)
-STRESS_HOST_WORKERS = 12                    # probe4 sweet spot: =VM 12 vCPU(6=no-op, 24=scrape 饿死)
+STRESS_HOST_WORKERS = 32                    # qualification host=32 vCPU; keep exactly 1 worker/vCPU
 STRESS_HOST_LOAD = 100                      # 每 worker CPU load 百分比
 # ⚠ probe4 实证: host CPU 饱和下 carrier 仅 +50-60ms(轻端点 MySQL-I/O-wait-bound)→ gate 阈值用 RELATIVE ratio≥1.8× baseline,
 #   绝不照 NET delay 借绝对 800ms; 且 VM_sat 高饱和下实时 scrape 饿成 EMPTY → 仅 soft/post-hoc 旁证, 不作 pass 硬判据。
@@ -324,6 +411,7 @@ PROM_QUERY_FAILS = {"last_stage": 0, "total": 0}   # range query 空/失败计�
 PANEL_SERVICE = "probe-panel"         # ★不用 traffic-probe 前缀(杜绝 adapter/gate 的 startswith 误伤)
 PANEL_PROXY_BASE = os.environ.get("KUBECTL_PROXY_URL", "http://127.0.0.1:8001")
 PANEL_PROBE_TIMEOUT_SEC = 3           # 面板探测超时(短: 故障期不拖垮面板节拍; 超时=request_success 0, 是信号不是错误)
+PODFAIL_PROBE_TIMEOUT_SEC = 1.5       # PodFailure during: timeout < 2s poll，失败仍记为失败但不能阻塞采样时钟
 # 面板占位常量【硬编码, 不取 CLI args】—— 面板必须跨全部 140 case 逐字节恒同(防泄漏铁律)。
 PANEL_ITEM = "0071341196"             # 与 collect-*.sh 的 --item 同值(词表内 item)
 PANEL_USER_TOKEN = "0870e257-6cd0-4fe4-b815-0a9da6b25d41"   # disjoint user(collect 脚本同款 token)
@@ -358,6 +446,22 @@ PANEL_TARGETS = [
 ]
 _PANEL_PREFLIGHT_DONE = [False]       # per-process: 首个 stage(=pre, 全健康)做一次 fail-fast 预检
 
+# ---------- ★strict51 panel-owner(2026-08-16, strict51 统一方案 §5.3): 默认关闭, exact-alias ----------
+#   方向 = D09/T08 已 live 验证的"固定 panel 拥有真实请求, scientific carrier 复用同一观测";
+#   仅当 --strict51-panel-owner 显式传入 且 fault ∈ STRICT51_PANEL_OWNER_FAULTS 时生效(其余 48 场景/旧协议
+#   逐字节走原 direct+panel 路径)。mapped scientific carrier 的有效 route/token/entity/timeout 规范化为
+#   固定 panel 的实际值(proxy:8001 + PANEL_ITEM/PANEL_USER_TOKEN + 3s); role/cadence/stage/窗口/GT/故障
+#   强度/阈值一律不变。gate-local membership 统一 request_interval_same_cell_v1(见 _interval_cell_and_detail)。
+STRICT51_PANEL_OWNER_FAULTS = ("host_cpu_x_cfg_timeout",
+                               "catalog_latency_x_cfg_timeout",
+                               "catalog_latency_x_net_loss")
+STRICT51_PANEL_OWNER_MAPS = {   # fault -> {scientific carrier name: probe-panel target svc}
+    "host_cpu_x_cfg_timeout": {"pricing": "pricing", "catalog_direct": "catalog", "user": "user"},
+    "catalog_latency_x_cfg_timeout": {"pricing": "pricing"},
+    "catalog_latency_x_net_loss": {"pricing": "pricing"},
+}
+STRICT51_MEMBERSHIP_BASIS = "request_interval_same_cell_v1"
+
 # ============================================================
 # M9-R 单根因 retarget（--target-service）: 把 2 个【CRD 类】故障打到【从未当过根因】的服务
 # ============================================================
@@ -385,7 +489,7 @@ RETARGET_APP_LABEL = {"backend": "backend_api",
 # ★★ 载体走 kubectl proxy 8001(= probe-panel 同一条路由), **不走 127.0.0.1 port-forward** —— 两条硬理由(实测非推断):
 #   (1) probe10 血泪(L202-205): port-forward 直连【pause-swap 后的 pod】仍可能返 200(路由 quirk)
 #       → 拿 pf 当 pod_failure 载体 = 故障看不见; 且 order/cart/review-query 【压根没有 port-forward】(pfwd_start.sh 只起 8 个)。
-#   (2) 反事实(2026-07-13 直接读已采数据 (native trees) single_dense/_pod_failure_reps_v19/pod_failure_single_r1
+#   (2) 反事实(2026-07-13 直接读已采数据 datasets/k8s_pilot/single_dense/_pod_failure_reps_v19/pod_failure_single_r1
 #       的面板记录): catalog pod-failure 窗内 proxy8001 对 catalog 的 15/15 探测【全 503】(pre/post 全 200)
 #       → apiserver service-proxy 看得见 pod-failure。同窗 order/cart/search/review-query/backend/checkout 全 200(=天然对照组)。
 # 端点复用 PANEL_TARGETS(单一真相): 这 6 个端点已在每个 M9 case 每拍探一次 → 只读性/CHECKSUM 安全性已被 40+ case 实证。
@@ -1685,10 +1789,10 @@ def recover_host_stress(ops_log):
     probe5 实证: delete 在饱和期 0.2s actuate(恢复路径自身过被争用控制面 OK); scale 0 是双保险, 不依赖被饿死的 chaos-controller。
     真窗靠 delete 对齐(非 CRD duration)。返回 recovered_at(ISO Z)。"""
     ts = delete_chaos_crd(STRESS_HOST_YAML, ops_log)
-    cp = _kubectl(["scale", f"deploy/{STRESSOR_DEPLOY}", "--replicas=0"], timeout=30)
-    ops_log.append({"ts": now_iso(), "op": "scale_stressor_zero", "rc": cp.returncode,
+    cp = _kubectl(["delete", f"deploy/{STRESSOR_DEPLOY}", "--ignore-not-found=true", "--wait=true", "--timeout=60s"], timeout=70)
+    ops_log.append({"ts": now_iso(), "op": "delete_stressor_deploy", "rc": cp.returncode,
                     "stdout": cp.stdout, "stderr": cp.stderr})
-    print(f"  [stressor] scale 0 fallback (rc={cp.returncode})", flush=True)
+    print(f"  [stressor] delete deployment (rc={cp.returncode})", flush=True)
     return ts
 
 
@@ -2299,7 +2403,7 @@ def _panel_preflight(targets):
     print(f"  [panel] preflight ok={len(ok)}/{len(targets)}" + (f" | 失败: {', '.join(bad)}" if bad else ""), flush=True)
 
 
-def start_probe_panel(t_end, poll, with_mysql=True):
+def start_probe_panel(t_end, poll, with_mysql=True, skip_services=()):
     """启动 probe-panel 线程族(+ mysql lock sampler), 与 capture 主循环并行, 到 t_end 自停。
 
     - 每个面板目标一条 daemon 线程: 按 poll 节拍 probe_carrier(url, timeout=3), 记真实 ts。
@@ -2324,7 +2428,13 @@ def start_probe_panel(t_end, poll, with_mysql=True):
             if remain > 0 and time.time() < t_end:
                 time.sleep(remain)
 
+    skip_services = frozenset(skip_services)
+    unknown_skips = skip_services.difference(t["svc"] for t in targets)
+    if unknown_skips:
+        raise ValueError(f"unknown probe-panel services to skip: {sorted(unknown_skips)}")
     for t in targets:
+        if t["svc"] in skip_services:
+            continue
         th = threading.Thread(target=_panel_worker, args=(t,), daemon=True)
         th.start()
         threads.append(th)
@@ -2562,7 +2672,9 @@ def k_logs(deploys, since_dt):
 # 一阶段采集
 # ============================================================
 def capture_stage(stage, carrier_url, svc_pods, svc_deploys, otel_jobs, jaeger_services, log_deploys,
-                  stage_seconds, poll, ops_dir, mid_actions=None, carriers=None, probe_timeout=None):
+                  stage_seconds, poll, ops_dir, mid_actions=None, carriers=None, probe_timeout=None,
+                  reuse_t08_pricing_panel=False, reuse_d09_pricing_panel=False,
+                  reuse_s04_pricing_panel=False, strict51_panel_map=None):
     """采一个阶段: 每 poll 秒探 carrier + 读 nginx 配置态; 阶段后 Prometheus 区间查 + Jaeger + logs。
     mid_actions: [(offset_seconds, fn)] — poll 循环内 elapsed≥offset 触发一次(fired[] 守卫), 用于
       during 阶段嵌套注/恢复 F2(must-fix#3: fn 内 cp+reload 跑线程非阻塞, 否则同步 reload 卡 poll 伤 quality)。
@@ -2572,10 +2684,15 @@ def capture_stage(stage, carrier_url, svc_pods, svc_deploys, otel_jobs, jaeger_s
     返回 dict: {stage, window_start, window_end, snapshots[], metric_records[], spans[], logs{}, traffic_stats}。
     """
     # 多载体委派(M3a refactor): carriers 非 None 才进; carriers=None(默认) → 下方现有单载体代码逐字不变, 字节级零回归。
+    if strict51_panel_map is not None and carriers is None:
+        raise ValueError("strict51 panel-owner mapping requires the multi-carrier path")
     if carriers is not None:
         return _capture_stage_multi(stage, carriers, svc_pods, svc_deploys, otel_jobs,
                                     jaeger_services, log_deploys, stage_seconds, poll, ops_dir,
-                                    mid_actions=mid_actions)
+                                    mid_actions=mid_actions,
+                                    reuse_t08_pricing_panel=reuse_t08_pricing_panel,
+                                    reuse_d09_pricing_panel=reuse_d09_pricing_panel,
+                                    strict51_panel_map=strict51_panel_map)
     # ★M9 fix(审查 R2): 面板预检是【阻塞】的(11 目标 × timeout 3s), 必须在窗口计时【之前】跑完 ——
     #   否则它吃掉的 1-3s 是从 pre_fault 窗里扣的, 而 pre 窗正是 BARO 的 baseline 窗
     #   (上游要的 "≥4 个 pre 点" 就砍在这)。_PANEL_PREFLIGHT_DONE 守卫 → 全 case 只做一次, 后续 stage 是 no-op。
@@ -2592,7 +2709,11 @@ def capture_stage(stage, carrier_url, svc_pods, svc_deploys, otel_jobs, jaeger_s
     # ★M9 (c)+(d): 统一探针面板 + mysql 锁 sampler 线程族(与主 poll 循环并行, t_end 自停)。
     #   面板记录只进 probe_records / mysql 记录只进 metric_records —— **绝不进 snapshots**(否则稀释
     #   observed_snapshots/coverage_ratio/max_gap/_slow_probe 判定 → metric_stream_quality 假 fail)。
-    panel = start_probe_panel(t_end, poll)
+    # S04's scientific carrier already probes pricing directly. Reuse those
+    # observations for the fixed panel's pricing view instead of issuing a
+    # second same-cadence request into catalog's small connection pool.
+    panel = (start_probe_panel(t_end, poll, skip_services=("pricing",))
+             if reuse_s04_pricing_panel else start_probe_panel(t_end, poll))
 
     i = 0
     while time.time() < t_end:
@@ -2637,6 +2758,17 @@ def capture_stage(stage, carrier_url, svc_pods, svc_deploys, otel_jobs, jaeger_s
         if remain > 0 and time.time() < t_end:
             time.sleep(remain)
     end_dt = datetime.now(timezone.utc)
+
+    if reuse_s04_pricing_panel:
+        panel_pricing = [t for t in panel["targets"] if t.get("svc") == "pricing"]
+        if len(panel_pricing) != 1 or panel["samples"].get("pricing"):
+            raise ValueError("S04 pricing panel reuse requires one skipped pricing target")
+        panel["samples"]["pricing"].extend({
+            "ts": row["ts"],
+            "request_duration_ms": row["request_duration_ms"],
+            "request_success": row["request_success"],
+            "http_status_code": row["http_status_code"],
+        } for row in snapshots)
 
     # ★M9: 先收面板/mysql 线程族(它们已到 t_end 自停), 再做窗末区间查
     panel_records, mysql_records = collect_probe_panel(panel, poll)
@@ -2743,7 +2875,9 @@ def capture_stage(stage, carrier_url, svc_pods, svc_deploys, otel_jobs, jaeger_s
 
 
 def _capture_stage_multi(stage, carriers, svc_pods, svc_deploys, otel_jobs, jaeger_services,
-                         log_deploys, stage_seconds, poll, ops_dir, mid_actions=None):
+                         log_deploys, stage_seconds, poll, ops_dir, mid_actions=None,
+                         reuse_t08_pricing_panel=False, reuse_d09_pricing_panel=False,
+                         strict51_panel_map=None):
     """多载体阶段采集(M3a S1/S2 多受害者 RES 故障用)。capture_stage(carriers=非None) 委派至此。
     probe3 实证: 串行轮询只探到当前 victim、空闲 victim 不降级 → **每 carrier 一个并发线程全程持续活载**。
     - 每 carrier 一线程: 每 poll 探一次, snapshot 带 carrier_name/carrier_role 区分(单载体路径绝不进此函数, 不加该字段 → 字节级零回归)。
@@ -2760,6 +2894,28 @@ def _capture_stage_multi(stage, carriers, svc_pods, svc_deploys, otel_jobs, jaeg
     fired = [False] * len(mid_actions)
     t_start = time.time()
     t_end = t_start + stage_seconds
+    # T08 的 F3 scientific carrier 与固定 probe-panel 都探 pricing。只在该
+    # exact 场景复用 panel 的 proxy:8001 观测，避免同节拍第二次 5014 请求
+    # 竞争 catalog pool；panel 的固定 route/worker 对所有场景保持不变。
+    reused_pricing = None
+    if reuse_t08_pricing_panel or reuse_d09_pricing_panel:
+        carriers = [dict(c) for c in carriers]
+        expected_name = "pricing" if reuse_t08_pricing_panel else "pricing_direct"
+        expected_role = "catalog_cpu_witness" if reuse_t08_pricing_panel else "gw_path_victim"
+        matches = [c for c in carriers if c.get("name") == expected_name]
+        if len(matches) != 1 or matches[0].get("role") != expected_role:
+            raise ValueError("pricing panel reuse requires the exact authorized carrier")
+        reused_pricing = matches[0]
+    # ★strict51 panel-owner(§5.3): mapped scientific carrier 不再起自己的 direct worker;
+    #   其 URL 规范化为对应 panel target 的 exact URL(采样后从同一 panel sample 逐值复制四字段)。
+    strict51_mapped = []
+    if strict51_panel_map:
+        carriers = [dict(c) for c in carriers]
+        for _cname, _psvc in strict51_panel_map.items():
+            _m = [c for c in carriers if c.get("name") == _cname]
+            if len(_m) != 1:
+                raise ValueError(f"strict51 panel-owner requires exactly one carrier named {_cname!r}")
+            strict51_mapped.append((_m[0], _psvc))
     snaps_by = {c["name"]: [] for c in carriers}   # 每 carrier 自己的线程独占自己的 list → 无需锁
     nginx_snaps = []
     host_samples = []
@@ -2768,6 +2924,16 @@ def _capture_stage_multi(stage, carriers, svc_pods, svc_deploys, otel_jobs, jaeg
     # ★M9 (c)+(d): 同 capture_stage —— 统一探针面板 + mysql 锁 sampler 线程族(不进 snapshots/snaps_by,
     #   不碰 carriers → per-carrier gate 分桶零影响)。
     panel = start_probe_panel(t_end, poll)
+    if reused_pricing is not None:
+        panel_pricing = [t for t in panel["targets"] if t.get("svc") == "pricing"]
+        if len(panel_pricing) != 1:
+            raise ValueError("pricing panel target is not exact")
+        reused_pricing["url"] = panel_pricing[0]["url"]
+    for _mc, _psvc in strict51_mapped:
+        _pt = [t for t in panel["targets"] if t.get("svc") == _psvc]
+        if len(_pt) != 1:
+            raise ValueError(f"strict51 panel target is not exact: {_psvc}")
+        _mc["url"] = _pt[0]["url"]
 
     def _carrier_worker(c):
         cu = c["url"]
@@ -2797,7 +2963,13 @@ def _capture_stage_multi(stage, carriers, svc_pods, svc_deploys, otel_jobs, jaeg
             if remain > 0 and time.time() < t_end:
                 time.sleep(remain)
 
-    threads = [threading.Thread(target=_carrier_worker, args=(c,), daemon=True) for c in carriers]
+    _skip_worker_ids = {id(c) for c, _ in strict51_mapped}
+    if reused_pricing is not None:
+        _skip_worker_ids.add(id(reused_pricing))
+    threads = [
+        threading.Thread(target=_carrier_worker, args=(c,), daemon=True)
+        for c in carriers if id(c) not in _skip_worker_ids
+    ]
     for th in threads:
         th.start()
 
@@ -2838,6 +3010,25 @@ def _capture_stage_multi(stage, carriers, svc_pods, svc_deploys, otel_jobs, jaeg
 
     # ★M9: 先收面板/mysql 线程族(已到 t_end 自停)
     panel_records, mysql_records = collect_probe_panel(panel, poll)
+    if reused_pricing is not None:
+        # One real panel request becomes two honest logical views.  Values and
+        # timestamps are copied unchanged; only carrier identity is added.
+        reused_name = reused_pricing["name"]
+        snaps_by[reused_name].extend({
+            **sample,
+            "carrier_name": reused_name,
+            "carrier_role": reused_pricing["role"],
+        } for sample in panel["samples"]["pricing"])
+    for _mc, _psvc in strict51_mapped:
+        # strict51 single real owner: the mapped scientific view copies the
+        # panel sample's four observed fields verbatim; only the carrier
+        # name/role logical identity is added (A4). No value is altered,
+        # imputed, or inferred.
+        snaps_by[_mc["name"]].extend({
+            **sample,
+            "carrier_name": _mc["name"],
+            "carrier_role": _mc.get("role", ""),
+        } for sample in panel["samples"][_psvc])
 
     # 阶段后区间查(与单载体同口径; ★M9 query_range 逐点序列 emit)
     metric_records = prom_stage_metrics(svc_pods, svc_deploys, otel_jobs, start_dt, end_dt)
@@ -3330,8 +3521,25 @@ def dual_sli_gate(stages, f1win, f2win, fault="dual_timeout_retry"):
         net_delay_points = sum(1 for d in _durs_nl(buckets["F1_only"]) if d >= thr)
         p95_shift = ((f1_only_p95 - base_p95)
                      if (not math.isnan(f1_only_p95) and not math.isnan(base_p95)) else NAN)
-        # F2 loss: error_ratio over overlap + F2_only 两桶(partial_overlap: F2 窗 = overlap ∪ F2_only)
-        f2_window_bucket = buckets["overlap"] + buckets["F2_only"]
+        # F2 loss: use the already-running fixed pricing panel.  The serial
+        # scientific carrier can yield only 2-4 samples in this window because
+        # every loss timeout blocks it for 3s; the independent panel records
+        # the same pricing -> catalog-gw path at fixed cadence.  This is a
+        # D02-only observer selection: fault/window/timeout/threshold stay
+        # unchanged, and no extra request or post-hoc source choice is added.
+        panel_loss_buckets = {"overlap": [], "F2_only": []}
+        for st in stages:
+            for r in st.get("probe_records", []):
+                if not (
+                    r.get("service") == PANEL_SERVICE
+                    and r.get("metric") == "request_success"
+                    and r.get("labels", {}).get("target_service") == "pricing"
+                ):
+                    continue
+                m = membership_for(_parse_iso(r["ts"]), f1win, f2win)
+                if m in panel_loss_buckets:
+                    panel_loss_buckets[m].append({"request_success": bool(r.get("value"))})
+        f2_window_bucket = panel_loss_buckets["overlap"] + panel_loss_buckets["F2_only"]
         f2_error_ratio = _ratio(f2_window_bucket, False)
         per_root_F1 = bool(net_delay_points > 0 and not math.isnan(p95_shift)
                            and p95_shift >= NET_ISO_MARGIN_MS and f1_only_ok_ratio >= 0.8)
@@ -3349,8 +3557,10 @@ def dual_sli_gate(stages, f1win, f2win, fault="dual_timeout_retry"):
             "per_root_F1": per_root_F1,
             "per_root_F2": per_root_F2,
             "bucket_counts": {k: len(v) for k, v in buckets.items()},
+            "f2_observer": "probe-panel/pricing",
+            "f2_observer_bucket_counts": {k: len(v) for k, v in panel_loss_buckets.items()},
             "rule": "per_root_F1 = net_delay_points>0 & (F1_only_p95 - baseline_p95)>=800ms & F1_only_ok>=0.8 (F1 NET delay, carrier p95 位移); "
-                    "per_root_F2 = (overlap+F2_only)error_ratio>=0.3 (F2 NET loss 60%, loss 合法 error≈0.3, 探针 B); gate = F1 & F2",
+                    "per_root_F2 = fixed pricing panel (overlap+F2_only)error_ratio>=0.3 (F2 NET loss 60%, loss 合法 error≈0.3, 探针 B); gate = F1 & F2",
         }
         return gate_passed, evidence
 
@@ -3755,6 +3965,126 @@ def fault_masking_gate(stages, f1win, f2win, carriers, fault="host_cpu_x_svccpu"
     return passed, evidence
 
 
+def _interval_cell_and_detail(s, f1win, f2win):
+    """★strict51 request_interval_same_cell_v1(A4): 单 snapshot 的 gate-local 归属。
+
+    duration_us=int(round(float(request_duration_ms)*1000)); end=start+duration_us;
+    start/end 分别过既有 membership_for —— 二者相同才进该 stable bucket; 不同=transition;
+    duration 缺失/非有限/负数/换算失败=invalid。三者都返回 (cell_or_None, detail)。
+    原 sample 永久保留(由 caller 记入 gate evidence 的 transition_samples), 绝不静默丢。"""
+    ts = _parse_iso(s.get("ts"))
+    d = s.get("request_duration_ms")
+    if (ts is None or isinstance(d, bool) or not isinstance(d, (int, float))
+            or not math.isfinite(float(d)) or float(d) < 0):
+        return None, {"kind": "invalid"}
+    try:
+        dur_us = int(round(float(d) * 1000))
+    except (OverflowError, ValueError):
+        return None, {"kind": "invalid"}
+    m_from = membership_for(ts, f1win, f2win)
+    m_to = membership_for(ts + timedelta(microseconds=dur_us), f1win, f2win)
+    if m_from == m_to:
+        return m_from, {"kind": "stable"}
+    return None, {"kind": "transition", "membership_from": m_from, "membership_to": m_to}
+
+
+def _interval_transition_row(s, detail, entity):
+    """transition sample 的 evidence 行(A4 exact keys)。"""
+    d = s.get("request_duration_ms")
+    ts = _parse_iso(s.get("ts"))
+    end_iso = None
+    if (ts is not None and not isinstance(d, bool) and isinstance(d, (int, float))
+            and math.isfinite(float(d)) and float(d) >= 0):
+        try:
+            end_iso = _dt_iso(ts + timedelta(microseconds=int(round(float(d) * 1000))))
+        except (OverflowError, ValueError):
+            end_iso = None
+    return {
+        "start_ts": s.get("ts"),
+        "end_ts": end_iso,
+        "duration_ms": d,
+        "membership_from": detail.get("membership_from"),
+        "membership_to": detail.get("membership_to"),
+        "request_success": s.get("request_success"),
+        "http_status_code": s.get("http_status_code"),
+        "entity": entity,
+    }
+
+
+def _bucket_snapshots_with_interval(stages, f1win, f2win, mship_labels, interval_carriers, url_by):
+    """(carrier_name, membership) 分桶; interval_carriers 内的 carrier 走 request_interval_same_cell_v1
+    (transition/invalid 从一切 stable 桶的分子分母排除并计数), 其余走既有 start-based membership_for。
+    返回 (buckets, interval_evidence); interval_evidence 为 {} 当 interval_carriers 空(旧协议零回归)。"""
+    ic = frozenset(interval_carriers or ())
+    if not ic:
+        buckets = {}
+        for st in stages:
+            for s in st.get("snapshots", []):
+                cn = s.get("carrier_name")
+                if cn is None:
+                    continue
+                m = membership_for(_parse_iso(s["ts"]), f1win, f2win)
+                if m not in mship_labels:
+                    continue
+                buckets.setdefault(cn, {k: [] for k in mship_labels})[m].append(s)
+        return buckets, {}
+    interval_evidence = {
+        "membership_basis": STRICT51_MEMBERSHIP_BASIS,
+        "transition_count": 0,
+        "transition_samples": [],
+        "invalid_interval_count": 0,
+    }
+    buckets = {}
+    for st in stages:
+        for s in st.get("snapshots", []):
+            cn = s.get("carrier_name")
+            if cn is None:
+                continue
+            if cn in ic:
+                cell, det = _interval_cell_and_detail(s, f1win, f2win)
+                if det["kind"] == "transition":
+                    interval_evidence["transition_count"] += 1
+                    interval_evidence["transition_samples"].append(
+                        _interval_transition_row(s, det, url_by.get(cn)))
+                    continue
+                if det["kind"] == "invalid":
+                    interval_evidence["invalid_interval_count"] += 1
+                    continue
+                m = cell
+            else:
+                m = membership_for(_parse_iso(s["ts"]), f1win, f2win)
+            if m not in mship_labels:
+                continue
+            buckets.setdefault(cn, {k: [] for k in mship_labels})[m].append(s)
+    return buckets, interval_evidence
+
+
+def _filter_interval_transitions(stages, f1win, f2win, interval_carriers):
+    """host 臂等共享 gate 消费前的 stages 视图: interval_carriers 的 transition/invalid snapshot 移除
+    (从一切 stable 分子分母排除), 其余 snapshot/stage 键原样浅拷贝。不改共享 gate 自身=零回归。"""
+    ic = frozenset(interval_carriers or ())
+    if not ic:
+        return stages
+    out = []
+    for st in stages:
+        snaps = st.get("snapshots")
+        if snaps is None:
+            out.append(st)
+            continue
+        kept = []
+        for s in snaps:
+            cn = s.get("carrier_name")
+            if cn is not None and cn in ic:
+                _cell, det = _interval_cell_and_detail(s, f1win, f2win)
+                if det["kind"] != "stable":
+                    continue
+            kept.append(s)
+        st2 = dict(st)
+        st2["snapshots"] = kept
+        out.append(st2)
+    return out
+
+
 def config_state_points_by_window(stages, f1win, f2win, expected_ms, baseline_ms=F1_TIMEOUT_BASELINE_MS):
     """DK09 host_cpu_x_cfg_timeout 的 cfg-state 根(nginx_config metric)逐窗点计数器(只被 hostcpu_cfg_gate 调用=零回归)。
     输入: stages 三 stage dict 各取 st.get("probe_records",[])(_capture_stage_multi 控制线程每 poll 读 read_proxy_config
@@ -3824,7 +4154,8 @@ def config_state_points_by_window(stages, f1win, f2win, expected_ms, baseline_ms
 def hostcpu_cfg_gate(stages, f1win, f2win, carriers, fault="host_cpu_x_cfg_timeout",
                      ns_restarts_before=None, ns_restarts_after=None,
                      checksum_pre=None, checksum_post=None,
-                     expected_ms=None, baseline_ms=F1_TIMEOUT_BASELINE_MS):
+                     expected_ms=None, baseline_ms=F1_TIMEOUT_BASELINE_MS,
+                     interval_carriers=None, strict51_hard_validity=False):
     """DK09 host_cpu × cfg_timeout nested dual-root gate(host_cpu_x_cfg_timeout)——三臂 + 样本地板 + fail-closed。
     F1=host_cpu_saturation(整 during 窗 VM CPU 饱和, off-graph)× F2=cfg read_timeout(catalog-gw nginx conf, nested 子窗 F2⊂F1)。
     nested 下 overlap==F2 子窗; 窗命名 baseline / F1_only(during 头+尾) / overlap(=f2win) / recovery, 无 F2_only 桶。
@@ -3851,7 +4182,10 @@ def hostcpu_cfg_gate(stages, f1win, f2win, carriers, fault="host_cpu_x_cfg_timeo
     expected_ms = (HOSTCFG_F2_READ_TIMEOUT_MS if expected_ms is None else expected_ms)
 
     # ---- 1) host 臂: 复用 common_cause_gate(f2win=[None,None], 整 during 当 F1_only; fault_masking_gate L2542 先例) ----
-    host_passed, host_ev = common_cause_gate(stages, f1win, carriers, fault="host_cpu_single",
+    #   ★strict51: mapped carrier 的 transition/invalid snapshot 先从 stages 视图剔除(request_interval_same_cell_v1
+    #   统一作用于本开关下全部 mapped scientific gates —— 含 host 臂; 不改 common_cause_gate 自身=零回归)。
+    host_stages = _filter_interval_transitions(stages, f1win, f2win, interval_carriers)
+    host_passed, host_ev = common_cause_gate(host_stages, f1win, carriers, fault="host_cpu_single",
                                               ns_restarts_before=ns_restarts_before,
                                               ns_restarts_after=ns_restarts_after)
     per_root_F1 = bool(host_ev.get("per_root_F1"))
@@ -3890,17 +4224,12 @@ def hostcpu_cfg_gate(stages, f1win, f2win, carriers, fault="host_cpu_x_cfg_timeo
 
     # ---- 3) cfg-validity 臂(AUDIT-FIX, 不并入 passed=只驱动 hedge): per-carrier 错误桶(deep_net_combo_gate 闭包风格) ----
     #   载体按【名】映射(s1_hostcfg preset): pricing=gw-path victim 见 cfg; catalog_direct=绕 gw 直打 catalog 不见 cfg; user=disjoint 不经 gw。
+    #   ★strict51: mapped carrier(pricing/catalog_direct/user 全三)的 gate-local 样本集合按 request_interval_same_cell_v1
+    #   形成(四承重 cells 的分子分母一致切换); 旧协议不传 interval_carriers → start-based 逐字节原路径。
     MSHIP_VAL = ("baseline", "F1_only", "overlap", "recovery")
-    buckets = {}
-    for st in stages:
-        for s in st.get("snapshots", []):
-            cn = s.get("carrier_name")
-            if cn is None:
-                continue
-            m = membership_for(_parse_iso(s["ts"]), f1win, f2win)
-            if m not in MSHIP_VAL:
-                continue
-            buckets.setdefault(cn, {k: [] for k in MSHIP_VAL})[m].append(s)
+    _url_by = {c.get("name"): c.get("url") for c in (carriers or [])}
+    buckets, _interval_ev = _bucket_snapshots_with_interval(
+        stages, f1win, f2win, MSHIP_VAL, interval_carriers, _url_by)
 
     def _err_n(cn, mships):
         # ★AUDIT-FIX 死变量清理: 原 _err_ratio_n 返回 (ratio, n) 但 4 个 ratio 局部量从未使用, err_n 反被第二遍 sum 重算
@@ -3931,7 +4260,16 @@ def hostcpu_cfg_gate(stages, f1win, f2win, carriers, fault="host_cpu_x_cfg_timeo
 
     checksum_zero_drift = bool(checksum_pre == checksum_post == CHECKSUM_BASELINE)
 
-    passed = bool(host_arm and cfg_state_arm)
+    # ★strict51 hard arm(方案 §5.2/A6): validity_pass 从 hedge 晋升为硬臂 ——
+    #   passed = host_arm AND cfg_state_arm AND validity_pass;
+    #   per_root_F2 = cfg_state_arm AND validity_pass(root_metric_contract.valid = per_root_F1 AND per_root_F2)。
+    #   旧协议(不带开关)逐字节保持 AUDIT-FIX 口径A(passed=host_arm AND cfg_state_arm; validity 只驱动 hedge)。
+    if strict51_hard_validity:
+        passed = bool(host_arm and cfg_state_arm and validity_pass)
+        per_root_F2 = bool(cfg_state_arm and validity_pass)
+    else:
+        passed = bool(host_arm and cfg_state_arm)
+        per_root_F2 = bool(cfg_state_arm)
 
     # victim_set = host 根真探到的降级 victim(off-graph 元数据, 不由拓扑推断; 复用 host_ev)
     victim_set = list(host_ev.get("victim_set") or [])
@@ -3961,23 +4299,38 @@ def hostcpu_cfg_gate(stages, f1win, f2win, carriers, fault="host_cpu_x_cfg_timeo
             "validity_iii": validity_iii,
             "validity_pass": validity_pass,
         },
-        # per_root_F2 = build_root_metric_contract dual 口径(F2 cfg 根: cfg-state 臂; 口径A)
-        "per_root_F2": bool(cfg_state_arm),   # validity_pass 不并入(AUDIT-FIX: 只驱动 hedge; 见 cfg_validity_footprint)
+        # per_root_F2 = build_root_metric_contract dual 口径(F2 cfg 根; strict51=cfg_state AND validity, 旧协议=口径A 只 cfg_state)
+        "per_root_F2": per_root_F2,
+        "strict51_hard_validity": bool(strict51_hard_validity),
         "checksum_zero_drift": checksum_zero_drift,
         "checksum_pre": checksum_pre,
         "checksum_post": checksum_post,
         "victim_set": victim_set,
         "bucket_counts": {cn: {m: len(buckets[cn][m]) for m in MSHIP_VAL} for cn in buckets},
-        "rule": ("passed = host_arm(common_cause_gate[整 during 当 F1_only, f2win=[None,None]] passed: >=2 carrier during/baseline p95>=1.8x "
-                 "RELATIVE & slow-not-fail ok>=0.8 + disjoint user 也降级=host 作用域 + 全 ns churn delta=0; "
-                 "样本地板: 每载体 min(baseline_n,during_n)>=MIN_SEP_SAMPLES=2) "
-                 "AND cfg_state_arm(overlap_expected_points>=2[conf 生效 F2 子窗] AND outside_expected_points<=1[容忍 cp→reload 亚秒毛边] "
-                 "AND outside_baseline_points>=2[非 overlap 窗见 baseline 值] AND recovery_baseline_val>=1[recovery 窗回读 baseline 才背书恢复]); "
-                 "★cfg-validity 臂【不并入 passed】(pricing overlap err>=3 & F1_only err==0 & catalog_direct 两窗 err==0): "
-                 "fail 只驱动 SUMMARY hedge(回退 masking/config-state-only), 不挡 case 落盘; "
-                 "fail-closed: swap 失败/recover 漏/NaN tick/样本<2/churn>0/disjoint 不降级 任一→gate False"),
+        "rule": _hostcpu_cfg_rule_text(strict51_hard_validity, bool(_interval_ev)),
     })
+    evidence.update(_interval_ev)   # strict51: membership_basis/transition_count/transition_samples/invalid_interval_count(旧协议空 dict 零回归)
     return passed, evidence
+
+
+def _hostcpu_cfg_rule_text(strict51_hard_validity, interval_on):
+    base = ("passed = host_arm(common_cause_gate[整 during 当 F1_only, f2win=[None,None]] passed: >=2 carrier during/baseline p95>=1.8x "
+            "RELATIVE & slow-not-fail ok>=0.8 + disjoint user 也降级=host 作用域 + 全 ns churn delta=0; "
+            "样本地板: 每载体 min(baseline_n,during_n)>=MIN_SEP_SAMPLES=2) "
+            "AND cfg_state_arm(overlap_expected_points>=2[conf 生效 F2 子窗] AND outside_expected_points<=1[容忍 cp→reload 亚秒毛边] "
+            "AND outside_baseline_points>=2[非 overlap 窗见 baseline 值] AND recovery_baseline_val>=1[recovery 窗回读 baseline 才背书恢复]); ")
+    if strict51_hard_validity:
+        base += ("★strict51 hard arm: AND cfg_validity_footprint.validity_pass(pricing overlap err>=3 & n>=5 "
+                 "& pricing F1_only err==0 & n>=2 & catalog_direct 两窗 err==0 & n>=2; "
+                 "per_root_F2 = cfg_state_arm AND validity_pass; mapped carrier 样本集合按 request_interval_same_cell_v1); "
+                 "fail-closed: swap 失败/recover 漏/NaN tick/样本不足/churn>0/disjoint 不降级/validity fail 任一→gate False")
+    else:
+        base += ("★cfg-validity 臂【不并入 passed】(pricing overlap err>=3 & F1_only err==0 & catalog_direct 两窗 err==0): "
+                 "fail 只驱动 SUMMARY hedge(回退 masking/config-state-only), 不挡 case 落盘; "
+                 "fail-closed: swap 失败/recover 漏/NaN tick/样本<2/churn>0/disjoint 不降级 任一→gate False")
+    if interval_on:
+        base += "; mapped scientific gates 统一 request_interval_same_cell_v1(start/end membership 相同才进 stable 桶, transition 排除并记录)"
+    return base
 
 
 def common_cause_gate_db(stages, f1win, carriers, fault="db_lock_single",
@@ -4833,7 +5186,8 @@ def deep_net_combo_gate(stages, f1win, f2win, carriers, fault="net_delay_x_cfg_c
 
 def deep_catlat_cfg_gate(stages, f1win, f2win, carriers, fault="catalog_latency_x_cfg_timeout",
                          ns_restarts_before=None, ns_restarts_after=None,
-                         checksum_pre=None, checksum_post=None):
+                         checksum_pre=None, checksum_post=None,
+                         interval_carriers=None):
     """--deep-only PER-CARRIER nested trigger_amplifier 门(DK14 catalog_latency_x_cfg_timeout, s_dk14_catlat_cfg 载体)。
     ★FORK of deep_net_combo_gate(L3644), 把 F1 臂 INVERTED: DK07 里 root_a=net_delay on catalog-gw egress → catalog_direct 是 FLAT CONTROL
       (net root 够不到绕 gw 的 direct 路径), net_gw_only_separable 要 direct 位移<margin。DK14 里 root_a=app-latency 在 catalog 自身 →
@@ -4867,16 +5221,11 @@ def deep_catlat_cfg_gate(stages, f1win, f2win, carriers, fault="catalog_latency_
 
     # 按 (carrier_name, membership) 分桶 snapshots(recovery 及非 during 桶不进; 镜像 deep_net_combo_gate)
     # nested F2⊂F1 → F2_only 桶 EMPTY, overlap==F2 子窗(membership_for L306-311: point 在两窗→overlap, 仅 f1→F1_only)。
-    buckets = {}   # {carrier_name: {membership: [snapshot, ...]}}
-    for st in stages:
-        for s in st.get("snapshots", []):
-            cn = s.get("carrier_name")
-            if cn is None:
-                continue   # 单载体 snapshot 无 carrier_name → 不进 PER-CARRIER 门
-            m = membership_for(_parse_iso(s["ts"]), f1win, f2win)
-            if m not in MSHIP:
-                continue
-            buckets.setdefault(cn, {k: [] for k in MSHIP})[m].append(s)
+    # ★strict51: interval_carriers(=mapped scientific pricing)的 gate-local 样本集合按 request_interval_same_cell_v1
+    # 形成(start/end membership 相同才进 stable 桶); 其他 carriers 仍 start-based。旧协议不传 → 逐字节原路径。
+    _url_by = {c.get("name"): c.get("url") for c in (carriers or [])}
+    buckets, _interval_ev = _bucket_snapshots_with_interval(
+        stages, f1win, f2win, MSHIP, interval_carriers, _url_by)
 
     def _ok_durs(cn, m):
         # ★只算成功请求 latency(error 请求 duration=probe timeout 不代表 catlat, 镜像 deep_net_combo_gate 铁律)
@@ -5060,12 +5409,14 @@ def deep_catlat_cfg_gate(stages, f1win, f2win, carriers, fault="catalog_latency_
                  "AND control_plane_healthy(全 ns restart_delta 无>0); PER-CARRIER 分桶(非 dual_sli_gate 4-载体 LUMP); "
                  "nested F2⊂F1(overlap==F2 子窗, 无 F2_only 桶); labels PROVISIONAL(待上游 24-combo 校准)。"),
     }
+    evidence.update(_interval_ev)   # strict51: membership_basis/transition_count/transition_samples/invalid_interval_count(旧协议空 dict 零回归)
     return passed, evidence
 
 
 def deep_catlat_loss_gate(stages, f1win, f2win, carriers, fault="catalog_latency_x_net_loss",
                           ns_restarts_before=None, ns_restarts_after=None,
-                          checksum_pre=None, checksum_post=None):
+                          checksum_pre=None, checksum_post=None,
+                          interval_carriers=None):
     """--deep-only PER-CARRIER cross_class partial_overlap co_primary 门(DK15 catalog_latency_x_net_loss, s_dk15_catlat_loss 载体)。
     ★FORK of deep_catlat_cfg_gate(L3899): per_root_A(catalog-wide latency)保持 VERBATIM(catalog_direct+pricing F1_only 成功 p95 位移>=800ms 慢非失败),
       但 per_root_B 从 cfg 504-amplifier 换成 NET-LOSS error 臂(pricing(overlap∪F2_only)error_ratio>=0.3, loss 合法 error), 可分性从 amplifier_separable 换成 loss_separable。
@@ -5095,16 +5446,11 @@ def deep_catlat_loss_gate(stages, f1win, f2win, carriers, fault="catalog_latency
 
     # 按 (carrier_name, membership) 分桶 snapshots(recovery 及非 during 桶不进; 镜像 deep_catlat_cfg_gate)
     # partial_overlap → F2_only 桶【非空】(loss 子窗末段, catlat 已 MID-during recover); overlap=catlat+loss 叠加段。
-    buckets = {}   # {carrier_name: {membership: [snapshot, ...]}}
-    for st in stages:
-        for s in st.get("snapshots", []):
-            cn = s.get("carrier_name")
-            if cn is None:
-                continue   # 单载体 snapshot 无 carrier_name → 不进 PER-CARRIER 门
-            m = membership_for(_parse_iso(s["ts"]), f1win, f2win)
-            if m not in MSHIP:
-                continue
-            buckets.setdefault(cn, {k: [] for k in MSHIP})[m].append(s)
+    # ★strict51: interval_carriers(=mapped scientific pricing)的 gate-local 样本集合按 request_interval_same_cell_v1;
+    # 其他 carriers 仍 start-based。旧协议不传 → 逐字节原路径。
+    _url_by = {c.get("name"): c.get("url") for c in (carriers or [])}
+    buckets, _interval_ev = _bucket_snapshots_with_interval(
+        stages, f1win, f2win, MSHIP, interval_carriers, _url_by)
 
     def _ok_durs(cn, m):
         # ★只算成功请求 latency(error 请求 duration=probe timeout 不代表 catlat, 镜像 deep_net_combo_gate 铁律)
@@ -5280,6 +5626,7 @@ def deep_catlat_loss_gate(stages, f1win, f2win, carriers, fault="catalog_latency
                  "AND control_plane_healthy(全 ns restart_delta 无>0); PER-CARRIER 分桶(非 dual_sli_gate 4-载体 LUMP); "
                  "partial_overlap(F2_only 桶非空); ★LABEL 自纠: 上游标 amplifier 但 loss 不放大 latency, 实为 independent co_primary; labels PROVISIONAL(待上游 24-combo 校准)。"),
     }
+    evidence.update(_interval_ev)   # strict51: membership_basis/transition_count/transition_samples/invalid_interval_count(旧协议空 dict 零回归)
     return passed, evidence
 
 
@@ -5947,7 +6294,7 @@ def deep_triple_res_dep_cfg_gate(stages, f1win, f2win, f3win, carriers,
         "disjoint_p95_ratio_max": DB_LOCK_DISJOINT_P95_RATIO_MAX,
         "labels_provisional": True,
         "windowing_note": ("TRIPLE 3-fault(RES f1win / DEP f2win / CFG f3win)→ write_case 落 3 真窗(0b 9-路 membership); "
-                           "gate 内部【2-窗视图】(blob=RES∥DEP 共活 span=f1win∩f2win=f1win, cfg=f3win nested): membership_for(ts,blob,f3win)→ F1_only=blob-pre-CFG / overlap=blob+CFG; "
+                           "gate 内部用【2-窗视图】(blob=RES∥DEP 共活 span=f1win∩f2win=f1win, cfg=f3win nested): membership_for(ts,blob,f3win)→ F1_only=blob-pre-CFG / overlap=blob+CFG; "
                            "RES 由 cfs_throttle post-hoc 探(机制签名, 非 membership 窗); DEP 用 F1_only 绝对 p95; CFG 用 overlap 504 burst。"
                            "★RES∥DEP 恒同居 F1_only 一桶(仅机制正交分), 故 gate membership 实为 2-窗 dual 形——验 root_count=3 输出管道 + CFG 时限放大, 非 3-窗空间可分。"),
         "rule": ("passed = per_root_RES(catalog cfs_throttle during-stage max>THROTTLE_EPS[0.003]; catlat sleep 零 throttle → 干净归因 RES) "
@@ -6205,7 +6552,7 @@ def deep_triple_pricing_cat_cfg_gate(stages, f1win, f2win, f3win, carriers,
         "disjoint_p95_ratio_max": DB_LOCK_DISJOINT_P95_RATIO_MAX,
         "labels_provisional": True,
         "windowing_note": ("TRIPLE 3-fault(RES f1win / DEP f2win / CFG f3win)→ write_case 落 3 真窗(0b 9-路 membership); "
-                           "gate 内部【2-窗视图】(blob=RES∥DEP 共活 span=f1win∩f2win=f1win, cfg=f3win nested): membership_for(ts,blob,f3win)→ F1_only=blob-pre-CFG / overlap=blob+CFG; "
+                           "gate 内部用【2-窗视图】(blob=RES∥DEP 共活 span=f1win∩f2win=f1win, cfg=f3win nested): membership_for(ts,blob,f3win)→ F1_only=blob-pre-CFG / overlap=blob+CFG; "
                            "RES 由 pricing cfs_throttle post-hoc 探(机制签名 @pricing pod, 非 membership 窗); DEP 用 catalog_direct F1_only 绝对 p95; CFG 用 pricing overlap 504 burst。"
                            "★真增益=空间(RES@pricing pod ≠ DEP@catalog pod, 2 不同 cgroup); 载体观测口径与 T2 同级(RES 仅 metric 可见, catalog 2000ms 淹没 pricing-cpu)——不比 T2 更真, defect#1 诚实标。"),
         "honesty_note": ("★对抗审 defect#1: path_relation=same_request_path 拓扑真但 PROVISIONAL(RES 仅 pricing cfs_throttle metric 可见, 不在载体延迟上); "
@@ -6919,7 +7266,7 @@ def deep_triple_inv_cfg_retry_gate(stages, f1win, f2win, f3win, carriers,
         "path_relation_note": "different_request_path: inv(inventory:5013 直连)≠ CFG 两腿(pricing→catalog-gw); DEP 独立(不经 CFG 链放大, ADAPTED 非上游同路径链)",
         "labels_provisional": True,
         "windowing_note": ("TRIPLE 3-fault(inv f1win / timeout f2win / retry f3win)→ write_case 落 3 真窗(0b 9-路 membership: inv∥timeout co-active→F1F2, +retry nested→F1F2F3); "
-                           "gate 内部【2-窗视图】(fork dual_sli_gate M1): membership_for(ts,f2win=timeout,f3win=retry)→ F1_only=timeout-only(ov-f1on masked-ok)/overlap=timeout+retry(ov-f1f2 504); "
+                           "gate 内部用【2-窗视图】(fork dual_sli_gate M1): membership_for(ts,f2win=timeout,f3win=retry)→ F1_only=timeout-only(ov-f1on masked-ok)/overlap=timeout+retry(ov-f1f2 504); "
                            "inv(f1win)co-active whole-during 在 F1_only 桶 slow-200(不同路径, CFG-immune never-504), baseline(f2win 前)inv 未注 fast → inv F1_only p95 位移绝对可分。"),
         "rule": ("passed = per_root_inv(inventory_direct F1_only 成功 p95 位移>=INV_LATENCY_MARGIN_MS[800] & slow_not_fail[ok>=0.8 & err<=0.1] & n>=2; SPATIAL 不同路径, 绕 catalog-gw CFG-immune) "
                  "AND per_root_timeout(timeout_points>0[pricing F1_only+overlap proxy_read_timeout_ms==1000 config-marker] & pricing F1_only ok>=0.8[masked: timeout+retry-ON failover→catalog:5005 backup]) "
@@ -8406,7 +8753,7 @@ def _build_fault_profile(fault, gw_pod, catalog_pod, injected_at, recovered_at, 
     if fault == "net_delay_single":
         # 单根因(M2b-1): 1 元 cgt = F1 NET delay(复用 M2a F1 机制, catalog-gw 出向 netem)。
         # ★★ 2026-07-13 GT 更正: 根因 = catalog-gw(不是 catalog)。
-        #   直接物理证据(注入窗内实测, 见 (project docs)/net-fault-injection-point.md):
+        #   直接物理证据(注入窗内实测, 见 docs/fault-catalog/net-fault-injection-point.md):
         #     Chaos Mesh containerRecords -> SELECTED = catalog-gw-*; PodNetworkChaos 只有 catalog-gw 一个;
         #     tc qdisc show: catalog-gw eth0 = "netem delay 500ms 50ms", catalog eth0 = "noqueue"(未被触碰)。
         #   注入器一直记着真相(下方 intensity.scope = "catalog_gw_egress_single_side" 与本行注释),
@@ -9782,6 +10129,43 @@ def _build_fault_profile(fault, gw_pod, catalog_pod, injected_at, recovered_at, 
 # ============================================================
 # 输出: 上游 per-case 文件夹（REF §1）
 # ============================================================
+def _required_recovery_traffic_stats(stage):
+    """Return recovery stats for required carriers, retaining optional probes as raw evidence."""
+    aggregate = stage["traffic_stats"]
+    carriers = stage.get("carriers")
+    by_carrier = stage.get("traffic_stats_by_carrier")
+    if type(carriers) is not list or type(by_carrier) is not dict:
+        return aggregate, ()
+
+    required_names = []
+    excluded_names = []
+    for carrier in carriers:
+        if type(carrier) is not dict or type(carrier.get("name")) is not str:
+            return aggregate, ()
+        if carrier.get("role") == "llm_business_probe":
+            excluded_names.append(carrier["name"])
+        else:
+            required_names.append(carrier["name"])
+    if not excluded_names or not required_names:
+        return aggregate, ()
+
+    required_rows = [by_carrier.get(name) for name in required_names]
+    if any(type(row) is not dict or type(row.get("total")) is not int or type(row.get("ok")) is not int
+           for row in required_rows):
+        return aggregate, ()
+    total = sum(row["total"] for row in required_rows)
+    ok = sum(row["ok"] for row in required_rows)
+    if total <= 0 or ok < 0 or ok > total:
+        return aggregate, ()
+    return {
+        "total": total,
+        "ok": ok,
+        "error": total - ok,
+        "ok_ratio": round(ok / total, 4),
+        "error_ratio": round((total - ok) / total, 4),
+    }, tuple(excluded_names)
+
+
 def write_case(case_dir, case_id, run_id, args, stages, gate_passed, gate_evidence,
                injected_at, recovered_at, f1win, f2win, checksum_pre, checksum_post, ops_log,
                fault="dual_timeout_retry", isolation_check=None, availability_check=None,
@@ -9875,7 +10259,7 @@ def write_case(case_dir, case_id, run_id, args, stages, gate_passed, gate_eviden
         # ★T3 net_delay_x_net_loss_x_db_lock 同理(2026-07-07): delay(~2.1s)+loss(3s 超时重传)+db_lock 结构性拖慢 during cadence,
         #   delay 段稀释均值 <1.5×poll(实测 during mean 常 <3000)→ _slow_probe 漏判 → 同 net_delay_x_net_loss/DK15 用绝对地板(observed>=4);
         #   coverage_ratio/max_gap 仍如实落盘, 27 指标恒在(metric 收全, 仅探测 cadence 被拖=解耦 scrape 伪影非缺数)。仅本组合放行, 其余不变。
-        if stage == "during_fault" and (_slow_probe or args.fault in ("net_delay_x_net_loss", "catalog_latency_x_net_loss", "net_delay_x_net_loss_x_db_lock")):
+        if stage == "during_fault" and (_slow_probe or args.fault in ("net_loss_single", "net_delay_x_net_loss", "catalog_latency_x_net_loss", "net_delay_x_net_loss_x_db_lock")):
             _valid = (observed >= DURING_FAULT_MIN_SNAPSHOTS) and not missing
         else:
             _valid = (observed >= expected * 0.8) and not missing
@@ -10174,6 +10558,7 @@ def write_case(case_dir, case_id, run_id, args, stages, gate_passed, gate_eviden
                    f"F2(inj={injected_at.get('F2')},rec={recovered_at.get('F2')})")
     if root_count >= 3:
         _cic_detail += f" F3(inj={injected_at.get('F3')},rec={recovered_at.get('F3')})"
+    recovery_stats, excluded_recovery_probes = _required_recovery_traffic_stats(stages[-1])
     validation_results = [
         {"id": "component_injections_completed",
          "status": "pass" if injections_done else "fail",
@@ -10199,8 +10584,9 @@ def write_case(case_dir, case_id, run_id, args, stages, gate_passed, gate_eviden
          "status": "pass" if all(st["logs"] for st in stages) else "fail",
          "detail": "kubectl logs per stage per svc"},
         {"id": "recovery_confirmed",
-         "status": "pass" if (stages[-1]["traffic_stats"]["ok_ratio"] >= 0.8) else "fail",
-         "detail": f"post_recovery ok_ratio={stages[-1]['traffic_stats']['ok_ratio']}"},
+         "status": "pass" if (recovery_stats["ok_ratio"] >= 0.8) else "fail",
+         "detail": {"required_ok_ratio": recovery_stats["ok_ratio"],
+                    "excluded_optional_carriers": list(excluded_recovery_probes)}},
         {"id": "checksum_zero_business_write",
          "status": "pass" if (checksum_pre == checksum_post == CHECKSUM_BASELINE) else "fail",
          "detail": {"pre": checksum_pre, "post": checksum_post, "baseline": CHECKSUM_BASELINE}},
@@ -10459,10 +10845,14 @@ def write_case(case_dir, case_id, run_id, args, stages, gate_passed, gate_eviden
         })
         validation_results.append({
             "id": "cfg_validity_footprint",
-            "status": ("pass" if _vf.get("validity_pass") else "degraded"),   # ★AUDIT-FIX: degraded 不挡 case 落盘, 只驱动 SUMMARY hedge
-            "notes": "cfg 根独立业务遥测足迹(AUDIT-FIX, per-carrier 错误桶): (i)pricing overlap err>=3 & n>=5(gw 504→pricing remap 404) "
+            # ★strict51 hard arm(A6): validity 晋升硬臂 → pass/fail(degraded hedge 仅旧协议保留);
+            #   fail 时 all_validation_pass=False → sample blocked, 由外层 strict review 产 B1E006。
+            "status": ("pass" if _vf.get("validity_pass")
+                       else ("fail" if gate_evidence.get("strict51_hard_validity") else "degraded")),
+            "notes": "cfg 根独立业务遥测足迹(per-carrier 错误桶): (i)pricing overlap err>=3 & n>=5(gw 504→pricing remap 404) "
                      "(ii)pricing F1_only err==0 & n>=2(时间差分: host 慢非失败)(iii)catalog_direct 两窗 err==0 & n>=2(空间差分: catalog slow-not-fail); "
-                     "validity_pass=False → SUMMARY 强制 hedge(回退 masking/config-state-only, 不可作遥测可检双根发表)",
+                     "旧协议 validity_pass=False → degraded 只驱动 SUMMARY hedge(回退 masking/config-state-only); "
+                     "strict51 hard arm 下 fail 直接挡 case(blocked, 不当 release)",
             "detail": dict(_vf),
         })
         validation_results.append({
@@ -11029,7 +11419,8 @@ def write_case(case_dir, case_id, run_id, args, stages, gate_passed, gate_eviden
     #   但 F2 无独立业务遥测足迹 → 下游按 interaction_pattern_hedged 过滤此类 case;
     #   5 维 label 本就 PROVISIONAL(待上游 24-combo 校准), fallback 与 SUMMARY hedge 文案一致(masking/config-state-only)。
     if fault == "host_cpu_x_cfg_timeout" and (
-            (gate_evidence.get("cfg_validity_footprint") or {}).get("validity_pass") is False):
+            (gate_evidence.get("cfg_validity_footprint") or {}).get("validity_pass") is False) and (
+            not gate_evidence.get("strict51_hard_validity")):
         ground_truth["interaction_pattern_hedged"] = True
         ground_truth["interaction_pattern_fallback"] = "masking/config-state-only"
     if off_graph_meta:
@@ -11724,7 +12115,15 @@ def write_case(case_dir, case_id, run_id, args, stages, gate_passed, gate_eviden
             for cn, v in _pc.items()) or "(none)"
         _cs = gate_evidence.get("cfg_state") or {}
         _vf = gate_evidence.get("cfg_validity_footprint") or {}
-        _validity_hedge = (_vf.get("validity_pass") is False)
+        _s51_hard = bool(gate_evidence.get("strict51_hard_validity"))
+        _validity_hedge = (_vf.get("validity_pass") is False and not _s51_hard)
+        _vf_line = (f"- cfg_validity_footprint (strict51 hard arm, 并入 passed 与 per_root_F2): validity_pass={_vf.get('validity_pass')} "
+                    f"(overlap_err={_vf.get('overlap_err_n')}/{_vf.get('overlap_n')}, f1only_err={_vf.get('f1only_err_n')}/{_vf.get('f1only_n')}, "
+                    f"direct_err_by_win={_vf.get('direct_err_n_by_win')})"
+                    if _s51_hard else
+                    f"- cfg_validity_footprint (AUDIT-FIX, 不并入 passed, fail 只驱动 hedge): validity_pass={_vf.get('validity_pass')} "
+                    f"(overlap_err={_vf.get('overlap_err_n')}/{_vf.get('overlap_n')}, f1only_err={_vf.get('f1only_err_n')}/{_vf.get('f1only_n')}, "
+                    f"direct_err_by_win={_vf.get('direct_err_n_by_win')})")
         gate_lines = (
             f"- host_arm (common_cause_gate 整 during 当 F1_only + 样本地板 min(baseline_n,during_n)>=2): {gate_evidence.get('host_arm')} "
             f"(per_root_F1={gate_evidence.get('per_root_F1')}, multi_victim={gate_evidence.get('multi_victim_degraded')}, "
@@ -11735,9 +12134,7 @@ def write_case(case_dir, case_id, run_id, args, stages, gate_passed, gate_eviden
             f"(overlap_exp={_cs.get('overlap_expected_points')}, overlap_tot={_cs.get('overlap_total_points')}, "
             f"outside_exp={_cs.get('outside_expected_points')}, outside_base={_cs.get('outside_baseline_points')}, "
             f"recovery_base={((_cs.get('points_by_membership') or {}).get('recovery') or {}).get('baseline_val')})\n"
-            f"- cfg_validity_footprint (AUDIT-FIX, 不并入 passed, fail 只驱动 hedge): validity_pass={_vf.get('validity_pass')} "
-            f"(overlap_err={_vf.get('overlap_err_n')}/{_vf.get('overlap_n')}, f1only_err={_vf.get('f1only_err_n')}/{_vf.get('f1only_n')}, "
-            f"direct_err_by_win={_vf.get('direct_err_n_by_win')})\n"
+            f"{_vf_line}\n"
             f"- control_plane_healthy (全 ns pod restart_delta=0): {gate_evidence.get('control_plane_healthy')} (churn={gate_evidence.get('churn_pods')})\n"
             f"- checksum_zero_drift (★铁律 pre==post==baseline): {gate_evidence.get('checksum_zero_drift')}\n"
             f"- per_carrier: {_pc_lines}")
@@ -12965,7 +13362,12 @@ G2EXT_COMBOS = {
         "arity": 3, "timing": "partial_overlap", "carriers": "s_g2_checkout_cart_pricing", "disjoint": "user",
         "legs": [
             {"fid": "F1", "svc": "checkout", "kind": "podfail", "carrier": "checkout", "carrier_hard": True, "leaf": False, "fclass": "lifecycle"},
-            {"fid": "F2", "svc": "cart", "kind": "svccpu", "carrier": "cart", "carrier_hard": True, "fclass": "resource"},
+            # T05 calibration: cart has a 500m cgroup. One 100% stress worker
+            # already saturates that quota; a second worker only amplified the
+            # synchronized cart/check-out/panel DB-pool contention (8/30 500s)
+            # without adding a stronger per-pod throttle marker.
+            {"fid": "F2", "svc": "cart", "kind": "svccpu", "carrier": "cart", "carrier_hard": True,
+             "workers": 1, "fclass": "resource"},
             {"fid": "F3", "svc": "pricing", "kind": "svccpu", "carrier": "pricing", "carrier_hard": False, "fclass": "resource"},
         ],
         "fault_category": "cross_class", "composition_type": "partial_overlap",
@@ -12978,7 +13380,8 @@ G2EXT_COMBOS = {
         "legs": [
             {"fid": "F1", "svc": "order", "kind": "podfail", "carrier": "order", "carrier_hard": True, "leaf": False, "fclass": "lifecycle"},
             {"fid": "F2", "svc": "review-query", "kind": "svccpu", "carrier": "review_query", "carrier_hard": True, "fclass": "resource"},
-            {"fid": "F3", "svc": "catalog", "kind": "svccpu", "carrier": "pricing", "carrier_hard": True, "fclass": "resource"},
+            {"fid": "F3", "svc": "catalog", "kind": "svccpu", "carrier": "pricing", "carrier_hard": True,
+             "workers": 1, "fclass": "resource"},
         ],
         "fault_category": "cross_class", "composition_type": "partial_overlap",
         "interaction_pattern": "independent_parallel", "path_relation": "partially_shared_path",
@@ -13381,7 +13784,11 @@ def main():
                     help="每阶段秒数（默认 60, 上游 §2）")
     ap.add_argument("--poll", type=float, default=2.0, help="snapshot 间隔秒（默认 2 -> 30 snapshot/阶段）")
     ap.add_argument("--out-dir", default=DEFAULT_OUT_DIR, dest="out_dir",
-                    help="输出根目录（默认 <output-root>/k8s_pilot）")
+                    help="输出根目录（默认 datasets/k8s_pilot）")
+    ap.add_argument("--lite-smoke-event-sink", default=None, dest="lite_smoke_event_sink",
+                    help=argparse.SUPPRESS)
+    ap.add_argument("--lite-smoke-attempt-token", default=None, dest="lite_smoke_attempt_token",
+                    help=argparse.SUPPRESS)
     ap.add_argument("--carrier-base", default=None, dest="carrier_base",
                     help="pricing 探测基址（默认走 backend pod port-forward / 集群内访问; "
                          "传如 http://localhost:5014 覆盖）")
@@ -13442,16 +13849,46 @@ def main():
                     help="采完不删 catalog-bad 慢 primary（调试用）")
     ap.add_argument("--skip-checksum", action="store_true",
                     help="跳过 CHECKSUM 闸（仅当 mysql.connector 不可用的纯机制冒烟; 正式采集禁用）")
+    ap.add_argument("--strict51-panel-owner", action="store_true", dest="strict51_panel_owner",
+                    help="strict51 专用(默认关): D06/D12/D13 的 mapped scientific carrier 复用固定 probe-panel 的"
+                         "真实请求(单一 owner); 非授权 alias 传入即 FATAL")
     ap.add_argument("--keep-carrier", action="store_true",
                     help="采完不 scale 0 pricing 且不 unset env（连跑用,保 port-forward 跨 run 存活;"
                          "注:会把 pricing 留在 scale1+CATALOG_SERVICE_URL=catalog-gw,若中途拆 catalog-gw 需先去本flag重跑)")
     args = ap.parse_args()
+
+    # Lite E5 smoke-only event sink.  Both flags are required together, only
+    # the two permanently authorized fault aliases may use it, and the file
+    # must be an absolute sibling of runner-out inside the attempt root.
+    global _lite_smoke_sink
+    if bool(args.lite_smoke_event_sink) != bool(args.lite_smoke_attempt_token):
+        ap.error("Lite smoke event sink and attempt token must be supplied together")
+    if args.lite_smoke_event_sink:
+        if args.fault not in {"db_lock_x_netdelay", "checkout_podfail_x_cart_cpu_x_pricing_cpu"}:
+            ap.error("Lite smoke event sink only supports D10/T05 aliases")
+        if not os.path.isabs(args.out_dir):
+            ap.error("Lite smoke --out-dir must be absolute")
+        _attempt_root = os.path.realpath(os.path.dirname(args.out_dir))
+        _event_path = os.path.realpath(args.lite_smoke_event_sink)
+        if os.path.dirname(_event_path) != _attempt_root:
+            ap.error("Lite smoke event sink must be directly attempt-local")
+        _lite_smoke_sink = _LiteSmokeEventSink(_event_path, args.lite_smoke_attempt_token)
 
     # 绕 Clash: 进程级 NO_PROXY + 清 HTTP(S)_PROXY
     os.environ["NO_PROXY"] = "127.0.0.1,localhost,host.docker.internal"
     os.environ["no_proxy"] = "127.0.0.1,localhost,host.docker.internal"
     for k in ("HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"):
         os.environ.pop(k, None)
+
+    # ★strict51 panel-owner fail-closed(A4): 必须在任何 carrier/panel 请求【之前】拒绝非授权 alias。
+    if args.strict51_panel_owner:
+        if args.fault not in STRICT51_PANEL_OWNER_FAULTS:
+            print(f"[FATAL] --strict51-panel-owner 只授权 {STRICT51_PANEL_OWNER_FAULTS} 三个 exact alias, "
+                  f"收到 --fault {args.fault} — 拒绝执行(不发起任何请求)。", file=sys.stderr)
+            sys.exit(2)
+        s51_panel_map = dict(STRICT51_PANEL_OWNER_MAPS[args.fault])
+    else:
+        s51_panel_map = None
 
     case_dir = os.path.join(args.out_dir, args.case_id)
     ops_dir = os.path.join(case_dir, "raw", "operations")
@@ -13460,7 +13897,7 @@ def main():
 
     # carrier URL（pricing /api/pricing/<item>, 只读 GET）
     # ⚠ 必须 127.0.0.1 不能 localhost: localhost 先解析 IPv6 ::1(port-forward 仅 127.0.0.1)→
-    #   失败回退每连接 ~2s 惩罚(项目铁律), 会让 request_duration_ms 恒 ~2s 失真。
+    #   失败回退每连接 ~2s 惩罚(CLAUDE.md 铁律), 会让 request_duration_ms 恒 ~2s 失真。
     carrier_base = args.carrier_base or os.environ.get("PRICING_BASE_URL", "http://127.0.0.1:5014")
     carrier_url = f"{carrier_base}/api/pricing/{args.item}"
     # is_single(M2b-1): 单根因, 只注 F1, 无 F2/overlap → mid_actions=[] + single_sli_gate。
@@ -13851,7 +14288,7 @@ def main():
         if (float(args.stage_seconds) < _hostcfg_min_stage) or (float(args.f2_offset_seconds) < 10.0):
             print(f"[FATAL] --fault host_cpu_x_cfg_timeout (DK09) 需 --stage-seconds >= f2_offset({args.f2_offset_seconds}) + "
                   f"f2_duration({args.f2_duration_seconds}) + 10 = {_hostcfg_min_stage:.0f}s AND f2_offset>=10 "
-                  f"(nested F2⊂F1 子窗须每窗 baseline/F1_only/overlap/recovery 均>=MIN_SEP_SAMPLES=2 样本; 短 stage 致某窗<2 样本→gate fail-closed 空跑); "
+                  f"(nested F2-in-F1 子窗须每窗 baseline/F1_only/overlap/recovery 均>=MIN_SEP_SAMPLES=2 样本; 短 stage 致某窗<2 样本→gate fail-closed 空跑); "
                   f"got --stage-seconds={args.stage_seconds} --f2-offset-seconds={args.f2_offset_seconds}. 建议 --stage-seconds ~60。", file=sys.stderr)
             sys.exit(2)
     # ★DK14 fail-closed stage-seconds 地板(仅 catalog_latency_x_cfg_timeout; CLONE DK09 hostcfg guard): nested F2⊂F1 子窗=[f2_offset, f2_offset+f2_duration]。
@@ -13862,7 +14299,7 @@ def main():
         if (float(args.stage_seconds) < _catlat_min_stage) or (float(args.f2_offset_seconds) < 10.0):
             print(f"[FATAL] --fault catalog_latency_x_cfg_timeout (DK14) 需 --stage-seconds >= f2_offset({args.f2_offset_seconds}) + "
                   f"f2_duration({args.f2_duration_seconds}) + 10 = {_catlat_min_stage:.0f}s AND f2_offset>=10 "
-                  f"(nested F2⊂F1 子窗须每窗 baseline/F1_only/overlap/recovery 均>=MIN_SEP_SAMPLES=2 样本; 短 stage 致某窗<2 样本→gate fail-closed 空跑); "
+                  f"(nested F2-in-F1 子窗须每窗 baseline/F1_only/overlap/recovery 均>=MIN_SEP_SAMPLES=2 样本; 短 stage 致某窗<2 样本→gate fail-closed 空跑); "
                   f"got --stage-seconds={args.stage_seconds} --f2-offset-seconds={args.f2_offset_seconds}. 建议 --stage-seconds ~90。", file=sys.stderr)
             sys.exit(2)
     # ★T2 fail-closed stage-seconds / CFG-offset 地板(仅 catalog_latency_x_svc_cpu_x_cfg_timeout; CLONE DK14 guard): CFG(F3)nested 子窗=[f2_offset, f2_offset+f2_duration] ⊂ RES∥DEP blob 整 during。
@@ -13921,7 +14358,7 @@ def main():
         if float(args.stage_seconds) < _t3_min_stage:
             _t3_probs.append(f"--stage-seconds={args.stage_seconds} < f2_offset+f2_duration+TAIL({T3_TAIL_BUDGET:.0f}=DB_LOCK_RELEASE_CONFIRM_SEC[{DB_LOCK_RELEASE_CONFIRM_SEC}]+15)={_t3_min_stage:.0f}(recover_db_lock 阻塞 confirm 推后 loss 窗尾, stage 须覆盖)")
         if _t3_probs:
-            print("[FATAL] --fault net_delay_x_net_loss_x_db_lock (T3) 时序 guard 不满足(nested-staggered delay⊃loss⊃db_lock): "
+            print("[FATAL] --fault net_delay_x_net_loss_x_db_lock (T3) 时序 guard 不满足(nested-staggered delay>loss>db_lock): "
                   + "; ".join(_t3_probs) + "。标定值(reps 用): --stage-seconds 150 --f2-offset-seconds 20 --f2-duration-seconds 90 --f3-offset-seconds 50 --f3-duration-seconds 30。", file=sys.stderr)
             sys.exit(2)
     # ★T4 fail-closed 时序 guard(仅 pod_failure_x_catalog_latency_x_cfg_timeout): nested DEP(f1win OUTER whole-during)⊃ CFG(f2win MID pod-UP)⊃ LIF(f3win INNER pod-DOWN)。
@@ -13944,7 +14381,7 @@ def main():
         if float(args.stage_seconds) < _t4_min_stage:
             _t4_probs.append(f"--stage-seconds={args.stage_seconds} < f2_offset+2*cfg_carve+pod_bite({T4_POD_BITE_CEIL:.0f})+f3_dwell+pod_recover({T4_POD_RECOVER_BLOCK:.0f})+20={_t4_min_stage:.0f}(★FIX#5 pod bite 真 poll 上限 30s 非 15)")
         if _t4_probs:
-            print("[FATAL] --fault pod_failure_x_catalog_latency_x_cfg_timeout (T4) 时序 guard 不满足(nested DEP⊃CFG⊃LIF): "
+            print("[FATAL] --fault pod_failure_x_catalog_latency_x_cfg_timeout (T4) 时序 guard 不满足(nested DEP>CFG>LIF): "
                   + "; ".join(_t4_probs) + "。建议 --stage-seconds ~420 --f2-offset-seconds 60 --cfg-carve-seconds 45 --f3-dwell-seconds 40。", file=sys.stderr)
             sys.exit(2)
     # ★DK12 FATAL stage guard(审计 must-fix ④): partial_overlap 3 窗 + F1 sasrec 窗须 <readinessProbe 45s(period15×fail3, D4 定 ≈30s 留 15s 余量)。
@@ -14538,6 +14975,7 @@ def main():
     ns_restarts_mid = None             # M3d S4: midpoint(catalog recover 后+user inject 前)全 ns pod restart 快照(restart 按窗归属)
     user_av = None                     # M3d S4: F2 user 叶子 victim availability evidence(ready/restart, kubectl 信号非 carrier)
     db_lock_inj = None                 # M3c S2: DbContentionInjector 句柄(inject_db_lock 赋值; recover/finally 幂等 inj.stop() 兜底)
+    lite_smoke_cleanup_ok = True       # 仅 smoke event sink 消费；普通路径恒不读
     t4_liveness_patched = False        # ★FIX3(T4 only): 是否已 patch-OUT catalog livenessProbe(is_t4+deep inject 前置真; finally 据此还原 → 非 T4/非 deep 恒 False 不碰)
     # M3d S4 staggered mid_action 跨线程共享态(mid_action daemon 线程写, 主线程 during 后经 mid_done 同步读)
     stagger = {"ns_restarts_mid": None, "user_av": None, "mid_done": threading.Event()}
@@ -14636,6 +15074,10 @@ def main():
         stages.append(capture_stage("pre_fault", carrier_url, svc_pods, svc_deploys, otel_jobs,
                                     jaeger_services, log_deploys, args.stage_seconds, args.poll, ops_dir,
                                     carriers=carriers,
+                                    reuse_t08_pricing_panel=(args.fault == "order_podfail_x_reviewquery_cpu_x_catalog_cpu"),
+                                    reuse_d09_pricing_panel=(args.fault == "sasrec_cpu_x_catalog_netdelay"),
+                                    reuse_s04_pricing_panel=(args.fault == "service_cpu_single" and not is_retarget),
+                                    strict51_panel_map=s51_panel_map,
                                     probe_timeout=(NET_LOSS_PROBE_TIMEOUT_SEC if (is_partial_overlap or is_catlat_loss) else None)))
 
         # ---- 注 F1 -> during_fault（mid_actions: +offset 注 F2 / +offset+dur 恢复 F2, nested）----
@@ -14722,9 +15164,20 @@ def main():
             #   ★ checksum_pre 已在 pre_fault 前完成(锁前 CHECKSUM 铁律); 窗有效性基线: inject 前全 ns pod restart 快照(catalog liveness churn 门)。
             #   注入序 NET-first(轻, NetworkChaos AllInjected 秒级)→ items_lock inj.start() 后注(probe11: 序不敏感但 NET-first 干净);
             #     两根都在 during 采集前就位 → 整 during 两根活跃, simultaneous。
+            _lite_smoke_emit("injection_transition_started", scenario="D10")
             ns_restarts_before = _ns_pod_restarts()
-            injected_at["F2"] = inject_net_f1(ops_dir, ops_log)            # NET 根(NetworkChaos catalog-gw delay, secondary) — 先注(轻)
-            injected_at["F1"], db_lock_inj = inject_db_lock(ops_log)       # items_lock 根(host-side LOCK TABLES items, primary) — 后注
+            injected_at["F2"] = _lite_smoke_invoke_leg(
+                "F2", "network_delay", "catalog-gw",
+                lambda: inject_net_f1(ops_dir, ops_log),
+                resource_kind=NET_F1_CRD_KIND, resource_name=NET_F1_CRD_NAME,
+            )                                                               # NET 根 — 先注(轻)
+            injected_at["F1"], db_lock_inj = _lite_smoke_invoke_leg(
+                "F1", "db_table_lock", "mysql/items",
+                lambda: inject_db_lock(ops_log),
+                resource_kind="offgraph", resource_name="mysql-items-lock",
+                resource_uid="offgraph:mysql:items",
+            )                                                               # items_lock 根 — 后注
+            _lite_smoke_emit("all_active_confirmed", scenario="D10", active_fids=["F1", "F2"])
         elif is_dual_podfail:
             # M3d S4 F1 = catalog pod-failure【前半窗】(during 采集前注, midpoint mid_action recover); F2 user 在 midpoint mid_action 注。
             #   nginx 留 ov-baseline(catalog-gw 仍在, nginx_config 3 指标续), 不 apply catalog-bad; 走 independent_gate(availability)。
@@ -14898,10 +15351,16 @@ def main():
             # ★G2ext pre-inject-both: 所有 svccpu 腿 pre-during 注(整 during co-active, 镜像 DK17/DK18); podfail 腿(若有)由 _g2ext_podfail_mid_action 在 during mid_action 注/收(INNER 子窗)。
             #   nginx 留 ov-baseline(不 apply catalog-bad, 用真服务被压); 两/三根均 CRD(StressChaos 容器内 stress-ng, 无 rollout)→ 秒级 AllInjected。
             #   窗有效性基线: inject 前全 ns pod restart 快照(churn 门 + deep churn watch; svccpu 腿 CRD 无 rollout → 预期 restart_delta=0; podfail 腿 target pod restart∈{1,2} 由 gate 豁免)。
+            if args.fault == "checkout_podfail_x_cart_cpu_x_pricing_cpu":
+                _lite_smoke_emit("injection_transition_started", scenario="T05")
             ns_restarts_before = _ns_pod_restarts()
             for _lg in g2_cpu_legs:
                 _y, _c, _k = g2_crd[_lg["fid"]]
-                injected_at[_lg["fid"]] = apply_chaos_crd(_y, _c, ops_dir, ops_log, kind=STRESS_CATALOG_KIND)   # svccpu 腿: StressChaos(kind=stresschaos), 整 during co-active
+                injected_at[_lg["fid"]] = _lite_smoke_invoke_leg(
+                    _lg["fid"], "service_cpu", _lg["svc"],
+                    lambda _y=_y, _c=_c: apply_chaos_crd(_y, _c, ops_dir, ops_log, kind=STRESS_CATALOG_KIND),
+                    resource_kind=_k, resource_name=_c,
+                )   # svccpu 腿: StressChaos(kind=stresschaos), 整 during co-active
             # ★Phase B(三-06): netdelay 腿最后注(镜像 DK17 svccpu 先→netem 后; NetworkChaos apply+AllInjected 秒级)。
             #   注入序 cpu F1→cpu F2→netem F3 + 恢复逆序 F3→F2→F1 → f3win⊆f2win⊆f1win 机械副产物, 语义仍 simultaneous。
             for _lg in g2_net_legs:
@@ -15290,10 +15749,16 @@ def main():
                 _leaf = bool(_lg.get("leaf"))
                 _pf_crd_active = True   # apply 是 inject_pod_failure 第一步; AllInjected 超时 RuntimeError 时 CRD 已 apply → 也须就地删
                 _t_apply0 = time.time()   # ★smoke 修: 活跃预算的保守起点(swap 最早可能在 apply 即落地)
-                _pf_inj, _pf_hit, _pf_err, _pf_ready = inject_pod_failure(
-                    ops_dir, ops_log, _pf_carrier, target=_svc, app_label=_applbl,
-                    yaml=_y, crd_name=_c, poll_carrier=(not _leaf), hit_timeout=30, n_probe=3)
+                _pf_inj, _pf_hit, _pf_err, _pf_ready = _lite_smoke_invoke_leg(
+                    _fid, "pod_failure", _svc,
+                    lambda: inject_pod_failure(
+                        ops_dir, ops_log, _pf_carrier, target=_svc, app_label=_applbl,
+                        yaml=_y, crd_name=_c, poll_carrier=(not _leaf), hit_timeout=30, n_probe=3),
+                    resource_kind=_k, resource_name=_c,
+                )
                 injected_at[_fid] = (_pf_inj if _leaf else now_iso())   # leaf: settle 后 CRD-inject 时刻(carrier-pf 探不出 leaf); non-leaf: bite 观测 DOWN=子窗起(hit_timeout=30 等 pause-swap ~10-20s 落地滞后, smoke 实证 10s 太短→err=0.0 未咬中→窗头掺健康流量)
+                if args.fault == "checkout_podfail_x_cart_cpu_x_pricing_cpu":
+                    _lite_smoke_emit("all_active_confirmed", scenario="T05", active_fids=["F1", "F2", "F3"])
                 g2ext["ns_restarts_mid"] = _ns_pod_restarts()
                 g2ext["overlap_av"] = {"svc": _svc, "carrier_hit": _pf_hit, "carrier_error_ratio": _pf_err,
                                        "leaf": _leaf,
@@ -15308,7 +15773,10 @@ def main():
                 print(f"  [g2ext-podfail] {_svc} pod-failure 注入(carrier_hit={_pf_hit}, err={_pf_err}, leaf={_leaf}); "
                       f"dwell {_dwell:.0f}s(自适应预算: elapsed={_elapsed:.0f}s, 约束 A worst ≤~57s < liveness 60s)...", flush=True)
                 time.sleep(_dwell)
-                recovered_at[_fid], _ = recover_pod_failure(ops_log, app_label=_applbl, yaml=_y)
+                recovered_at[_fid], _ = _lite_smoke_recover_leg(
+                    _fid, "pod_failure", _svc,
+                    lambda: recover_pod_failure(ops_log, app_label=_applbl, yaml=_y),
+                )
                 _pf_crd_active = False   # 正常收尾: recover_pod_failure 内已 delete CRD
                 # ★Phase C(双-17 staggered 第二段, 编排时序 fix): checkout podfail 早子窗 recover 收尾【之后】才注 invlat set-env
                 #   —— 这是本 fix 的核心。base 窗(pre_fault + podfail 子窗期)inventory 必须干净, 故 set-env 绝不能在 during 起点
@@ -15484,7 +15952,13 @@ def main():
         stages.append(capture_stage("during_fault", carrier_url, svc_pods, svc_deploys, otel_jobs,
                                     jaeger_services, log_deploys, args.stage_seconds, args.poll, ops_dir,
                                     mid_actions=mid_actions, carriers=carriers,
-                                    probe_timeout=(NET_LOSS_PROBE_TIMEOUT_SEC if (is_partial_overlap or is_catlat_loss) else None)))
+                                    reuse_t08_pricing_panel=(args.fault == "order_podfail_x_reviewquery_cpu_x_catalog_cpu"),
+                                    reuse_d09_pricing_panel=(args.fault == "sasrec_cpu_x_catalog_netdelay"),
+                                    reuse_s04_pricing_panel=(args.fault == "service_cpu_single" and not is_retarget),
+                                    strict51_panel_map=s51_panel_map,
+                                    probe_timeout=(PODFAIL_PROBE_TIMEOUT_SEC if (is_pod_failure or is_dual_podfail)
+                                                   else NET_LOSS_PROBE_TIMEOUT_SEC
+                                                   if (is_partial_overlap or is_catlat_loss) else None)))
 
         # M3d S4: midpoint mid_action(daemon 线程)在 during 内完成 catalog recover + user inject; 经 mid_done 同步读跨线程态。
         if is_dual_podfail:
@@ -15562,6 +16036,10 @@ def main():
             ns_restarts_mid = g2ext["ns_restarts_mid"]   # optional evidence(podfail 腿 restart 归属 mid 快照)
 
         # ---- 恢复 F1 -> post_recovery（M1: 回 ov-baseline; M2a/M2b1/M2b1b: delete NetworkChaos CRD; M2b-2: delete PodChaos + poll ready/img 回真）----
+        if is_db_lock_combo:
+            _lite_smoke_emit("recovery_transition_started", scenario="D10")
+        elif args.fault == "checkout_podfail_x_cart_cpu_x_pricing_cpu":
+            _lite_smoke_emit("recovery_transition_started", scenario="T05")
         db_released = True   # db_lock 专用: 仅 db_lock recover 时按 _confirm 结果重置; 非 db_lock 恒 True(checksum_post 照常)
         if is_net and not is_partial_overlap:
             # ★M10 retarget: 删渲染出的那个 CRD(retarget_yaml); 非 retarget 恒 None → 静态 catalog-gw yaml(零回归)。
@@ -15642,7 +16120,10 @@ def main():
                 recovered_at[_lg["fid"]] = recover_net_f1(ops_log, yaml=_y)
             for _lg in reversed(g2_cpu_legs):
                 _y, _c, _k = g2_crd[_lg["fid"]]
-                recovered_at[_lg["fid"]] = delete_chaos_crd(_y, ops_log)
+                recovered_at[_lg["fid"]] = _lite_smoke_recover_leg(
+                    _lg["fid"], "service_cpu", _lg["svc"],
+                    lambda _y=_y: delete_chaos_crd(_y, ops_log),
+                )
             # ★Phase C(双-17 invlat 腿): during 后拆 inventory dep-latency(kubectl set env FAULT_DELAY_MS- unset + 单节点 rollout ~4-10s
             #   + _wait_carrier_slow want_fast → recovered_at 取观测快刻; DK11 recover_inventory_latency 既有原语)。podfail 腿已在 mid_action 收。
             for _lg in reversed(g2_invlat_legs):
@@ -15671,8 +16152,14 @@ def main():
         elif is_db_lock_combo:
             # M3c-2 combo 恢复: 两根都拆 — items_lock(inj.stop() 四重释放 + 带 timeout SELECT 1 FROM items 确认释放)先, NET(delete NetworkChaos)后。
             #   ★ checksum_post 在 items_lock 恢复(UNLOCK+确认释放)之后(锁后 CHECKSUM 铁律); db_released 决定 checksum_post 是否走(防挂死, 复用 M3c-1)。
-            recovered_at["F1"], db_released = recover_db_lock(db_lock_inj, ops_log)   # items_lock 根
-            recovered_at["F2"] = recover_net_f1(ops_log)                             # NET 根(delete NetworkChaos)
+            recovered_at["F1"], db_released = _lite_smoke_recover_leg(
+                "F1", "db_table_lock", "mysql/items",
+                lambda: recover_db_lock(db_lock_inj, ops_log),
+            )                                                                         # items_lock 根
+            recovered_at["F2"] = _lite_smoke_recover_leg(
+                "F2", "network_delay", "catalog-gw",
+                lambda: recover_net_f1(ops_log),
+            )                                                                         # NET 根(delete NetworkChaos)
         elif is_dual_podfail:
             # M3d S4 恢复: catalog F1 已在 midpoint mid_action recover; 此处 recover user F2(delete user PodChaos + poll user ready 回真确认恢复)。
             recovered_at["F2"], _ = recover_pod_failure(ops_log, app_label="user", yaml=POD_FAILURE_USER_YAML)
@@ -15702,6 +16189,10 @@ def main():
         stages.append(capture_stage("post_recovery", carrier_url, svc_pods, svc_deploys, otel_jobs,
                                     jaeger_services, log_deploys, args.stage_seconds, args.poll, ops_dir,
                                     carriers=carriers,
+                                    reuse_t08_pricing_panel=(args.fault == "order_podfail_x_reviewquery_cpu_x_catalog_cpu"),
+                                    reuse_d09_pricing_panel=(args.fault == "sasrec_cpu_x_catalog_netdelay"),
+                                    reuse_s04_pricing_panel=(args.fault == "service_cpu_single" and not is_retarget),
+                                    strict51_panel_map=s51_panel_map,
                                     probe_timeout=(NET_LOSS_PROBE_TIMEOUT_SEC if (is_partial_overlap or is_catlat_loss) else None)))
 
         # ---- 窗后 CHECKSUM 闸 ----
@@ -15813,9 +16304,9 @@ def main():
             except Exception as e:  # pragma: no cover
                 print(f"  [WARN] finally delete_chaos_crd(host-cpu) 失败: {e}", flush=True)
             try:
-                _kubectl(["scale", f"deploy/{STRESSOR_DEPLOY}", "--replicas=0"], timeout=30)
+                _kubectl(["delete", f"deploy/{STRESSOR_DEPLOY}", "--ignore-not-found=true", "--wait=true", "--timeout=60s"], timeout=70)
             except Exception as e:  # pragma: no cover
-                print(f"  [WARN] finally scale stressor 0 失败: {e}", flush=True)
+                print(f"  [WARN] finally delete stressor deployment 失败: {e}", flush=True)
         # M3b-2 combo: 额外无条件幂等删 catalog StressChaos CRD(第二根; recover_stress_catalog 已删则 no-op)
         if is_host_cpu_combo:
             try:
@@ -15933,13 +16424,21 @@ def main():
         if is_db_lock_any and db_lock_inj is not None:
             try:
                 db_lock_inj.stop()
+                if is_db_lock_combo:
+                    _lite_smoke_emit("cleanup_result", fid="F1", kind="db_table_lock", target_identity="mysql/items", success=True)
             except Exception as e:  # pragma: no cover
+                lite_smoke_cleanup_ok = False
+                if is_db_lock_combo:
+                    _lite_smoke_emit("cleanup_result", fid="F1", kind="db_table_lock", target_identity="mysql/items", success=False)
                 print(f"  [WARN] finally db_lock_inj.stop() 失败: {e}", flush=True)
         # M3c-2 combo: 额外无条件幂等删 NetworkChaos CRD(NET 根; --ignore-not-found; recover_net_f1 已删则 no-op)
         if is_db_lock_combo:
             try:
                 delete_chaos_crd(NET_F1_DELAY_YAML, ops_log)
+                _lite_smoke_emit("cleanup_result", fid="F2", kind="network_delay", target_identity="catalog-gw", success=True)
             except Exception as e:  # pragma: no cover
+                lite_smoke_cleanup_ok = False
+                _lite_smoke_emit("cleanup_result", fid="F2", kind="network_delay", target_identity="catalog-gw", success=False)
                 print(f"  [WARN] finally delete_chaos_crd(combo net-delay) 失败: {e}", flush=True)
         # M3d S4: 无条件幂等删两 PodChaos CRD(catalog F1 midpoint 已删 / user F2 recover 已删; --ignore-not-found no-op, 不再触发 restart)
         if is_dual_podfail:
@@ -16009,7 +16508,12 @@ def main():
                     continue
                 try:
                     delete_chaos_crd(_yc[0], ops_log)   # 渲染 yaml 路径(svccpu stress-<svc>-cpu / podfail pod-failure-<svc>; ★Phase B/C netdelay 腿=静态 NET_F1 或渲染 net-delay-<svc>, 同样幂等)
+                    if args.fault == "checkout_podfail_x_cart_cpu_x_pricing_cpu":
+                        _lite_smoke_emit("cleanup_result", fid=_lg["fid"], kind=_lg["kind"], target_identity=_lg["svc"], success=True)
                 except Exception as e:  # pragma: no cover
+                    lite_smoke_cleanup_ok = False
+                    if args.fault == "checkout_podfail_x_cart_cpu_x_pricing_cpu":
+                        _lite_smoke_emit("cleanup_result", fid=_lg["fid"], kind=_lg["kind"], target_identity=_lg["svc"], success=False)
                     print(f"  [WARN] finally delete_chaos_crd(g2ext {_lg['fid']}:{_lg['svc']}/{_lg['kind']}) 失败: {e}", flush=True)
             # ★Phase C(双-17 invlat 腿): 无条件幂等 unset FAULT_DELAY_MS(即便 during/mid_action 中途崩; kubectl set env X- 幂等,
             #   未设则 no-op)—— 绝不让 inventory 残留慢态。逐腿各自 try/except 独立(镜像 DK13/T1 finally inventory 兜底)。
@@ -16025,6 +16529,11 @@ def main():
                 except Exception as e:  # pragma: no cover
                     g2rec_cleanup_error = f"{type(e).__name__}: {e}"
                     print(f"  [FAIL-LOUD] G2ext(三-06) 案后 recommendations cleanup 失败: {g2rec_cleanup_error} — 手工核 recommendations 表! case 将标 fail。", flush=True)
+
+    if is_db_lock_combo:
+        _lite_smoke_emit("recovery_confirmed", scenario="D10", cleanup_ok=lite_smoke_cleanup_ok)
+    elif args.fault == "checkout_podfail_x_cart_cpu_x_pricing_cpu":
+        _lite_smoke_emit("recovery_confirmed", scenario="T05", cleanup_ok=lite_smoke_cleanup_ok)
 
     # ---- 算 F1/F2[/F3] 窗(datetime 区间, ISO Z → aware datetime) ----
     f1win = [_parse_iso(injected_at.get("F1")), _parse_iso(recovered_at.get("F1"))]
@@ -16062,7 +16571,9 @@ def main():
                 stages, f1win, f2win, carriers, args.fault,
                 ns_restarts_before=ns_restarts_before, ns_restarts_after=ns_restarts_after,
                 checksum_pre=checksum_pre, checksum_post=checksum_post,
-                expected_ms=HOSTCFG_F2_READ_TIMEOUT_MS, baseline_ms=F1_TIMEOUT_BASELINE_MS)
+                expected_ms=HOSTCFG_F2_READ_TIMEOUT_MS, baseline_ms=F1_TIMEOUT_BASELINE_MS,
+                interval_carriers=(frozenset(s51_panel_map) if s51_panel_map else None),
+                strict51_hard_validity=bool(args.strict51_panel_owner and is_hostcpu_cfg))
         elif args.deep and is_db_lock:
             # M6 Phase A --deep db_lock_single: 串行深 fan-in 载体下 items 锁表现为 latency block(probe 等锁释放~12s 后成功)
             #   而非 error-burst —— 串行探针(poll 单请求)不耗尽 mysql-connector pool(size3), 故走 fanin_victim_gate(latency)
@@ -16164,7 +16675,8 @@ def main():
             #   ★置于 generic is_single/else dual_sli_gate 之前(is_catlat_cfg 非 is_single/is_net → 否则误落 dual_sli_gate 4-载体 LUMP)。
             gate_passed, gate_evidence = deep_catlat_cfg_gate(
                 stages, f1win, f2win, carriers, args.fault,
-                ns_restarts_before, ns_restarts_after, checksum_pre, checksum_post)
+                ns_restarts_before, ns_restarts_after, checksum_pre, checksum_post,
+                interval_carriers=(frozenset(s51_panel_map) if s51_panel_map else None))
         elif args.deep and is_catlat_loss:
             # DK15 --deep cross_class partial_overlap co_primary(s_dk15_catlat_loss 载体): deep_catlat_loss_gate
             #   (per_root_A catalog-wide latency[catalog_direct+pricing F1_only p95 位移>=800 慢非失败, VERBATIM DK14]
@@ -16175,7 +16687,8 @@ def main():
             #   ★置于 generic is_single/else dual_sli_gate 之前(is_catlat_loss 非 is_single/is_net → 否则误落 dual_sli_gate 4-载体 LUMP)。
             gate_passed, gate_evidence = deep_catlat_loss_gate(
                 stages, f1win, f2win, carriers, args.fault,
-                ns_restarts_before, ns_restarts_after, checksum_pre, checksum_post)
+                ns_restarts_before, ns_restarts_after, checksum_pre, checksum_post,
+                interval_carriers=(frozenset(s51_panel_map) if s51_panel_map else None))
         elif args.deep and is_net_svccpu:
             # DK17 --deep cross_class SIMULTANEOUS co_primary(s_dk17_netdelay_svccpu 载体): deep_netdelay_svccpu_gate
             #   (per_root_NET pricing(gw)F1_only 成功 p95 【绝对】位移>=800 慢非失败 + per_root_RES catalog cfs_throttle during-stage>eps[★NOT catalog_direct latency ratio]
@@ -16687,10 +17200,16 @@ def main():
                 print("[WARN] fault-masking gate FAILED — host 根/catalog throttle/per-root 可分/churn 信号未全现。case 标记 fail（summary 已注明）。"
                       " 检查 host+catalog StressChaos 双 AllInjected + >=2 carrier p95>=1.8x + disjoint user 也降级 + catalog cfs_throttle spike + disjoint user 无 throttle + 无 pod churn。", flush=True)
             elif is_hostcpu_cfg:
-                print("[WARN] hostcpu-cfg gate FAILED — host_arm/cfg_state_arm 未双现。case 标记 fail（summary 已注明）。"
-                      " 检查 host StressChaos AllInjected(>=2 carrier p95>=1.8x + disjoint user 也降级 + 每载体样本>=2) "
-                      "+ ov-hostcfg-f2.conf swap_conf 生效(nginx_config metric overlap_expected>=2, outside_expected<=1, outside_baseline>=2) + 无 pod churn。"
-                      " 注: cfg-validity 臂 fail 不挡 case, 只驱动 SUMMARY hedge(回退 masking/config-state-only)。", flush=True)
+                if args.strict51_panel_owner:
+                    print("[WARN] hostcpu-cfg gate FAILED (strict51 hard arm) - host_arm/cfg_state_arm/validity_pass 未全现。"
+                          " case 标记 fail (blocked, summary 已注明)。检查 host StressChaos AllInjected(>=2 carrier p95>=1.8x + "
+                          "disjoint user 也降级 + 每载体样本>=2) + ov-hostcfg-f2.conf swap_conf 生效 + cfg_validity_footprint 三项 "
+                          "(pricing overlap err>=3 & F1_only err==0 & catalog_direct 两窗 err==0) + 无 pod churn。", flush=True)
+                else:
+                    print("[WARN] hostcpu-cfg gate FAILED — host_arm/cfg_state_arm 未双现。case 标记 fail（summary 已注明）。"
+                          " 检查 host StressChaos AllInjected(>=2 carrier p95>=1.8x + disjoint user 也降级 + 每载体样本>=2) "
+                          "+ ov-hostcfg-f2.conf swap_conf 生效(nginx_config metric overlap_expected>=2, outside_expected<=1, outside_baseline>=2) + 无 pod churn。"
+                          " 注: cfg-validity 臂 fail 不挡 case, 只驱动 SUMMARY hedge(回退 masking/config-state-only)。", flush=True)
             elif is_db_lock:
                 print("[WARN] common-cause-db gate FAILED — db_lock error-burst/disjoint flat/catalog liveness/checksum 信号未全现。case 标记 fail（summary 已注明）。"
                       " 检查 inj.start() 获锁(.env DB_USER 有 LOCK TABLES priv)+ >=2 items-reader F1_only error_ratio>=0.5 + disjoint user flat + catalog 无 churn + CHECKSUM pre==post==baseline。", flush=True)
@@ -16738,10 +17257,17 @@ def main():
                       " 检查 kubectl set env deploy/catalog FAULT_DELAY_MS 生效(rollout 成功) + carrier 直连 catalog-direct(/api/items 绕 catalog-gw)"
                       " during F1_only p95 位移≥800ms(慢非失败 err≤0.1; /health 豁免故 pod 仍 Ready 属预期)。", flush=True)
             elif is_catlat_cfg:
-                print("[WARN] catlat-cfg gate FAILED — per_root_A(catalog-wide latency)/per_root_B(gw overlap 504 amplifier)/amplifier_separable/disjoint/checksum 未全现。case 标记 fail（summary 已注明）。"
-                      " 检查 kubectl set env FAULT_DELAY_MS 生效(catalog_direct+pricing F1_only p95 位移>=800ms 慢非失败) + ov-catlat-f2.conf swap_conf 生效(pricing overlap error>=0.8=504)"
-                      " + catalog_direct 全窗 err<=0.1(never-504=放大器仅限 gw-path 可分) + pricing F1_only err<=0.1(放大器仅限 F2 子窗) + disjoint user 平 + 非-target 无 churn + CHECKSUM pre==post==baseline。"
-                      " 注: catlat pre-during 注入吸收 rollout; F2 nested 子窗[f2_offset, f2_offset+f2_duration]⊂F1; catalog:5005 / pricing:5014 / user:5004 port-forward 须活。", flush=True)
+                # ★strict51 B5(A7): warning 全 ASCII —— 科学 gate fail 落盘 blocked 后, 该 WARN 在 Windows GBK
+                #   控制台曾因 "⊂"(U+2282) 触发 UnicodeEncodeError → runner 崩溃非零退出 → B1E010 冒充技术失败。
+                #   语义不变, 只改可打印字符集; D12/D13 科学失败仍完整落盘后正常 exit 0(由 coordinator 出 B1E006)。
+                print("[WARN] catlat-cfg gate FAILED - per_root_A(catalog-wide latency) / per_root_B(gw overlap 504 amplifier) / "
+                      "amplifier_separable / disjoint / checksum not all present. Case marked fail (blocked; see summary). "
+                      "Check kubectl set env FAULT_DELAY_MS took effect (catalog_direct+pricing F1_only p95 shift >=800ms, slow-not-fail); "
+                      "ov-catlat-f2.conf swap_conf active (pricing overlap error>=0.8 = 504 burst); catalog_direct all-window err<=0.1 "
+                      "(never 504: amplifier confined to gw-path); pricing F1_only err<=0.1 (amplifier confined to F2 subwindow); "
+                      "disjoint user flat; no non-target churn; CHECKSUM pre==post==baseline. "
+                      "Note: catlat pre-during injection absorbs rollout; F2 nested subwindow [f2_offset, f2_offset+f2_duration] is a subset of F1; "
+                      "catalog:5005 / pricing:5014 / user:5004 port-forwards must be alive.", flush=True)
             elif is_catlat_loss:
                 print("[WARN] catlat-loss gate FAILED — per_root_A(catalog-wide latency)/per_root_B(pricing NET-loss error>=0.3)/loss_separable/disjoint/checksum 未全现。case 标记 fail（summary 已注明）。"
                       " 检查 kubectl set env FAULT_DELAY_MS 生效(catalog_direct+pricing F1_only p95 位移>=800ms 慢非失败) + NetworkChaos netem loss AllInjected(pricing overlap∪F2_only error>=0.3, ★loss 合法 error 不要求 ok>=0.8)"
@@ -16762,12 +17288,12 @@ def main():
                       " 检查 NetworkChaos delay AllInjected(pricing_gw F1_only[delay-only 边窗]成功 p95>=NET_SEP_MS[800]& >=NET_SEP_RATIO[5]×catalog_direct F1_only & ok>=0.8 slow-NOT-fail & n>=2)"
                       " + NetworkChaos loss AllInjected(pricing_gw F1F2[排除 F1F2F3]error_ratio>=0.3[loss% 用 --loss-pct/--net-loss-yaml 标定至 [0.35,0.7]]& catalog_direct F1F2 err<=0.1 空间见证 & F1F2 err>F1_only err)"
                       " + db_lock inj.start() 获锁(>=2 off-gw items-reader[catalog_direct/search]f3win error_ratio>=0.5 & baseline<=0.1 + disjoint user flat + catalog liveness restart_delta=0)+ 全 ns 无 churn + CHECKSUM pre==post==baseline。"
-                      " ★nested-staggered 时序(delay OUTER⊃loss MID⊃db_lock INNER); loss/lock 须留 F1F2 lock-off 窗(f3_offset+f3_duration < f2_offset+f2_duration); pricing:5014 / catalog:5005 / search:5017 / user:5004 port-forward 须活; --stage-seconds 须覆盖 recover_db_lock confirm 阻塞。", flush=True)
+                      " ★nested-staggered 时序(delay OUTER > loss MID > db_lock INNER); loss/lock 须留 F1F2 lock-off 窗(f3_offset+f3_duration < f2_offset+f2_duration); pricing:5014 / catalog:5005 / search:5017 / user:5004 port-forward 须活; --stage-seconds 须覆盖 recover_db_lock confirm 阻塞。", flush=True)
             elif is_t4:
                 print("[WARN] triple lif-dep-cfg gate FAILED — per_root_DEP(catalog_direct F1_only 绝对 p95>=1000 慢非失败)/per_root_CFG(pricing F1F2 504 err>=0.8)/per_root_LIF(catalog_direct F1F2F3 000 err>=0.8 + catalog_restart_delta>=1)/masking_confirmed(DEP-only: F1_only present + F1F2F3 vanish + CFG present)/amplifier_separable/disjoint_flat/control_plane/checksum 未全现。case 标记 fail（summary 已注明）。"
                       " 检查 catlat FAULT_DELAY_MS 生效(catalog_direct F1_only slow-200 p95>=1000) + swap_conf ov-catlat-f2(pricing F1F2 504) + inject_pod_failure carrier_hit(catalog_direct F1F2F3 000; ★carrier=catalog_direct 非 pricing)"
                       " + recovered_at[F3]@pod-READY(非 CRD-delete,否则 readiness-lag 000 误标 F1F2 毁 amplifier_separable) + catalog 无 livenessProbe(否则 kubelet 抢重启 LIF 窗震荡) + catalog 全豁免后非-catalog 无 churn + CHECKSUM 净。"
-                      " ★nested DEP⊃CFG⊃LIF; stage 须覆盖 f2_offset+2*cfg_carve+30(pod bite)+f3_dwell+60(pod recover block); pricing:5014/catalog:5005/user:5004 pf 须活。", flush=True)
+                      " ★nested DEP>CFG>LIF; stage 须覆盖 f2_offset+2*cfg_carve+30(pod bite)+f3_dwell+60(pod recover block); pricing:5014/catalog:5005/user:5004 pf 须活。", flush=True)
             elif is_single:
                 print("[WARN] single SLI gate FAILED — F1(NET p95 位移)信号未现。case 标记 fail（summary 已注明）。"
                       " 检查 NetworkChaos AllInjected + carrier p95 位移是否 ≥ baseline+800ms。", flush=True)

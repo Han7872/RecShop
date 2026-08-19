@@ -3,7 +3,7 @@
 
     python scripts/chaos/ctk/build_full_delivery.py
 
-That is the whole operation. Output lands in (delivery) RecShop_<tag>/
+That is the whole operation. Output lands in datasets/_delivery/RecShop_<tag>/
 (tag defaults to today's date, override with --tag). Re-running with the same
 --tag rebuilds in place.
 
@@ -37,10 +37,10 @@ the agent dataset. Nothing is re-derived, so every traditional case is
 byte-identical to what was already sent and validated. This is the mode you
 want; it takes minutes, not hours.
 
-  (delivery) 20260713_gtfix/{single,dual,triple}   140  sent 2026-07-13
-  (delivery) single_spread_20260716/single_spread   55  sent 2026-07-16
-  (delivery) single_recagent_20260722                15  packaged 07-22
-  (upstream batch) + (upstream whowhen view) 108  agent side
+  datasets/_delivery/20260713_gtfix/{single,dual,triple}   140  sent 2026-07-13
+  datasets/_delivery/single_spread_20260716/single_spread   55  sent 2026-07-16
+  datasets/_delivery/single_recagent_20260722                15  packaged 07-22
+  datasets/_archive/agentfault/agentfault_v2/ + datasets/_archive/agentfault/agentfault_v2_whowhen/ 108  agent side
 
 --mode rebuild regenerates the traditional side from the native trees instead.
 Only reach for it if a native GT changed; it takes ~1-2h and its output will NOT
@@ -52,7 +52,7 @@ If you ever need to rebuild one traditional batch from its native tree (this is
 what --mode rebuild runs per batch), the recipe per batch is:
 
   python scripts/chaos/ctk/package_for_delivery.py \
-      --pilot-dir (native trees) <tree> --out <dest> \
+      --pilot-dir datasets/k8s_pilot/<tree> --out <dest> \
       --bare --force --flat-traces --with-calltree --with-eval
 
   --flat-traces    raw/traces/ = flat projection (trace_id==span_id), the shape
@@ -69,10 +69,10 @@ what --mode rebuild runs per batch), the recipe per batch is:
   packager and so live in a second script:
 
   python scripts/chaos/ctk/build_recagent_agent_views.py \
-      --delivery-dir <dest> --pilot-dir (native trees) single_recagent
+      --delivery-dir <dest> --pilot-dir datasets/k8s_pilot/single_recagent
 
   Native trees are READ-ONLY. package_for_delivery.py refuses to write into
-  (native trees)  and that guard is not to be worked around.
+  datasets/k8s_pilot/ and that guard is not to be worked around.
 """
 import argparse
 import collections
@@ -87,6 +87,10 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import dataset_registry as DR   # noqa: E402  (同目录; signal_class 对未登记 fault_type fail-loud)
+# P0-8 release gate (HANDOFF §7 P0-8). The builder re-runs the gate INDEPENDENTLY
+# rather than trusting that the upstream packager already filtered — a frozen
+# delivery dir could have been built before the gate existed, or hand-edited.
+from package_for_delivery import check_release_gate  # noqa: E402  (same dir)
 
 # ★注入伪影族(DATASHEET §6 L15): 这两类不走 Chaos Mesh CRD, 而是 `kubectl set env` →
 #   触发 deployment rollout → 起新 pod → 根因自己的 container_start_time_seconds 跳变 +
@@ -106,36 +110,36 @@ PY = sys.executable
 
 # (label, frozen delivery dir, native tree, arity bucket)
 TRAD = [
-    ("dense140_single", "(delivery) 20260713_gtfix/single",
-     "(native trees) single_dense", "single"),
-    ("spread55", "(delivery) single_spread_20260716/single_spread",
-     "(native trees) single_spread", "single"),
-    ("recagent15", "(delivery) single_recagent_20260722",
-     "(native trees) single_recagent", "single"),
-    ("dense140_dual", "(delivery) 20260713_gtfix/dual",
-     "(native trees) dual_dense", "dual"),
-    ("dense140_triple", "(delivery) 20260713_gtfix/triple",
-     "(native trees) triple_dense", "triple"),
+    ("dense140_single", "datasets/_delivery/20260713_gtfix/single",
+     "datasets/k8s_pilot/single_dense", "single"),
+    ("spread55", "datasets/_delivery/single_spread_20260716/single_spread",
+     "datasets/k8s_pilot/single_spread", "single"),
+    ("recagent15", "datasets/_delivery/single_recagent_20260722",
+     "datasets/k8s_pilot/single_recagent", "single"),
+    ("dense140_dual", "datasets/_delivery/20260713_gtfix/dual",
+     "datasets/k8s_pilot/dual_dense", "dual"),
+    ("dense140_triple", "datasets/_delivery/20260713_gtfix/triple",
+     "datasets/k8s_pilot/triple_dense", "triple"),
     # ★G2ext 扩充(2026-07-24 采完, 2026-07-25 打冻结包并入): 全异服务不坍缩,
     #   dual_ext 全 G=2 → dual 桶, triple_ext 全 G=3 → triple 桶(tier 均匀断言自校验)。
-    ("dual_ext25", "(delivery) dual_ext_20260725/dual",
-     "(native trees) dual_ext", "dual"),
-    ("triple_ext20", "(delivery) triple_ext_20260725/triple",
-     "(native trees) triple_ext", "triple"),
+    ("dual_ext25", "datasets/_delivery/dual_ext_20260725/dual",
+     "datasets/k8s_pilot/dual_ext", "dual"),
+    ("triple_ext20", "datasets/_delivery/triple_ext_20260725/triple",
+     "datasets/k8s_pilot/triple_ext", "triple"),
 ]
 
 EVAL_NOTES = [
     # ★2026-07-28 精简: 交付树 doc 层只留 README.md + DATASHEET.md。原 per-batch EVAL_NOTES_*.md /
     #   BASELINES_255.md / COMPARISON_*.md 的关键指标已并入 DATASHEET §关键结果表;完整逐方法/逐服务
-    #   表留仓内 (project docs)/n5_255/(外部使用者可索取)。这里只搬【逐 case 分数 CSV】(数据,非文档)。
-    ("(project docs)/n5_255/per_case_scores.csv", "per_case_scores_255.csv"),
+    #   表留仓内 docs/results/n5_255/(外部使用者可索取)。这里只搬【逐 case 分数 CSV】(数据,非文档)。
+    ("docs/results/n5_255/per_case_scores.csv", "per_case_scores_255.csv"),
 ]
 
-AGENT_SRC = "(archived) agentfault_v2"
-AGENT_WW_SRC = "(archived) agentfault_v2_whowhen"
+AGENT_SRC = "datasets/_archive/agentfault/agentfault_v2"
+AGENT_WW_SRC = "datasets/_archive/agentfault/agentfault_v2_whowhen"
 # ★2026-07-28 精简: 交付树 doc 层只留 README.md + DATASHEET.md(+ MANIFEST.json + 数据目录)。
 #   原 per-track .md(SUMMARY/EVAL_NOTES/BASELINE_RESULTS/RESULTS_*)的关键指标已并入 DATASHEET
-#   §关键结果表;完整逐方法分数留仓内 (project docs)/。这里只搬【数据文件】,不搬【文档】。
+#   §关键结果表;完整逐方法分数留仓内 docs/results/。这里只搬【数据文件】,不搬【文档】。
 AGENT_DOCS = ["limitations.json",
               "dataset_agentfault.csv",
               "run_summary.json", "context_drift_outcomes.json",
@@ -158,7 +162,7 @@ NORMAL_ARM_FILES = shutil.ignore_patterns("normal__*", "normal.jsonl",
 
 # rec-agent batch's agent-layer views: they are produced by the traditional
 # collection but belong, conceptually, to the agent tree.
-NEGCTL_SRC = "(delivery) single_recagent_20260722"
+NEGCTL_SRC = "datasets/_delivery/single_recagent_20260722"
 NEGCTL_PARTS = ["agent_traces", "whowhen"]
 
 
@@ -271,7 +275,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--tag", default=datetime.date.today().strftime("%Y%m%d"))
     ap.add_argument("--mode", choices=("copy", "rebuild"), default="copy")
-    ap.add_argument("--out-root", default="output/_delivery")
+    ap.add_argument("--out-root", default="datasets/_delivery")
     ap.add_argument("--agent-src", default=AGENT_SRC,
                     help="agent-fault dataset root (default = agentfault_v2 REF). "
                          "For the B-档 (K8S) delivery: datasets/agentfault_k8s.")
@@ -279,6 +283,17 @@ def main():
                     help="agent Who&When delivery view (default = "
                          "agentfault_v2_whowhen). For k8s: "
                          "datasets/agentfault_k8s_whowhen.")
+    # P0-8 release gate (HANDOFF §7 P0-8). Default ON: the builder re-runs the
+    # gate independently on every case it is about to copytree. --no-strict-gate
+    # downgrades to warn-but-still-copy (legacy debug only).
+    gate = ap.add_mutually_exclusive_group()
+    gate.add_argument("--strict-gate", dest="strict_gate", action="store_true",
+                      default=True,
+                      help="(default) P0-8: reject cases whose release fields are "
+                           "false/missing; they are excluded and NOT copied.")
+    gate.add_argument("--no-strict-gate", dest="strict_gate", action="store_false",
+                      help="legacy-debug ONLY: warn on release-field failures but "
+                           "still copy. Do NOT use for real deliveries.")
     a = ap.parse_args()
 
     def _abs(x):
@@ -310,6 +325,10 @@ def main():
 
     stats = collections.Counter()
     case_index = []
+    # P0-8 excluded ledger (HANDOFF §7 P0-8). The builder re-runs the gate
+    # independently. Rejected cases are written to excluded_ledger.json at the
+    # delivery root so a reader can see exactly what was held back and why.
+    excluded = []  # list of {"source", "case", "reason"}
 
     # ---------------- traditional ----------------
     # Staging must start empty. Leftovers from a previous rebuild of the same tag
@@ -351,6 +370,21 @@ def main():
             dp = os.path.join(out, "traditional", bucket, name)
             if os.path.exists(dp):
                 sys.exit("[ERR] case name collision: %s" % name)
+            # ----- P0-8 release gate (HANDOFF §7 P0-8). Re-run INDEPENDENTLY here:
+            #       the builder must not trust that the upstream frozen package
+            #       was already filtered. A gate failure skips the copytree and
+            #       records the case in excluded_ledger.json. -----
+            gate_ok, gate_reason = check_release_gate(sp)
+            if not gate_ok:
+                if a.strict_gate:
+                    print("[full] GATE-REJECT %s/%s: %s (excluded; not copied)"
+                          % (label, name, gate_reason))
+                    excluded.append({"source": label, "case": name,
+                                     "tier": bucket, "reason": gate_reason})
+                    continue
+                else:
+                    print("[full] GATE-WARN %s/%s: %s (--no-strict-gate: copied anyway)"
+                          % (label, name, gate_reason))
             copytree(sp, dp)
             with open(os.path.join(dp, "metadata.json"), encoding="utf-8") as f:
                 src_case = json.load(f).get("source_case_id")
@@ -598,6 +632,29 @@ def main():
 
     write_readme(out, manifest)
 
+    # ---- P0-8 excluded ledger (HANDOFF §7 P0-8). Write excluded_ledger.json at
+    #      the delivery root so a reader can audit exactly which cases the gate
+    #      held back and why. Always written (even when empty) so its absence is
+    #      itself a red flag that the gate did not run.
+    ledger = {
+        "schema": "p0_8_excluded_ledger/v1",
+        "strict_gate": a.strict_gate,
+        "n_excluded": len(excluded),
+        "excluded": excluded,
+    }
+    with open(os.path.join(out, "excluded_ledger.json"), "w", encoding="utf-8") as f:
+        json.dump(ledger, f, ensure_ascii=False, indent=2)
+    if excluded:
+        from collections import Counter as _Ctr
+        reason_counts = _Ctr(e["reason"] for e in excluded)
+        print("[full] GATE excluded %d case(s) by reason:" % len(excluded))
+        for reason, cnt in sorted(reason_counts.items()):
+            print("      %3d x %s" % (cnt, reason))
+        for e in excluded:
+            print("      - %s/%s: %s" % (e["source"], e["case"], e["reason"]))
+    else:
+        print("[full] GATE: 0 cases excluded (all passed release gate)")
+
     # ---- 把【手工维护的根级文件】从备份搬回新树 ----
     # ★2026-07-27 修的真 bug: L243 把旧树 rename 成 .bak, L481 又在成功后 rmtree 掉它,
     #   而 DATASHEET.md / LICENSE.md / score_baro.py 【本脚本不生成】 ⇒ 跑一次重建就把它们
@@ -710,7 +767,7 @@ DATASHEET.md · FAULT_DESIGN.md · MANIFEST.json
 
 > `agent/negative_controls/` {nc_total} 条 = 把 `traditional/single/` 里打在 `rec-agent` 上的 15 个 case,在零 Agent 注入下重采的 Agent 流水线轨迹(真值统一是"根因在基础设施",点名任一 Agent 即误报)。明细见 `DATASHEET.md` §2.2。
 
-> **故障设计**(逐 combo 完整表:8 传统机制 + 21 dual + 8 triple combo + 4 agent 族)见 **`FAULT_DESIGN.md`**。
+> **故障设计**(逐 combo 完整表:8 个单腿基础故障机制 + 21 个双故障腿设计 combo + 8 个三故障腿设计 combo + 4 个 agent 族)见 **`FAULT_DESIGN.md`**。这里的“双/三故障腿”描述设计态注入腿数，不是服务级 G；交付判档仍以去重根因服务数为准。
 
 ## 怎么评
 

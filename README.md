@@ -14,7 +14,8 @@ Two complementary fault lines: **traditional infrastructure faults** (255 cases,
 |---|---|
 | `services/` | 25 microservices (Flask/FastAPI) — the running application |
 | `datasets/agentfault_k8s/` | Agent semantic fault dataset (96 faulted cases, 4 families) + pre-computed eval results |
-| `datasets/traditional_k8s/` | Traditional infra fault dataset (255 cases; full telemetry on Google Drive) |
+| `datasets/traditional_k8s/` | Traditional infra fault dataset, v1 (255 cases; full telemetry on Google Drive) |
+| `datasets/traditional_v2_strict51/` | Traditional infra fault dataset, **v2 strict51 resample** (255 cases; per-case scores in-repo, full telemetry on Google Drive) |
 | `scripts/chaos/` | Fault injection + collection + evaluation toolkit |
 | `docker/` `ops/` `k8s/` | Docker / OTel stack / K8S deployment configs |
 
@@ -39,7 +40,9 @@ Access — Buyer: http://localhost:3000 · Merchant: `/merchant` · Admin: `/adm
 
 **Agent semantic faults** (`datasets/agentfault_k8s/`) — 96 faulted cases across 4 families (hallucinate / context_drift / wrong_item_pick / format_violation), each with machine-verifiable ground truth. See `SUMMARY.md` (what / how) + `EVAL_NOTES.md` (evaluation protocol).
 
-**Traditional infra faults** (`datasets/traditional_k8s/`) — 255 cases (single 130 / dual 100 / triple 25), Chaos Mesh. Full telemetry (~16 GB) on Google Drive; see `traditional_k8s/README.md`.
+**Traditional infra faults, v1** (`datasets/traditional_k8s/`) — 255 cases (single 130 / dual 100 / triple 25), Chaos Mesh. Full telemetry (~16 GB) on Google Drive; see `traditional_k8s/README.md`.
+
+**Traditional infra faults, v2 (strict51)** (`datasets/traditional_v2_strict51/`) — a protocol-controlled resample of the same 255-case design: randomized complete block design (51 scenarios x 5 blocks), frozen seed/identity chain, per-case qualification gates, disclosed amendments (242 primary + 13). Constant baselines identical to v1 at every tier; BARO/resource 0.608 -> 0.698. Per-case method scores ship in-repo; full telemetry on Google Drive; see `traditional_v2_strict51/README.md`.
 
 ## Data collection
 

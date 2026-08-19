@@ -26,6 +26,6 @@ spec:
       app: stressor
   stressors:
     cpu:
-      workers: 12
+      workers: 32
       load: 100
   duration: "300s"

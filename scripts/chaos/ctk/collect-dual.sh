@@ -19,7 +19,6 @@
 #   KUBECTL 必 export（runner L65 默认 bare kubectl 不在 PATH → FATAL）
 #   Windows C:/ D:/ 路径；service→service URL 用 127.0.0.1。
 #   长 fault-injection 用 nohup【不用 run_in_background】(被 SIGKILL reaped → 集群留脏)。
-#   commit 不加 Co-Authored-By: Claude；origin/main 永不 push。
 #   CHECKSUM 铁律：items=3849590678 / inventory=3935678504，逐 case fail-closed，
 #     绝不 --skip-checksum。双-10 db_lock：LOCK 前 pre / UNLOCK+确认释放后 post。
 # -----------------------------------------------------------------------------

@@ -1,0 +1,572 @@
+{
+ "backends": [
+  {
+   "base_url": "http://127.0.0.1:9090",
+   "name": "prometheus",
+   "readiness_endpoint": "/-/ready"
+  },
+  {
+   "base_url": "http://127.0.0.1:16686",
+   "name": "jaeger",
+   "readiness_endpoint": "/api/services"
+  },
+  {
+   "base_url": "http://127.0.0.1:3100",
+   "name": "loki",
+   "readiness_endpoint": "/ready"
+  }
+ ],
+ "carrier_token_sha256": "269bba1c439ec13d08af42706bd4da1eb1893c32ff57a725dd886fab0c34d060",
+ "cluster": {
+  "backend_http_status": {
+   "jaeger": 200,
+   "loki": 200,
+   "prometheus": 200
+  },
+  "context": "docker-desktop",
+  "deployments": [
+   {
+    "config_sha256": "b2de37f2c97ed14e01a1ac104e9acf6e76f7fde24472f45846809cd92b6e5833",
+    "desired": 1,
+    "image": "recweb-cart:latest",
+    "name": "cart",
+    "ready": 1,
+    "uid": "7d221841-6098-4b4c-9ab8-b6800b718165"
+   },
+   {
+    "config_sha256": "664c7241c2869501114e87501fb0df5cc3dec908481a139ae6823f5dc4b7fef9",
+    "desired": 1,
+    "image": "recweb-catalog:latest",
+    "name": "catalog",
+    "ready": 1,
+    "uid": "e093fea3-ca4c-402b-87a5-cce2dd94fdd1"
+   },
+   {
+    "config_sha256": "e893fc46feaaffd522445ec9eb58dd14fa39bd41dfd088ff6f668e8ef10cd41b",
+    "desired": 1,
+    "image": "nginx:alpine",
+    "name": "catalog-gw",
+    "ready": 1,
+    "uid": "9556f619-c4c0-4221-98c5-ad0bdffff185"
+   },
+   {
+    "config_sha256": "42538180cde65e45d701d31415b1848ffb9beb125d063d91227b65ed3a5fcaa9",
+    "desired": 1,
+    "image": "recweb-checkout:latest",
+    "name": "checkout",
+    "ready": 1,
+    "uid": "558d5343-afc9-4225-bc6d-6c6e5a212dc1"
+   },
+   {
+    "config_sha256": "9e104e03b118944e174fef26056d1e02899cac6cd3cb2b36f834f32012b9e80d",
+    "desired": 1,
+    "image": "recweb-pricing:latest",
+    "name": "pricing",
+    "ready": 1,
+    "uid": "74492ae0-6a53-461e-93c6-a852c43f26d9"
+   },
+   {
+    "config_sha256": "8aaa476a2a64dca2763abc0716068ce381ac04e7b77685042d3f857c72ca8d0e",
+    "desired": 1,
+    "image": "recweb-search:latest",
+    "name": "search",
+    "ready": 1,
+    "uid": "ee626227-648c-42c8-98bb-03ae28980d2b"
+   },
+   {
+    "config_sha256": "cd80d15c75f7f2c888b22b202eaf7f2be1cf058f758bcbc99873fe80f0e12441",
+    "desired": 1,
+    "image": "recweb-user:latest",
+    "name": "user",
+    "ready": 1,
+    "uid": "7fa59872-e8a9-42b4-832b-3bdff673377a"
+   }
+  ],
+  "namespace": "recweb-chaos",
+  "namespace_uid": "a0d9d4fa-424a-45ea-9939-3babfe287e7b"
+ },
+ "contract": {
+  "artifact_file_sha256": "fb773c108771c58687bad222b5baefb8e79e32b933fcb090b261044dd47ec955",
+  "contract_sha256_inner": "1a6a7b8618e1cc1b525cb474d5e64bf47a1c936c81a584d91a16e6c182a105a3",
+  "path": "docs/acceptance/contracts/traditional-v2-lite-strict51-20260816/strict51-contract.json"
+ },
+ "db_checksums": {
+  "inventory": 3935678504,
+  "items": 3849590678
+ },
+ "environment_identity_core": {
+  "backend_identity": [
+   {
+    "base_url": "http://127.0.0.1:9090",
+    "name": "prometheus",
+    "readiness_endpoint": "/-/ready"
+   },
+   {
+    "base_url": "http://127.0.0.1:16686",
+    "name": "jaeger",
+    "readiness_endpoint": "/api/services"
+   },
+   {
+    "base_url": "http://127.0.0.1:3100",
+    "name": "loki",
+    "readiness_endpoint": "/ready"
+   }
+  ],
+  "carrier_token_sha256": "269bba1c439ec13d08af42706bd4da1eb1893c32ff57a725dd886fab0c34d060",
+  "component_sha256": {
+   "artifact_manifest.py": "a31a26b0d2b3d31a3afed1111d7486dd2bf890e483e6f76ff77a72c73b5d3a05",
+   "cleanup_audit.py": "6aab6ce349dbdadff3842a8eed37f1656db1930c28aa8e9dc24fd78389892c24",
+   "control_adapter.py": "17e696a3834e42c1d0b453deffefabb090a0af8ca4352b5ff64a98be37c36dfc",
+   "evidence.py": "40bdd8a5854db52a62800c458109875a3f9d534d9ab00dcfeea925560146dafe",
+   "phase_journal.py": "d91853aa2e7a1878ebfa718592a9d81d76242eb1036cfc77c6068c7ab24c10be",
+   "telemetry_journal.py": "92a84894b7bab28e0458ad75d6da1c5f7e01dcc3e8ca077f8a1fa2cbd4859a86",
+   "verifier_adapter.py": "5a04ca6e3d4541d9cfa3a9f904c5eac6b139a549aa870314d36ae517fc53ecc4",
+   "workload_driver.py": "35deb7ba03ac00da30f934fb61c34e7556ecea50b572415fe7c0464116875ae3"
+  },
+  "context": "docker-desktop",
+  "db_checksums": {
+   "inventory": 3935678504,
+   "items": 3849590678
+  },
+  "deployment_identity": [
+   {
+    "config_sha256": "b2de37f2c97ed14e01a1ac104e9acf6e76f7fde24472f45846809cd92b6e5833",
+    "desired": 1,
+    "image": "recweb-cart:latest",
+    "name": "cart",
+    "uid": "7d221841-6098-4b4c-9ab8-b6800b718165"
+   },
+   {
+    "config_sha256": "664c7241c2869501114e87501fb0df5cc3dec908481a139ae6823f5dc4b7fef9",
+    "desired": 1,
+    "image": "recweb-catalog:latest",
+    "name": "catalog",
+    "uid": "e093fea3-ca4c-402b-87a5-cce2dd94fdd1"
+   },
+   {
+    "config_sha256": "e893fc46feaaffd522445ec9eb58dd14fa39bd41dfd088ff6f668e8ef10cd41b",
+    "desired": 1,
+    "image": "nginx:alpine",
+    "name": "catalog-gw",
+    "uid": "9556f619-c4c0-4221-98c5-ad0bdffff185"
+   },
+   {
+    "config_sha256": "42538180cde65e45d701d31415b1848ffb9beb125d063d91227b65ed3a5fcaa9",
+    "desired": 1,
+    "image": "recweb-checkout:latest",
+    "name": "checkout",
+    "uid": "558d5343-afc9-4225-bc6d-6c6e5a212dc1"
+   },
+   {
+    "config_sha256": "9e104e03b118944e174fef26056d1e02899cac6cd3cb2b36f834f32012b9e80d",
+    "desired": 1,
+    "image": "recweb-pricing:latest",
+    "name": "pricing",
+    "uid": "74492ae0-6a53-461e-93c6-a852c43f26d9"
+   },
+   {
+    "config_sha256": "8aaa476a2a64dca2763abc0716068ce381ac04e7b77685042d3f857c72ca8d0e",
+    "desired": 1,
+    "image": "recweb-search:latest",
+    "name": "search",
+    "uid": "ee626227-648c-42c8-98bb-03ae28980d2b"
+   },
+   {
+    "config_sha256": "cd80d15c75f7f2c888b22b202eaf7f2be1cf058f758bcbc99873fe80f0e12441",
+    "desired": 1,
+    "image": "recweb-user:latest",
+    "name": "user",
+    "uid": "7fa59872-e8a9-42b4-832b-3bdff673377a"
+   }
+  ],
+  "foreign_residuals": [],
+  "namespace": "recweb-chaos",
+  "namespace_uid": "a0d9d4fa-424a-45ea-9939-3babfe287e7b",
+  "pod_image_identity": [
+   {
+    "container": "address",
+    "deployment": "address",
+    "image_id": "docker.io/library/recweb-address@sha256:689e522eca0fd3e53fd547d628cf854e6ce6ef1350944d5e743d571a2a1acf8f"
+   },
+   {
+    "container": "admin-audit",
+    "deployment": "admin-audit",
+    "image_id": "docker.io/library/recweb-admin-audit@sha256:56603d8fb430ba865bba14235e813f38497cd7d14fa43d2ff7a60da8ddd395d9"
+   },
+   {
+    "container": "ai-memory",
+    "deployment": "ai-memory",
+    "image_id": "docker.io/library/recweb-ai-memory@sha256:624ed7c34ce667d7fd388d1967812251a51fb7fa7ae01a497c109a267fd9456d"
+   },
+   {
+    "container": "announcement",
+    "deployment": "announcement",
+    "image_id": "docker.io/library/recweb-announcement@sha256:67f71d259f37654b0c761ea435af6afae13436a15b93d4e66c0cced6703c0731"
+   },
+   {
+    "container": "backend",
+    "deployment": "backend",
+    "image_id": "docker.io/library/recweb-backend@sha256:2a0b8e8870c6888c3cd95372128a5c1fb49c98157e4bea5b6d52f39607d76049"
+   },
+   {
+    "container": "cart",
+    "deployment": "cart",
+    "image_id": "docker.io/library/recweb-cart@sha256:4c9d4daf3cad31575283b11a400af1c9dc58a866dc835cc7f0ef5325f353456d"
+   },
+   {
+    "container": "catalog",
+    "deployment": "catalog",
+    "image_id": "docker.io/library/recweb-catalog@sha256:596db6f509572c7ece501e20baed72e92a8b09800261b884c7f53b92f4bdc6b7"
+   },
+   {
+    "container": "nginx",
+    "deployment": "catalog-gw",
+    "image_id": "docker.io/library/nginx@sha256:4a73073bd557c65b759505da037898b61f1be6cbcc3c2c3aeac22d2a470c1752"
+   },
+   {
+    "container": "checkout",
+    "deployment": "checkout",
+    "image_id": "docker.io/library/recweb-checkout@sha256:763aa598861d2e25e159f29f5b1f03b7c10e7fd0e4cf558a13cf5d770f67f004"
+   },
+   {
+    "container": "interaction",
+    "deployment": "interaction",
+    "image_id": "docker.io/library/recweb-interaction@sha256:461270af6790295446c59a8bb533058327ea53e97825d04dbcccc1fa3f0e087a"
+   },
+   {
+    "container": "inventory",
+    "deployment": "inventory",
+    "image_id": "docker.io/library/recweb-inventory@sha256:984cb552940d300694f2c37234427a34a5328e4128b97ee330a7e59fca857759"
+   },
+   {
+    "container": "kube-state-metrics",
+    "deployment": "kube-state-metrics",
+    "image_id": "registry.k8s.io/kube-state-metrics/kube-state-metrics@sha256:639a1e2da549210adddc0391ff91e270e83f7873014aec53258462812f741e6f"
+   },
+   {
+    "container": "llm-rerank",
+    "deployment": "llm-rerank",
+    "image_id": "docker.io/library/recweb-llm-rerank@sha256:709d786855d135cc59b0b248f2ff44cb4eba2b76caa9851c3bf913b8f8b6c407"
+   },
+   {
+    "container": "merchant",
+    "deployment": "merchant",
+    "image_id": "docker.io/library/recweb-merchant@sha256:ddd77a9b3f75490fbf7b9776424511f62718ccda6481bf64ff4c1d2b3aabe24d"
+   },
+   {
+    "container": "notification",
+    "deployment": "notification",
+    "image_id": "docker.io/library/recweb-notification@sha256:ebfaaa96ec6db08080db3b12adc71eb50ebe4551229b7b3cbf45b32ad0748710"
+   },
+   {
+    "container": "order",
+    "deployment": "order",
+    "image_id": "docker.io/library/recweb-order@sha256:f886e0ff540dd95a6b3db4f47d56deefc60e0dbf2f9f89e3a64ebb59b0ac9414"
+   },
+   {
+    "container": "payment",
+    "deployment": "payment",
+    "image_id": "docker.io/library/recweb-payment@sha256:59bc08208c28adb1581e2e7d65f8dd5a2fa27738fa0c6fde597acf9349906b9d"
+   },
+   {
+    "container": "pricing",
+    "deployment": "pricing",
+    "image_id": "docker.io/library/recweb-pricing@sha256:ef632000660d037ede27753e1f8102af08b5166d115118ffcb1eca5f573216a0"
+   },
+   {
+    "container": "promotion",
+    "deployment": "promotion",
+    "image_id": "docker.io/library/recweb-promotion@sha256:902b3287b6bf376cd9617e0b8da4673c005b40c8d71840ea90d51ceed012b7d7"
+   },
+   {
+    "container": "rec-agent",
+    "deployment": "rec-agent",
+    "image_id": "docker.io/library/recweb-rec-agent@sha256:15f6e0b8194b878c4e13c27e02bfdb875a4898548c24291d927d07917b640720"
+   },
+   {
+    "container": "review",
+    "deployment": "review",
+    "image_id": "docker.io/library/recweb-review@sha256:7b6dac3fd614ad3d66a26e128776f0b6a9665b48e4000cb91b971c9a6557ebd8"
+   },
+   {
+    "container": "review-query",
+    "deployment": "review-query",
+    "image_id": "docker.io/library/recweb-review-query@sha256:ad5438dd46e4e2535d6642bedc64891c4ceb89516dae17df9980aa52e70ef679"
+   },
+   {
+    "container": "sasrec",
+    "deployment": "sasrec",
+    "image_id": "docker.io/library/recweb-sasrec@sha256:2c6ca0286053c93e6d377d6aaf13438169ca614f3c44284cf13f4718d19df3b0"
+   },
+   {
+    "container": "search",
+    "deployment": "search",
+    "image_id": "docker.io/library/recweb-search@sha256:009e527252d9fdcf0101939b681f54fb2431e60880a0fc2df5d5395fa679304f"
+   },
+   {
+    "container": "shipping",
+    "deployment": "shipping",
+    "image_id": "docker.io/library/recweb-shipping@sha256:6501089840855e9842f5fd560f7de494dd51003881abe17d321760a7b19909c5"
+   },
+   {
+    "container": "shop-web",
+    "deployment": "shop-web",
+    "image_id": "docker.io/library/recweb-shop-web@sha256:6caefc3de35708b7d4d14dc20291abdb2c96d2ec235d568cb92af1a583b635b0"
+   },
+   {
+    "container": "user",
+    "deployment": "user",
+    "image_id": "docker.io/library/recweb-user@sha256:4038ab326c3f958f952ce214dfd7dc72b4c43c155b6764ce3e18fa97d560fabd"
+   }
+  ],
+  "runner_sha256": "cb1396f0574764437de3c410f5ac2ac3c3fa338f97b9d91597682a513e8cce51"
+ },
+ "environment_identity_sha256": "abde327d199ade62e79f10c1edf4b1104eefbe149f4649653f64fab7d12e75f6",
+ "foreign_residuals": [],
+ "generated": "A10-freeze",
+ "logical_schedule": {
+  "block_hashes": {
+   "S51-B1": "872b3b91655c576d86a74ec1dc84b09024f58e01ddc7de730cd2cb5426a4ab14",
+   "S51-B2": "dbc03f5e9b78c57475b901bc5b12183b0f6f920e866a4e3a1a5c441e969f81b7",
+   "S51-B3": "b96ac8080620473674da384d3f43920218b7e0c1305662911f3fbf3e68d6a21f",
+   "S51-B4": "530f9181c784348a94e78ef44413d493f7fc057bfb0ae4f371daf43a117992aa",
+   "S51-B5": "6432d58119ff5c0a907063740888baa5eb7eb185cbc9bf2473ae4fd234ea3c7c"
+  },
+  "fault_hashes": {
+   "S51-B1": "eb91412d19e4d8b79a81e39dd6a289b838c75b29ceb413aaf735a2356d1f4092",
+   "S51-B2": "576d0122442fb124529347b0c6389b60a032deafa66756ba71eef2383702a955",
+   "S51-B3": "0cecafa63847b43d37dc43d49c1853786ed276c171038359f75953ec200df4df",
+   "S51-B4": "e888251eb77e6958e99d01dcfc09422f5f6c812da7b5f2c87f22ddb4e0988828",
+   "S51-B5": "3d53ccfdf0e785f066a6fbb50501f47ddd570fa070dea1169efbbc82dbf71b6f"
+  },
+  "logical_schedule_hash": "db4c0dbe6e5f327e675bc31be2a05621a33d377feba67de10362dbf1211d8f48",
+  "seed": "recshop-traditional-v2-lite-strict51-20260816-rcbd-v1"
+ },
+ "pod_image_ids": [
+  {
+   "container": "address",
+   "deployment": "address",
+   "image": "docker.io/library/recweb-address:latest",
+   "image_id": "docker.io/library/recweb-address@sha256:689e522eca0fd3e53fd547d628cf854e6ce6ef1350944d5e743d571a2a1acf8f",
+   "owner": "ReplicaSet",
+   "pod": "address-57544d8d65-qc65q"
+  },
+  {
+   "container": "admin-audit",
+   "deployment": "admin-audit",
+   "image": "docker.io/library/recweb-admin-audit:latest",
+   "image_id": "docker.io/library/recweb-admin-audit@sha256:56603d8fb430ba865bba14235e813f38497cd7d14fa43d2ff7a60da8ddd395d9",
+   "owner": "ReplicaSet",
+   "pod": "admin-audit-5c76f57b6c-n59cb"
+  },
+  {
+   "container": "ai-memory",
+   "deployment": "ai-memory",
+   "image": "docker.io/library/recweb-ai-memory:latest",
+   "image_id": "docker.io/library/recweb-ai-memory@sha256:624ed7c34ce667d7fd388d1967812251a51fb7fa7ae01a497c109a267fd9456d",
+   "owner": "ReplicaSet",
+   "pod": "ai-memory-65cb9fb4b-xzplk"
+  },
+  {
+   "container": "announcement",
+   "deployment": "announcement",
+   "image": "docker.io/library/recweb-announcement:latest",
+   "image_id": "docker.io/library/recweb-announcement@sha256:67f71d259f37654b0c761ea435af6afae13436a15b93d4e66c0cced6703c0731",
+   "owner": "ReplicaSet",
+   "pod": "announcement-76f47687d-x7s92"
+  },
+  {
+   "container": "backend",
+   "deployment": "backend",
+   "image": "docker.io/library/recweb-backend:latest",
+   "image_id": "docker.io/library/recweb-backend@sha256:2a0b8e8870c6888c3cd95372128a5c1fb49c98157e4bea5b6d52f39607d76049",
+   "owner": "ReplicaSet",
+   "pod": "backend-745dd6df4c-h9zz6"
+  },
+  {
+   "container": "cart",
+   "deployment": "cart",
+   "image": "docker.io/library/recweb-cart:latest",
+   "image_id": "docker.io/library/recweb-cart@sha256:4c9d4daf3cad31575283b11a400af1c9dc58a866dc835cc7f0ef5325f353456d",
+   "owner": "ReplicaSet",
+   "pod": "cart-5cc68d7f4f-rpzzr"
+  },
+  {
+   "container": "catalog",
+   "deployment": "catalog",
+   "image": "docker.io/library/recweb-catalog:latest",
+   "image_id": "docker.io/library/recweb-catalog@sha256:596db6f509572c7ece501e20baed72e92a8b09800261b884c7f53b92f4bdc6b7",
+   "owner": "ReplicaSet",
+   "pod": "catalog-68fd68c7f4-zdshn"
+  },
+  {
+   "container": "nginx",
+   "deployment": "catalog-gw",
+   "image": "docker.io/library/nginx:alpine",
+   "image_id": "docker.io/library/nginx@sha256:4a73073bd557c65b759505da037898b61f1be6cbcc3c2c3aeac22d2a470c1752",
+   "owner": "ReplicaSet",
+   "pod": "catalog-gw-56b649b6c5-bzt8t"
+  },
+  {
+   "container": "checkout",
+   "deployment": "checkout",
+   "image": "docker.io/library/recweb-checkout:latest",
+   "image_id": "docker.io/library/recweb-checkout@sha256:763aa598861d2e25e159f29f5b1f03b7c10e7fd0e4cf558a13cf5d770f67f004",
+   "owner": "ReplicaSet",
+   "pod": "checkout-74487887bf-ng4dh"
+  },
+  {
+   "container": "interaction",
+   "deployment": "interaction",
+   "image": "docker.io/library/recweb-interaction:latest",
+   "image_id": "docker.io/library/recweb-interaction@sha256:461270af6790295446c59a8bb533058327ea53e97825d04dbcccc1fa3f0e087a",
+   "owner": "ReplicaSet",
+   "pod": "interaction-56d9cd86cd-qs8tq"
+  },
+  {
+   "container": "inventory",
+   "deployment": "inventory",
+   "image": "docker.io/library/recweb-inventory:latest",
+   "image_id": "docker.io/library/recweb-inventory@sha256:984cb552940d300694f2c37234427a34a5328e4128b97ee330a7e59fca857759",
+   "owner": "ReplicaSet",
+   "pod": "inventory-66bfc84875-9kkkr"
+  },
+  {
+   "container": "kube-state-metrics",
+   "deployment": "kube-state-metrics",
+   "image": "registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.13.0",
+   "image_id": "registry.k8s.io/kube-state-metrics/kube-state-metrics@sha256:639a1e2da549210adddc0391ff91e270e83f7873014aec53258462812f741e6f",
+   "owner": "ReplicaSet",
+   "pod": "kube-state-metrics-7cc9459f7b-mj4lx"
+  },
+  {
+   "container": "llm-rerank",
+   "deployment": "llm-rerank",
+   "image": "docker.io/library/recweb-llm-rerank:latest",
+   "image_id": "docker.io/library/recweb-llm-rerank@sha256:709d786855d135cc59b0b248f2ff44cb4eba2b76caa9851c3bf913b8f8b6c407",
+   "owner": "ReplicaSet",
+   "pod": "llm-rerank-6dd4c79579-wzwxp"
+  },
+  {
+   "container": "merchant",
+   "deployment": "merchant",
+   "image": "docker.io/library/recweb-merchant:latest",
+   "image_id": "docker.io/library/recweb-merchant@sha256:ddd77a9b3f75490fbf7b9776424511f62718ccda6481bf64ff4c1d2b3aabe24d",
+   "owner": "ReplicaSet",
+   "pod": "merchant-8fbc74498-nrmwf"
+  },
+  {
+   "container": "notification",
+   "deployment": "notification",
+   "image": "docker.io/library/recweb-notification:latest",
+   "image_id": "docker.io/library/recweb-notification@sha256:ebfaaa96ec6db08080db3b12adc71eb50ebe4551229b7b3cbf45b32ad0748710",
+   "owner": "ReplicaSet",
+   "pod": "notification-598db85ddd-x2ll7"
+  },
+  {
+   "container": "order",
+   "deployment": "order",
+   "image": "docker.io/library/recweb-order:latest",
+   "image_id": "docker.io/library/recweb-order@sha256:f886e0ff540dd95a6b3db4f47d56deefc60e0dbf2f9f89e3a64ebb59b0ac9414",
+   "owner": "ReplicaSet",
+   "pod": "order-5d9b46676-dmhqb"
+  },
+  {
+   "container": "payment",
+   "deployment": "payment",
+   "image": "docker.io/library/recweb-payment:latest",
+   "image_id": "docker.io/library/recweb-payment@sha256:59bc08208c28adb1581e2e7d65f8dd5a2fa27738fa0c6fde597acf9349906b9d",
+   "owner": "ReplicaSet",
+   "pod": "payment-755ff54b69-wxtmj"
+  },
+  {
+   "container": "pricing",
+   "deployment": "pricing",
+   "image": "docker.io/library/recweb-pricing:latest",
+   "image_id": "docker.io/library/recweb-pricing@sha256:ef632000660d037ede27753e1f8102af08b5166d115118ffcb1eca5f573216a0",
+   "owner": "ReplicaSet",
+   "pod": "pricing-7894bf7745-ngqqn"
+  },
+  {
+   "container": "promotion",
+   "deployment": "promotion",
+   "image": "docker.io/library/recweb-promotion:latest",
+   "image_id": "docker.io/library/recweb-promotion@sha256:902b3287b6bf376cd9617e0b8da4673c005b40c8d71840ea90d51ceed012b7d7",
+   "owner": "ReplicaSet",
+   "pod": "promotion-5ddc9655d9-zwkl8"
+  },
+  {
+   "container": "rec-agent",
+   "deployment": "rec-agent",
+   "image": "docker.io/library/recweb-rec-agent:latest",
+   "image_id": "docker.io/library/recweb-rec-agent@sha256:15f6e0b8194b878c4e13c27e02bfdb875a4898548c24291d927d07917b640720",
+   "owner": "ReplicaSet",
+   "pod": "rec-agent-5ffd55fcc8-lnhdg"
+  },
+  {
+   "container": "review",
+   "deployment": "review",
+   "image": "docker.io/library/recweb-review:latest",
+   "image_id": "docker.io/library/recweb-review@sha256:7b6dac3fd614ad3d66a26e128776f0b6a9665b48e4000cb91b971c9a6557ebd8",
+   "owner": "ReplicaSet",
+   "pod": "review-7fd94d448f-jfbbp"
+  },
+  {
+   "container": "review-query",
+   "deployment": "review-query",
+   "image": "docker.io/library/recweb-review-query:latest",
+   "image_id": "docker.io/library/recweb-review-query@sha256:ad5438dd46e4e2535d6642bedc64891c4ceb89516dae17df9980aa52e70ef679",
+   "owner": "ReplicaSet",
+   "pod": "review-query-5956d66f57-vgt85"
+  },
+  {
+   "container": "sasrec",
+   "deployment": "sasrec",
+   "image": "docker.io/library/recweb-sasrec:latest",
+   "image_id": "docker.io/library/recweb-sasrec@sha256:2c6ca0286053c93e6d377d6aaf13438169ca614f3c44284cf13f4718d19df3b0",
+   "owner": "ReplicaSet",
+   "pod": "sasrec-5f98d44f67-mcdjs"
+  },
+  {
+   "container": "search",
+   "deployment": "search",
+   "image": "docker.io/library/recweb-search:latest",
+   "image_id": "docker.io/library/recweb-search@sha256:009e527252d9fdcf0101939b681f54fb2431e60880a0fc2df5d5395fa679304f",
+   "owner": "ReplicaSet",
+   "pod": "search-98df5c7cc-5rh6h"
+  },
+  {
+   "container": "shipping",
+   "deployment": "shipping",
+   "image": "docker.io/library/recweb-shipping:latest",
+   "image_id": "docker.io/library/recweb-shipping@sha256:6501089840855e9842f5fd560f7de494dd51003881abe17d321760a7b19909c5",
+   "owner": "ReplicaSet",
+   "pod": "shipping-75c9bf8b76-r5pbr"
+  },
+  {
+   "container": "shop-web",
+   "deployment": "shop-web",
+   "image": "docker.io/library/recweb-shop-web:latest",
+   "image_id": "docker.io/library/recweb-shop-web@sha256:6caefc3de35708b7d4d14dc20291abdb2c96d2ec235d568cb92af1a583b635b0",
+   "owner": "ReplicaSet",
+   "pod": "shop-web-697d8bf998-rxc5k"
+  },
+  {
+   "container": "user",
+   "deployment": "user",
+   "image": "docker.io/library/recweb-user:latest",
+   "image_id": "docker.io/library/recweb-user@sha256:4038ab326c3f958f952ce214dfd7dc72b4c43c155b6764ce3e18fa97d560fabd",
+   "owner": "ReplicaSet",
+   "pod": "user-55c6c4f8d5-2kz6x"
+  }
+ ],
+ "source_sha256": {
+  "scripts/chaos/ctk/chaos_k8s_runner.py": "cb1396f0574764437de3c410f5ac2ac3c3fa338f97b9d91597682a513e8cce51",
+  "scripts/chaos/ctk/run-traditional-v2-lite.ps1": "f2fbf6f679683d1828c20923044862093831a55c5615dbd630ff86a47b4f8faa",
+  "scripts/chaos/ctk/traditional_v2_lite/b1_lite.py": "e63f2769d1235c86222cc1439d99e0899ae5be4919c37330d65c9db3c2b79e31",
+  "scripts/chaos/ctk/traditional_v2_lite/contract.py": "d9e289d88d1086ac730d0f81c50fdc6323ead12cce76f480dc16cf9bd4feb7b9",
+  "scripts/chaos/ctk/traditional_v2_lite/smoke_lite.py": "2494ddee58b62c8ab80a1d0a0a48ccd767a817167f3643f3029fe4478141f9a0",
+  "scripts/chaos/ctk/traditional_v2_lite/verifier_adapter.py": "5a04ca6e3d4541d9cfa3a9f904c5eac6b139a549aa870314d36ae517fc53ecc4",
+  "tests/qa/run_strict51_engineering.py": "a339803c873327ff43f502bc0fb432e908230218102914bcce696e8dd9cb6155"
+ }
+}

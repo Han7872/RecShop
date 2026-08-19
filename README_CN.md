@@ -14,7 +14,8 @@
 |---|---|
 | `services/` | 25 个微服务（Flask/FastAPI）——可运行的应用本体 |
 | `datasets/agentfault_k8s/` | Agent 语义故障数据集（96 faulted case，4 个族）+ 预计算评测结果 |
-| `datasets/traditional_k8s/` | 传统基础设施故障数据集（255 case；全量遥测托管在 Google Drive） |
+| `datasets/traditional_k8s/` | 传统基础设施故障数据集 v1（255 case；全量遥测托管在 Google Drive） |
+| `datasets/traditional_v2_strict51/` | 传统基础设施故障数据集 **v2（strict51 协议化重采）**（255 case；逐 case 分数在本仓，全量遥测托管在 Google Drive） |
 | `scripts/chaos/` | 故障注入 + 采集 + 评测工具链 |
 | `docker/` `ops/` `k8s/` | Docker / OTel 栈 / K8S 部署配置 |
 
@@ -39,7 +40,9 @@ python scripts/setup/start.py --stop   # 停止
 
 **Agent 语义故障**（`datasets/agentfault_k8s/`）——96 faulted case，4 个族（hallucinate / context_drift / wrong_item_pick / format_violation），每 case 附机器可校验真值。详见 `SUMMARY.md`（是什么 / 怎么采）+ `EVAL_NOTES.md`（评测协议）。
 
-**传统基础设施故障**（`datasets/traditional_k8s/`）——255 case（single 130 / dual 100 / triple 25），Chaos Mesh 注入。全量遥测（~16 GB）托管在 Google Drive，见 `traditional_k8s/README.md`。
+**传统基础设施故障 v1**（`datasets/traditional_k8s/`）——255 case（single 130 / dual 100 / triple 25），Chaos Mesh 注入。全量遥测（~16 GB）托管在 Google Drive，见 `traditional_k8s/README.md`。
+
+**传统基础设施故障 v2（strict51）**（`datasets/traditional_v2_strict51/`）——同设计的协议化重采：51 场景 × 5 区组随机化完全区组设计、冻结 seed/身份链、逐 case 资格门、补采留痕（242 主槽 + 13）。常量基线与 v1 逐层相同；BARO/resource 0.608 → 0.698。逐 case 方法分数随仓提供；全量遥测在 Google Drive，见 `traditional_v2_strict51/README.md`。
 
 ## 数据采集（一键脚本）
 
